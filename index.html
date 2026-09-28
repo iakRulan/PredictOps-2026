@@ -79,6 +79,15 @@
       知识层 · 诊断问答
     </button>
 
+    <button class="nav-item" data-view="all-tracks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
+        <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+      </svg>
+      全赛题矩阵 (01-08)
+      <span class="nav-badge">8</span>
+    </button>
+
     <div class="sidebar-foot">
       系统版本 <b>v1.0.0</b><br />
       采样频率 <b>1 Hz</b> · 窗口 <b>60s</b><br />
@@ -383,6 +392,16 @@
       </div>
     </section>
 
+    <!-- ======== 全赛题矩阵 (01-08) ======== -->
+    <section class="view" id="view-all-tracks">
+      <div class="section-head">
+        <h2>2026 卡奥斯 1024 开发者大赛 · 全赛题交互式解答矩阵</h2>
+        <p>01-08 赛题无缝切换 · 真实交互式沙盒与指标对标</p>
+      </div>
+      <div class="track-tabs" id="track-tabs"><!-- JS 渲染 --></div>
+      <div id="track-content"><!-- JS 渲染 --></div>
+    </section>
+
   </main>
 </div>
 
@@ -417,6 +436,7 @@
 <script src="assets/js/dataset.js"></script>
 <script src="assets/js/knowledge.js"></script>
 <script src="assets/js/charts.js"></script>
+<script src="assets/js/tracks.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>

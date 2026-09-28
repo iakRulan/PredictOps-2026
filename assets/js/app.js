@@ -131,12 +131,14 @@
 
     switchView(view) {
       this.currentView = view;
+      if (view !== "all-tracks" && global.Tracks) global.Tracks.leave();
       document.querySelectorAll(".nav-item").forEach(b => b.classList.toggle("active", b.dataset.view === view));
       document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + view));
       if (view === "perception") this.renderPerception();
       if (view === "inference") this.renderInference();
       if (view === "decision") this.renderDecision();
       if (view === "knowledge") this.renderKnowledge();
+      if (view === "all-tracks" && global.Tracks) global.Tracks.render();
       setTimeout(() => global.Charts.resizeAll(), 60);
     },
 
