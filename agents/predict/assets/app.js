@@ -138,6 +138,7 @@
       if (view === "inference") this.renderInference();
       if (view === "decision") this.renderDecision();
       if (view === "knowledge") this.renderKnowledge();
+      if (view === "dataset" && global.PredictEval) global.PredictEval.render();
       if (view === "all-tracks" && global.Tracks) global.Tracks.render();
       setTimeout(() => global.Charts.resizeAll(), 60);
     },

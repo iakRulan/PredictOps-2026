@@ -14,7 +14,7 @@
 | 01 | 换产协同智能体 | ChangeoverOps | 8081 | [打开](https://8081-08fe446a69af16a6.code.cosmoplat.cn/) | 换产总览 / 智能体协同 / 排程甘特 / 异常重排 |
 | 02 | 空压站调度智能体 | AirStationOps | 8082 | [打开](https://8082-08fe446a69af16a6.code.cosmoplat.cn/) | 站房总览 / 机组负荷分配 / 喘振防护 / 设备健康 |
 | 03 | 图纸解析智能体 | DrawingOps | 8083 | [打开](https://8083-08fe446a69af16a6.code.cosmoplat.cn/) | 图纸解析 / 三维预览 / 尺寸链校验 / BOM 与导出 |
-| 04 | 设备健康智能体 | PredictOps | 8084 | [打开](https://8084-08fe446a69af16a6.code.cosmoplat.cn/) | 感知层 / 推理层 / 决策层 / 知识层 |
+| 04 | 设备健康智能体 | PredictOps | 8084 | [打开](https://8084-08fe446a69af16a6.code.cosmoplat.cn/) | 感知层 / 推理层 / 决策层 / 知识层 / 数据集与评估 |
 | 05 | 质量归因智能体 | QualityOps | 8085 | [打开](https://8085-08fe446a69af16a6.code.cosmoplat.cn/) | 缺陷识别 / 根因溯源 / 工艺纠偏 / 闭环验证 |
 | 06 | 经营问数智能体 | DataMind BI | 8086 | [打开](https://8086-08fe446a69af16a6.code.cosmoplat.cn/) | 对话问数 / 图表分析 / 运营日报 |
 | 07 | 智能客服智能体 | SalesAgent | 8087 | [打开](https://8087-08fe446a69af16a6.code.cosmoplat.cn/) | 会话工作台 / 产品推荐 / 线索管理 |
@@ -30,7 +30,7 @@
 │   ├── changeover/             #   :8081  index.html + assets/{core.css, core.js, app.js}
 │   ├── airstation/             #   :8082
 │   ├── drawing/                #   :8083
-│   ├── predict/                #   :8084  （含 data.js / dataset.js / knowledge.js / charts.js）
+│   ├── predict/                #   :8084  （含 data.js / dataset.js / knowledge.js / charts.js / eval.js）
 │   ├── quality/                #   :8085
 │   ├── bimind/                 #   :8086
 │   ├── salesagent/             #   :8087
