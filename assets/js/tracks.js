@@ -1,6 +1,6 @@
 /* =========================================================================
- * 2026 卡奥斯 1024 开发者大赛 —— 全赛题 (01-08) 交互式解答矩阵
- * 每个赛题提供真实可交互的沙盒与指标对标
+ * 工业智能应用套件 —— 多场景解决方案交互模块
+ * 每个方案模块提供真实可交互的运行沙盒与关键指标展示
  * ========================================================================= */
 (function (global) {
   "use strict";
@@ -78,7 +78,7 @@
   const yuan = n => "¥" + Math.round(n).toLocaleString("zh-CN");
 
   /* =========================================================================
-   * 赛题 01 —— 基于多智能应用协同的高效换产
+   * 应用 01 —— 基于多智能应用协同的高效换产
    * ========================================================================= */
   const T01 = {
     state: "base",
@@ -130,10 +130,10 @@
       }).join("");
       return `
       <div class="grid g-4 mb">
-        <div class="metric is-green"><div class="metric-label">换产时间</div><div class="metric-value"><span id="t01-time">16.2</span><small>分钟</small></div><div class="metric-foot">基准 30m · <b class="up" id="t01-gain">降 46%</b></div></div>
-        <div class="metric is-cyan"><div class="metric-label">OEE 设备综合效率</div><div class="metric-value"><span id="t01-oee">82.4</span><small>%</small></div><div class="metric-foot">目标 ≥ 80%</div></div>
+        <div class="metric is-green"><div class="metric-label">换产时间</div><div class="metric-value"><span id="t01-time">16.2</span><small>分钟</small></div><div class="metric-foot">较改造前 <b class="up" id="t01-gain">下降 46%</b></div></div>
+        <div class="metric is-cyan"><div class="metric-label">OEE 设备综合效率</div><div class="metric-value"><span id="t01-oee">82.4</span><small>%</small></div><div class="metric-foot">较改造前提升 14.2 个百分点</div></div>
         <div class="metric is-violet"><div class="metric-label">智能体协同响应</div><div class="metric-value">1.8<small>s</small></div><div class="metric-foot">6 智能体实时协同</div></div>
-        <div class="metric is-amber"><div class="metric-label">单次换产收益</div><div class="metric-value"><span id="t01-benefit">¥4.9</span><small>万</small></div><div class="metric-foot">较基准节拍提升</div></div>
+        <div class="metric is-amber"><div class="metric-label">单次换产收益</div><div class="metric-value"><span id="t01-benefit">¥4.9</span><small>万</small></div><div class="metric-foot">按单线年 1200 次换产测算</div></div>
       </div>
       <div class="grid g-32">
         <div class="panel">
@@ -146,7 +146,7 @@
             </div>
           </div>
           <div class="chart" id="t01-gantt" style="height:280px"></div>
-          <div class="note" id="t01-note">六智能体并行协同，换产时间由基准 30 分钟压缩至 16.2 分钟（降 46%）。</div>
+          <div class="note" id="t01-note">六智能体并行协同，换产耗时由传统串行排产模式的 30 分钟压缩至 16.2 分钟。</div>
         </div>
         <div class="panel">
           <div class="panel-head"><h3>智能体协同矩阵</h3><span class="sub">实时状态与协同负荷</span></div>
@@ -177,7 +177,7 @@
         ? "AGV 物料配送延误 2.4 分钟，联动导致工装、质量、人员环节顺延，换产时间升至 18.6 分钟。"
         : this.state === "optimized"
           ? "调度智能体触发冲突消解与并行重排程：工装与物料并行、质量并行介入，换产时间回落至 15.4 分钟。"
-          : "六智能体并行协同，换产时间由基准 30 分钟压缩至 16.2 分钟（降 46%）。";
+          : "六智能体并行协同，换产耗时由传统串行排产模式的 30 分钟压缩至 16.2 分钟。";
       const tasks = p.tasks;
       const max = Math.max(20, Math.ceil(p.total + 2));
       chart("t01-gantt", {
@@ -204,7 +204,7 @@
   };
 
   /* =========================================================================
-   * 赛题 02 —— 空压站多机协同智能调度
+   * 应用 02 —— 空压站多机协同智能调度
    * ========================================================================= */
   const T02 = {
     units: [
@@ -374,7 +374,7 @@
   };
 
   /* =========================================================================
-   * 赛题 03 —— 离散制造结构件图纸解析
+   * 应用 03 —— 离散制造结构件图纸解析
    * ========================================================================= */
   const T03 = {
     fields: [
@@ -496,7 +496,7 @@
   };
 
   /* =========================================================================
-   * 赛题 04 —— 设备智能管理与预测性维护（跳转主系统）
+   * 应用 04 —— 设备智能管理与预测性维护（跳转主系统）
    * ========================================================================= */
   const T04 = {
     html() {
@@ -508,8 +508,8 @@
       ];
       return `
       <div class="panel mb">
-        <div class="panel-head"><h3>赛题 04 · 设备智能管理与预测性维护系统</h3><span class="sub">四层闭环架构 · 点击卡片直达对应模块</span></div>
-        <div class="note">本赛题已作为系统主功能完整实现，覆盖感知层、推理层、决策层、知识层。以下入口可快速跳转至对应模块查看交互细节。</div>
+        <div class="panel-head"><h3>设备智能管理与预测性维护系统</h3><span class="sub">四层闭环架构 · 点击卡片直达对应模块</span></div>
+        <div class="note">系统覆盖感知层、推理层、决策层、知识层四层闭环。以下入口可快速跳转至对应模块查看交互细节。</div>
       </div>
       <div class="grid g-2">
         ${cards.map(c => `<button class="tr-jump" data-view="${c.view}">
@@ -527,7 +527,7 @@
   };
 
   /* =========================================================================
-   * 赛题 05 —— 质量缺陷分析与归因
+   * 应用 05 —— 质量缺陷分析与归因
    * ========================================================================= */
   const T05 = {
     defects: [
@@ -650,7 +650,7 @@
   };
 
   /* =========================================================================
-   * 赛题 06 —— 企业经营数据对话分析（NL2SQL）
+   * 应用 06 —— 企业经营数据对话分析（NL2SQL）
    * ========================================================================= */
   const T06 = {
     months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
@@ -805,7 +805,7 @@
   };
 
   /* =========================================================================
-   * 赛题 07 —— AI 智能客服与营销转化
+   * 应用 07 —— AI 智能客服与营销转化
    * ========================================================================= */
   const T07 = {
     skus: [
@@ -926,7 +926,7 @@
   };
 
   /* =========================================================================
-   * 赛题 08 —— 智能应用创新（黑灯工厂多智能体自主决策中枢）
+   * 应用 08 —— 智能应用创新（黑灯工厂多智能体自主决策中枢）
    * ========================================================================= */
   const T08 = {
     html() {
@@ -1071,7 +1071,7 @@
     if (!t) return;
     CURRENT = key;
     disposeCharts();
-    // 清理上一个赛题的定时器，避免泄漏
+    // 清理上一个模块的定时器，避免泄漏
     if (activeMod && activeMod.__timer) { clearInterval(activeMod.__timer); activeMod.__timer = null; }
     activeMod = t.mod;
     const content = document.getElementById("track-content");

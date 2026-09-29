@@ -328,7 +328,7 @@ input, select, textarea { font-family: inherit; }
 .quick-ask button:hover { border-color: var(--cyan); box-shadow: var(--glow-cyan); transform: translateY(-1px); }
 .quick-ask button svg { width: 12px; height: 12px; color: var(--cyan); }
 
-/* ---- 官方基准数据集面板 ---- */
+/* ---- 基准数据集面板 ---- */
 .ds-meta { display: flex; flex-direction: column; gap: 7px; margin-bottom: 10px; }
 .ds-meta-row { display: flex; gap: 10px; font-size: 12px; }
 .ds-meta-row .k { color: var(--txt-2); min-width: 64px; flex: none; }
@@ -344,14 +344,6 @@ input, select, textarea { font-family: inherit; }
 .ds-sample-label { font-size: 12px; font-weight: 600; }
 .ds-sample-meta { font-size: 10px; color: var(--txt-2); font-family: var(--mono); }
 
-/* ---- 评审标准对齐胶囊 ---- */
-.pill-review {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.16), rgba(239, 68, 68, 0.12));
-  border-color: rgba(245, 158, 11, 0.45); color: var(--amber);
-  transition: all 0.16s ease;
-}
-.pill-review:hover { box-shadow: 0 0 16px rgba(245, 158, 11, 0.35); border-color: var(--amber); }
-.pill-review svg { width: 14px; height: 14px; }
 
 /* ---- 通用模态框 ---- */
 .modal-mask {
@@ -392,23 +384,13 @@ input, select, textarea { font-family: inherit; }
 .si-formula { margin-top: 7px; }
 .si-threshold { font-size: 11.5px; color: var(--txt-2); margin-top: 5px; }
 
-/* ---- 评审维度清单 ---- */
-.rev-dim { padding: 14px 0; border-bottom: 1px solid var(--line); }
-.rev-dim:last-child { border-bottom: none; }
-.rev-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.rev-idx { font-family: var(--mono); font-size: 12px; color: var(--cyan); font-weight: 700; }
-.rev-name { font-size: 14px; font-weight: 700; }
-.rev-head em { font-style: normal; color: var(--txt-2); font-size: 11px; }
-.rev-dim ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-.rev-dim li { display: flex; gap: 9px; font-size: 12.5px; color: var(--txt-1); line-height: 1.6; }
-.tick { color: var(--green); font-weight: 700; flex: none; }
 
 /* ---- 问答联想气泡 ---- */
 .bubble-rel { width: 100%; max-width: 100%; }
 .rel-title { font-size: 11.5px; color: var(--txt-2); margin-bottom: 9px; letter-spacing: 0.04em; }
 .bubble-rel .quick-ask button { font-size: 11px; padding: 5px 11px; }
 
-/* ================= 全赛题矩阵 (01-08) ================= */
+/* ================= 智能应用套件 ================= */
 .track-tabs {
   display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px;
   margin-bottom: 16px;
@@ -443,7 +425,7 @@ input, select, textarea { font-family: inherit; }
 .tr-drawing { background: var(--bg-0); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px; }
 .tr-svg { width: 100%; height: auto; display: block; }
 
-/* 跳转卡（赛题04） */
+/* 跳转卡 */
 .tr-jump {
   text-align: left; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius);
   background: linear-gradient(180deg, var(--panel-2), var(--panel)); transition: all 0.18s ease; width: 100%;
@@ -464,7 +446,7 @@ input, select, textarea { font-family: inherit; }
 }
 .tr-select:focus { border-color: var(--cyan-dim); }
 
-/* 架构图（赛题08） */
+/* 架构图 */
 .tr-arch { display: flex; align-items: stretch; gap: 10px; }
 .tr-arch-col { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .tr-arch-title { font-size: 11.5px; font-weight: 700; color: var(--cyan); letter-spacing: 0.05em; margin-bottom: 2px; text-align: center; }

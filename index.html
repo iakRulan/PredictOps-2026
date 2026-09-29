@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>设备智能管理与预测性维护系统 | 2026 卡奥斯工业智能应用开发者大赛</title>
+<title>智维 PredictOps · 工业设备智能健康管理与预测性维护平台</title>
 <meta name="description" content="面向制造业关键设备的智能管理与预测性维护系统，覆盖感知层、推理层、决策层与知识层。" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1018'/%3E%3Cpath d='M8 20l6-9 4 6 3-4 3 7' stroke='%2322d3ee' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
 <link rel="stylesheet" href="assets/css/style.css" />
@@ -28,7 +28,7 @@
   <header class="topbar">
     <div class="topbar-title">
       设备智能管理与预测性维护系统
-      <small>2026 卡奥斯工业智能应用开发者大赛 · 赛题 04</small>
+      <small>工业设备健康管理 · 预测性维护 · 智能诊断</small>
     </div>
     <div class="topbar-spacer"></div>
     <div class="kpi-strip">
@@ -38,10 +38,6 @@
       <div class="kpi-chip"><em>在监设备</em><b id="kpi-devices">3</b></div>
     </div>
     <span class="pill pill-info"><span class="dot pulse"></span>数据采集中</span>
-    <button class="pill pill-review" id="btn-review" title="查看大赛评审标准对齐情况">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      大赛评审标准对齐看板
-    </button>
     <span class="mono" id="clock" style="color:var(--txt-1);font-size:12.5px;min-width:64px;text-align:right">--:--:--</span>
   </header>
 
@@ -79,13 +75,13 @@
       知识层 · 诊断问答
     </button>
 
+    <div class="nav-label" style="margin-top:16px">解决方案</div>
     <button class="nav-item" data-view="all-tracks">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
         <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
       </svg>
-      全赛题矩阵 (01-08)
-      <span class="nav-badge">8</span>
+      智能应用套件
     </button>
 
     <div class="sidebar-foot">
@@ -121,7 +117,7 @@
         <div class="note" id="state-desc">各特征参数处于健康基线范围内，振动频谱平稳，无异常谐波。</div>
       </div>
 
-      <div class="panel mt" id="dataset-panel"><!-- JS 渲染：官方基准数据集验证 --></div>
+      <div class="panel mt" id="dataset-panel"><!-- JS 渲染：基准数据集验证 --></div>
 
       <div class="grid g-4 mt">
         <div class="metric">
@@ -392,11 +388,11 @@
       </div>
     </section>
 
-    <!-- ======== 全赛题矩阵 (01-08) ======== -->
+    <!-- ======== 智能应用套件 ======== -->
     <section class="view" id="view-all-tracks">
       <div class="section-head">
-        <h2>2026 卡奥斯 1024 开发者大赛 · 全赛题交互式解答矩阵</h2>
-        <p>01-08 赛题无缝切换 · 真实交互式沙盒与指标对标</p>
+        <h2>智能应用套件 · 多场景解决方案</h2>
+        <p>覆盖换产协同、能源调度、图纸解析、设备运维、质量归因、经营分析、智能客服等工业与通用场景</p>
       </div>
       <div class="track-tabs" id="track-tabs"><!-- JS 渲染 --></div>
       <div id="track-content"><!-- JS 渲染 --></div>

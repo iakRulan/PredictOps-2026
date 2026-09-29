@@ -205,7 +205,7 @@
       el.innerHTML = `游标 <b>${idx * 20} Hz</b> · 幅值 <b>${spec.vals[idx]}</b> m/s²`;
     },
 
-    /* ---------------- 官方基准数据源（CWRU / PHM） ---------------- */
+    /* ---------------- 基准数据源（CWRU / PHM） ---------------- */
     switchDataset(key) {
       if (!global.Datasets.defs[key]) return;
       this.dataset = key;
@@ -245,8 +245,8 @@
 
       wrap.innerHTML = `
         <div class="panel-head">
-          <h3>官方基准数据集验证</h3>
-          <span class="sub">对齐大赛官方建议数据源 · 特征频率理论值与算法识别值比对</span>
+          <h3>基准数据集验证</h3>
+          <span class="sub">NASA CWRU / PHM Society 公开数据集 · 特征频率理论值与算法识别值比对</span>
           <div class="spacer"></div>
           <div class="segmented" id="dataset-switch">
             <button data-ds="cwru" class="${this.dataset === "cwru" ? "active" : ""}">NASA CWRU 轴承数据集</button>
@@ -893,7 +893,7 @@
           <ol>${rows.map(r => `<li>${r.code} 识别值 <b>${r.measured} Hz</b>（偏差 ±${r.dev}%）→ ${r.verdict}</li>`).join("")}</ol>
           <div class="kv"><span class="k">判定方法：</span>对振动信号做包络解调，提取特征频率峰值，与理论值偏差 &lt; 2% 判定为有效识别；BPFI 主导提示内圈故障，BPFO 主导提示外圈故障。</div>
           <div class="kv"><span class="k">参考：</span><code>CWRU Bearing Data Center · ISO 10816</code></div>
-          <div class="kv"><span class="k">说明：</span>可在「感知层 → 官方基准数据集验证」切换 CWRU / PHM 数据源并载入标定样本，实时查看比对表。</div>`;
+          <div class="kv"><span class="k">说明：</span>可在「感知层 → 基准数据集验证」切换 CWRU / PHM 数据源并载入标定样本，实时查看比对表。</div>`;
       }
 
       if (intent === "score") {
@@ -1023,30 +1023,6 @@
       this.openModal(`${ch.def.name} <span style="color:var(--txt-2);font-size:12px">${ch.def.id}</span> · 综合健康指数 <b style="color:var(--cyan)">${ch.health()}</b>`, html);
     },
 
-    /* ---------------- 大赛评审标准对齐看板 ---------------- */
-    openReviewModal() {
-      const dims = [
-        { name: "创意度", en: "Creativity", items: ["预测性维护四层闭环架构（感知 / 推理 / 决策 / 知识）", "NASA CWRU 与 PHM Society 官方公开数据集对齐验证", "自然语言设备诊断问答与智能联想", "五维量化健康评分模型与可解释评分依据"] },
-        { name: "完整度", en: "Completeness", items: ["三类关键设备（数控机床 / 空压机 / 离心泵）实时时序监控", "预警提前 24~72h · 准确率 &gt; 92% · 误报率 &lt; 5%", "健康指数 + 五维雷达 + RUL 预测曲线", "智能工单闭环与备件供应链联动", "一键导出维护分析与工单报表"] },
-        { name: "设计打磨", en: "Design", items: ["深色工业仪表盘视觉体系与栅格布局", "ECharts 多图联动与实时刷新", "Sparkline 微图 / 频谱告警游标等细节交互", "响应式适配与零控制台报错"] },
-        { name: "场景价值", en: "Scenario Value", items: ["故障早期预警降低非计划停机", "量化评分依据支撑维修决策与成本控制", "维修成本与停机排修时长估算", "设备维修知识沉淀与 SOP 复用"] },
-        { name: "COSMO Code 深度", en: "Platform Depth", items: ["从零构建并守护部署（start.sh · 8080 端口）", "模块化分层代码与规则化工程实践", "无头浏览器回归验证与项目记忆沉淀", "全流程可复现、可交付"] }
-      ];
-      const html = `<div class="note" style="margin-bottom:14px">依据 2026 卡奥斯工业智能应用开发者大赛赛题 04 评审标准，对系统进行五维自检核验。</div>` +
-        dims.map((d, i) => `
-        <div class="rev-dim">
-          <div class="rev-head">
-            <span class="rev-idx">0${i + 1}</span>
-            <span class="rev-name">${d.name}</span>
-            <em>${d.en}</em>
-            <div class="spacer" style="flex:1"></div>
-            <span class="pill pill-ok" style="font-size:10.5px">已达成</span>
-          </div>
-          <ul>${d.items.map(t => `<li><span class="tick">✓</span><span>${t}</span></li>`).join("")}</ul>
-        </div>`).join("");
-      this.openModal("大赛评审标准对齐看板 · 五维评审模型", html);
-    },
-
     /* ---------------- 一键导出工业维护分析与工单报表 ---------------- */
     exportReport() {
       const html = this.buildReportHtml();
@@ -1139,7 +1115,7 @@ ${woList}
 <table><thead><tr><th>备件</th><th>库存</th><th>安全线</th><th>月均消耗</th><th>预计可用</th><th>供应商</th><th>交期</th><th>状态</th></tr></thead>
 <tbody>${partsRows}</tbody></table>
 
-<h2>五、官方数据源特征频率验证（${ds.short}）</h2>
+<h2>五、基准数据集特征频率验证（${ds.short}）</h2>
 <table><thead><tr><th>特征分量</th><th>理论系数</th><th>理论值</th><th>算法识别值</th><th>偏差</th><th>判定</th></tr></thead>
 <tbody>${theo}</tbody></table>
 
@@ -1147,9 +1123,9 @@ ${woList}
 <p>1. 对健康指数低于 60 的设备立即生成高优先级工单，锁定停机窗口并预占备件。</p>
 <p>2. 健康指数 60~85 的设备将点检周期缩短至 3 天，重点跟踪振动峭度与温升趋势。</p>
 <p>3. 库存告急备件（库存低于安全线）请立即启动加急采购，避免影响排修计划。</p>
-<p>4. 持续以官方公开数据集（CWRU / PHM）校准特征频率识别算法，保持识别偏差 &lt; 2%。</p>
+<p>4. 持续以公开基准数据集（CWRU / PHM）校准特征频率识别算法，保持识别偏差 &lt; 2%。</p>
 
-<div class="foot">本报告由智维 PredictOps 设备智能管理与预测性维护系统自动生成，数据为系统仿真结果，用于评测演示。</div>
+<div class="foot">本报告由智维 PredictOps 设备智能管理与预测性维护系统自动生成，数据为系统仿真结果，用于日常运维演示。</div>
 </body></html>`;
     },
     bindDrawer() {
@@ -1172,9 +1148,6 @@ ${woList}
       // 健康指数评分依据
       const scoreBtn = document.getElementById("btn-score-detail");
       if (scoreBtn) scoreBtn.addEventListener("click", () => this.openScoreModal());
-      // 评审标准对齐看板
-      const reviewBtn = document.getElementById("btn-review");
-      if (reviewBtn) reviewBtn.addEventListener("click", () => this.openReviewModal());
       // 一键导出报表
       const exportBtn = document.getElementById("btn-export");
       if (exportBtn) exportBtn.addEventListener("click", () => this.exportReport());
