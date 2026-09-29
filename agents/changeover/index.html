@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>换产协同智能体 · ChangeoverOps</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1018'/%3E%3Cpath d='M8 20l6-9 4 6 3-4 3 7' stroke='%2322d3ee' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="assets/core.css" />
+</head>
+<body>
+<div class="app">
+  <div class="brand" id="agent-brand"></div>
+  <header class="topbar">
+    <div class="topbar-title" id="agent-title"></div>
+    <div class="topbar-spacer"></div>
+    <div class="kpi-strip" id="agent-kpis"></div>
+    <span class="pill pill-info"><span class="dot pulse"></span>实时数据</span>
+    <span class="mono" id="clock" style="color:var(--txt-1);font-size:12.5px;min-width:64px;text-align:right">--:--:--</span>
+  </header>
+  <aside class="sidebar">
+    <div class="nav-label">业务视图</div>
+    <div id="agent-nav"></div>
+    <div class="sidebar-foot" id="agent-foot"></div>
+  </aside>
+  <main class="main" id="agent-main"></main>
+</div>
+<script src="assets/echarts.min.js"></script>
+<script src="assets/core.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
