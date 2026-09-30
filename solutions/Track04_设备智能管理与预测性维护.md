@@ -4,7 +4,7 @@
 > **赛题方向**：赛题 04 · 设备智能管理与预测性维护智能应用  
 > **赛题领域**：设备运维 · 预测性维护 · 知识沉淀  
 > **赛题类型**：工业场景 · 开放命题  
-> **参赛选手**：兰儒恺（iakrulan）  
+> **参赛选手**：Ryan（iakrulan）  
 > **在线公网体验**：https://8080-08fe446a69af16a6.code.cosmoplat.cn/  
 > **开源代码仓**：https://github.com/iakrulan/PredictOps-2026  
 > **OpenLab 文章**：https://openlab.cosmoplat.com/article-detils?id=36918&articleType=0  

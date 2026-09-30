@@ -1,7 +1,7 @@
 # 智维 · PredictOps 工业设备智能管理与预测性维护系统
 
 > **2026 卡奥斯 1024 程序员节开发者大赛 · 赛题 04（设备智能管理与预测性维护智能应用）**  
-> **参赛赛道**：社会赛道 · 选手：iakrulan（兰儒恺）  
+> **参赛赛道**：社会赛道 · 选手：iakrulan（Ryan）  
 > **开源协议**：[Apache-2.0 License](LICENSE)  
 > **开源仓库**：[https://github.com/iakRulan/PredictOps-2026](https://github.com/iakRulan/PredictOps-2026)  
 > **在线公网运行地址**：[https://8084-08fe446a69af16a6.code.cosmoplat.cn/](https://8084-08fe446a69af16a6.code.cosmoplat.cn/) / [https://8080-08fe446a69af16a6.code.cosmoplat.cn/](https://8080-08fe446a69af16a6.code.cosmoplat.cn/)  

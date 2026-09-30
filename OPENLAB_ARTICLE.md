@@ -2,7 +2,7 @@
 
 > **参赛赛道**：社会赛道  
 > **提报赛题**：赛题 04 · 设备智能管理与预测性维护智能应用（工业场景 · 开放命题）  
-> **参赛选手**：兰儒恺（iakrulan）  
+> **参赛选手**：Ryan（iakrulan）  
 > **作品在线体验链接**：https://8080-08fe446a69af16a6.code.cosmoplat.cn/  
 > **开源代码仓链接**：https://github.com/iakrulan/PredictOps-2026  
 > **开发平台**：卡奥斯 COSMO Code 天匠智能开发平台  
@@ -130,6 +130,32 @@
 3. **闭环自检与纠错**：平台在无头环境中进行深度测试，敏锐识别出初始化未定义函数与峭度长缓冲收敛问题，自主重构优化，保证代码健壮与零运行时异常。
 4. **服务配置与守护进程（Daemon）**：编写 `start.sh` 脚本在 8080 端口启动 Python Web 服务，并在 COSMO Code“进程守护”面板中配置心跳检测与自动拉起机制，确保应用 7×24 小时不间断运行。
 5. **一键发布公网应用**：通过 COSMO Code“应用发布”功能，成功提交发布至应用中心，生成全球公网可访问链接：`https://8080-08fe446a69af16a6.code.cosmoplat.cn/`。
+
+
+### 开发过程截图（COSMO Code 平台使用佐证）
+
+以下截图均来自 COSMO Code 云端开发环境的实时运行画面（`https://8084-08fe446a69af16a6.code.cosmoplat.cn/`）：
+
+![图1 感知层 · 多维时序监控与 NASA CWRU 基准数据集特征频率验证](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/619283840-fileOfnull.png)
+
+*图1 · 感知层：三台设备实时健康分、CWRU 6 组标定样本、特征频率理论值与算法识别值比对（偏差 <2%）*
+
+![图2 感知层 · 注入轴承内圈故障后的特征频识别与预警](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/65987642-fileOfnull.png)
+
+*图2 · 故障注入实测：离心泵 BPFI 特征频 160.7 Hz 被识别（偏差 ±0.5%），系统提前 27 小时预警（置信度 96.1%）*
+
+![图3 推理层 · 早期预警、健康指数与 RUL 推演](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/868709534-fileOfnull.png)
+
+*图3 · 推理层：预警准确率 94.6%、误报率 2.9%、最近预警提前 27h（置信度 96.1%）、五维雷达、健康指数 26 分、RUL 剩余 7 小时*
+
+![图4 决策层 · 自动工单与备件联动](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/1199189152-fileOfnull.png)
+
+*图4 · 决策层：自动生成工单 WO-1001（BPFI 特征+处置 SOP），维修成本估算 ¥3,940、预计停机 6.5 小时，联动备件库存水位与供应链预警*
+
+![图5 数据集与模型评估视图](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/321190529-fileOfnull.png)
+
+*图5 · 数据集与评估：3 类设备 × 5 种工况 × 1,200 条/类 = 18,000 条样本，三源融合（CWRU/PHM/自建仿真），训练/验证/测试 70%/15%/15% 分层抽样*
+
 
 ---
 
