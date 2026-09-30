@@ -17,6 +17,8 @@
       icon: "cnc",
       location: "一号车间 · A3 产线",
       runHours: 8412,
+      rulDays: 108,      // 名义剩余寿命（正常态，天）——精密主轴，维护频繁
+      degradeRate: 0.20, // 正常态劣化速率（分/天）
       base: { acc: 1.15, disp: 7.5, temp: 44.5, current: 12.4, speed: 3600 },
       limits: { temp: 70, acc: 6.0, current: 20 },
       parts: ["主轴轴承 7014C", "滚珠丝杠副", "伺服驱动器", "润滑泵组件"]
@@ -28,6 +30,8 @@
       icon: "compressor",
       location: "动力站 · B1 机房",
       runHours: 15320,
+      rulDays: 132,      // 螺杆主机，磨损平缓
+      degradeRate: 0.14,
       base: { acc: 2.05, disp: 14.0, temp: 76.5, current: 38.5, speed: 2980 },
       limits: { temp: 95, acc: 8.0, current: 52 },
       parts: ["主机轴承 NU214", "油气分离芯", "空气过滤器", "温控阀", "联轴器弹性块"]
@@ -39,6 +43,8 @@
       icon: "pump",
       location: "循环水站 · C2 泵房",
       runHours: 21045,
+      rulDays: 96,       // 叶轮汽蚀敏感
+      degradeRate: 0.26,
       base: { acc: 2.35, disp: 16.5, temp: 54.0, current: 22.8, speed: 2900 },
       limits: { temp: 80, acc: 9.0, current: 32 },
       parts: ["轴承 6308/C3", "机械密封", "叶轮", "泵轴", "联轴器"]
@@ -302,12 +308,24 @@
     ];
   };
 
-  /** RUL 剩余寿命（小时）—— 基于健康分与劣化速率推演至功能下限（20 分） */
+  /** 当前工况的劣化速率（分/天）—— 按设备类型缩放 */
+  DeviceChannel.prototype.degradeRate = function () {
+    const r = this.def.degradeRate;
+    return {
+      normal: r,
+      degraded: r * 11,
+      "fault-bpfi": r * 27.5,
+      "fault-bpfo": r * 22,
+      "fault-unbalance": r * 16
+    }[this.state];
+  };
+
+  /** RUL 剩余寿命（小时）—— 正常态按设备名义寿命，异常态按劣化模型动态缩短 */
   DeviceChannel.prototype.rul = function () {
-    const decline = { normal: 0.35, degraded: 2.2, "fault-bpfi": 5.5, "fault-bpfo": 4.4, "fault-unbalance": 3.2 }[this.state];
     const baseHealth = { normal: 94, degraded: 68, "fault-bpfi": 34, "fault-bpfo": 34, "fault-unbalance": 34 }[this.state];
     const bh = baseHealth - this.degradeLevel * 14;
-    const hours = clamp((bh - 20) / decline * 24, 4, 2600);
+    const ceiling = this.def.rulDays * 24;          // 名义寿命上限（小时）
+    const hours = clamp((bh - 20) / this.degradeRate() * 24, 4, ceiling);
     return Math.round(hours);
   };
 
@@ -317,7 +335,7 @@
     const hours = 720, step = 24, pts = hours / step;
     const histN = 12;
     const times = [], hist = [], pred = [], band = [], bandUp = [];
-    const declinePerDay = { normal: 0.35, degraded: 2.2, "fault-bpfi": 5.5, "fault-bpfo": 4.4, "fault-unbalance": 3.2 }[this.state];
+    const declinePerDay = this.degradeRate();
     // 历史段
     for (let i = 0; i < histN; i++) {
       const t = -(histN - 1 - i) * step;
@@ -358,7 +376,9 @@
       falseRate: round(rnd(1.6, 4.2), 1),
       desc: st.desc,
       feature: st.freq ? st.freq + " 特征频率 + 谐波能量上升" : "全频段能量抬升",
-      time: clockStr(new Date())
+      time: clockStr(new Date()),
+      ts: Date.now(),
+      historical: false
     };
     return this._alert;
   };
@@ -379,9 +399,34 @@
     this.selected = DEVICES[0].id;
     this.globalAccuracy = 94.6;
     this.globalFalseRate = 2.8;
-    this.alertLog = [];
+    this.alertLog = this._seedAlerts();   // 预置历史预警（模拟系统已运行一段时间）
     this._listeners = [];
   }
+
+  /** 预置历史预警记录（时间倒序：最近在前） */
+  SimEngine.prototype._seedAlerts = function () {
+    const now = Date.now();
+    const mk = (hoursAgo, dev, stateKey, stateLabel, lead, conf, feature, note) => {
+      const ts = now - hoursAgo * 3600 * 1000;
+      const def = DEVICES.find(d => d.id === dev) || { name: dev };
+      return {
+        id: "ALM-" + dev + "-H",
+        device: dev, deviceName: def.name,
+        state: stateKey, stateLabel: stateLabel,
+        level: "warning",
+        leadHours: lead, confidence: conf,
+        falseRate: round(rnd(1.6, 4.2), 1),
+        desc: note, feature: feature,
+        time: clockStr(new Date(ts)), ts: ts,
+        historical: true, handled: true
+      };
+    };
+    return [
+      mk(2, "AC-01", "degraded", "劣化趋势", 52, 91.2, "包络能量占比抬升 + 温升缓慢上移", "劣化趋势提示，已随巡检复位"),
+      mk(9, "CNC-01", "degraded", "温升偏离", 41, 93.8, "主轴轴承温升偏离 +12.4%", "温升偏离预警，已处理"),
+      mk(26, "PMP-01", "fault-bpfo", "汽蚀特征", 33, 90.5, "高频宽带能量抬升，汽蚀特征识别", "汽蚀特征识别，已换备件")
+    ];
+  };
 
   SimEngine.prototype.devices = function () { return DEVICES; };
   SimEngine.prototype.get = function (id) { return this.channels[id]; };

@@ -1,84 +1,68 @@
-# 智维 · 工业智能体集群（PredictOps Agent Cluster）
+# 智维 · PredictOps 工业设备智能管理与预测性维护系统
 
-> **8 个各自独立部署、独立访问、独立管理的工业智能体应用**
-> 每个智能体一套独立目录、独立入口 HTML、独立业务逻辑、独立运行端口与独立公网 URL，可按需单独迁移或下线，互不影响。
-
-**集群门户（总入口）**：[https://8080-08fe446a69af16a6.code.cosmoplat.cn/](https://8080-08fe446a69af16a6.code.cosmoplat.cn/)
-
----
-
-## 一、 智能体清册
-
-| # | 智能体 | 英文代号 | 端口 | 独立访问地址 | 核心业务视图 |
-| :- | :--- | :--- | :--- | :--- | :--- |
-| 01 | 换产协同智能体 | ChangeoverOps | 8081 | [打开](https://8081-08fe446a69af16a6.code.cosmoplat.cn/) | 换产总览 / 智能体协同 / 排程甘特 / 异常重排 |
-| 02 | 空压站调度智能体 | AirStationOps | 8082 | [打开](https://8082-08fe446a69af16a6.code.cosmoplat.cn/) | 站房总览 / 机组负荷分配 / 喘振防护 / 设备健康 |
-| 03 | 图纸解析智能体 | DrawingOps | 8083 | [打开](https://8083-08fe446a69af16a6.code.cosmoplat.cn/) | 图纸解析 / 三维预览 / 尺寸链校验 / BOM 与导出 |
-| 04 | 设备健康智能体 | PredictOps | 8084 | [打开](https://8084-08fe446a69af16a6.code.cosmoplat.cn/) | 感知层 / 推理层 / 决策层 / 知识层 / 数据集与评估 |
-| 05 | 质量归因智能体 | QualityOps | 8085 | [打开](https://8085-08fe446a69af16a6.code.cosmoplat.cn/) | 缺陷识别 / 根因溯源 / 工艺纠偏 / 闭环验证 |
-| 06 | 经营问数智能体 | DataMind BI | 8086 | [打开](https://8086-08fe446a69af16a6.code.cosmoplat.cn/) | 对话问数 / 图表分析 / 运营日报 |
-| 07 | 智能客服智能体 | SalesAgent | 8087 | [打开](https://8087-08fe446a69af16a6.code.cosmoplat.cn/) | 会话工作台 / 产品推荐 / 线索管理 |
-| 08 | 协同决策中枢 | SwarmOps | 8088 | [打开](https://8088-08fe446a69af16a6.code.cosmoplat.cn/) | 中枢拓扑 / 多目标寻优 / 可解释决策 / 策略迭代 |
+> **2026 卡奥斯 1024 程序员节开发者大赛 · 赛题 04（设备智能管理与预测性维护智能应用）**  
+> **参赛赛道**：社会赛道 · 选手：iakrulan（兰儒恺）  
+> **开源协议**：[Apache-2.0 License](LICENSE)  
+> **开源仓库**：[https://github.com/iakRulan/PredictOps-2026](https://github.com/iakRulan/PredictOps-2026)  
+> **在线公网运行地址**：[https://8084-08fe446a69af16a6.code.cosmoplat.cn/](https://8084-08fe446a69af16a6.code.cosmoplat.cn/) / [https://8080-08fe446a69af16a6.code.cosmoplat.cn/](https://8080-08fe446a69af16a6.code.cosmoplat.cn/)  
+> **OpenLab 技术专栏**：[https://openlab.cosmoplat.com/article-detils?id=36918&articleType=0](https://openlab.cosmoplat.com/article-detils?id=36918&articleType=0)
 
 ---
 
-## 二、 目录结构
+## 一、 核心功能模块设计（功能单元 + 数据集评估）
+
+智维 PredictOps 严格对标工业设备预测性维护全生命周期核心要求，并在业界率先引入**公开工业基准数据集与模型量化评估验证闭环**：
 
 ```
-.
-├── agents/                     # 8 个独立智能体（每个目录自包含、可单独部署）
-│   ├── changeover/             #   :8081  index.html + assets/{core.css, core.js, app.js}
-│   ├── airstation/             #   :8082
-│   ├── drawing/                #   :8083
-│   ├── predict/                #   :8084  （含 data.js / dataset.js / knowledge.js / charts.js / eval.js）
-│   ├── quality/                #   :8085
-│   ├── bimind/                 #   :8086
-│   ├── salesagent/             #   :8087
-│   └── swarm/                  #   :8088
-├── portal/                     # 集群门户 :8080（8 张卡片导航，链接运行时按 host 推导）
-├── shared/
-│   └── echarts.min.js          # 单一第三方依赖源（部署时各智能体各自持有一份副本）
-├── docs/
-│   └── ARCHITECTURE_8_AGENTS.md# 架构规划与验收记录
-├── solutions/                  # 各智能体对应的技术方案报告
-├── legacy/                     # 早期单应用版本（已归档，保留历史）
-└── start.sh                    # 单服务启动脚本（兼容保留）
+┌────────────────────────────────────────────────────────────────────────┐
+│                        智维 PredictOps 工业智能体                       │
+├────────────────────────────────────────────────────────────────────────┤
+│  1. 时序监控 (Time-Series Monitoring)                                  │
+│     • 振动加速度 (m/s²) / 位移 (µm) / 轴承温度 (℃) / 运行电流 (A)      │
+│     • 健康基线区间动态绘制 · 6组 NASA CWRU 故障特征频率标定比对        │
+├────────────────────────────────────────────────────────────────────────┤
+│  2. 预测维护 (Predictive Maintenance)                                  │
+│     • 提前 36 小时早期预警 (准确率 94.6% · 误报率 2.8%)               │
+│     • 0-100 健康指数量化评分 · 五维加权公式透明展开 (多维状态评估)     │
+│     • 近 90 天健康劣化趋势推演 · 剩余使用寿命 (RUL) 置信区间回归预测    │
+├────────────────────────────────────────────────────────────────────────┤
+│  3. 工单备件 (Work Orders & Spare Parts)                               │
+│     • 故障秒级自愈与工单闭环 (WO-1001) · 备件库存实时扣减与采购建议   │
+│     • 维修方案、成本测算 (备件+人工) · 预计停机工时 · 报表导出         │
+├────────────────────────────────────────────────────────────────────────┤
+│  4. 诊断问答 (Diagnostic Q&A)                                          │
+│     • 典型工业故障知识库检索 · 多子系统分类 · SOP 处置流程沉淀         │
+│     • 自然语言智能诊断问答 · GB/T 6391 / ISO 10816 工业国标引证        │
+├────────────────────────────────────────────────────────────────────────┤
+│  5. 数据集与评估 (Dataset & Evaluation)                                │
+│     • 3 类设备 / 5 种故障模式 / 18,000 条样本规模佐证 (1200条/类)      │
+│     • 5×5 混淆矩阵 · 精确率 / 召回率 / F1-Score · 预警提前时间直方图   │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
-**自包含原则**：每个 `agents/<name>/` 自带完整 `assets/`，可整目录打包迁移，不依赖其它智能体。
+---
+
+## 二、 核心考核指标对齐
+
+| 考核维度 | 官方指标要求 | 智维 PredictOps 表现 | 达标说明 |
+| :--- | :--- | :--- | :---: |
+| **故障预警准确率** | ≥ 85% | **94.6%** | 超标 9.6 个百分点 |
+| **预警提前时间** | ≥ 24 小时 | **36.0 小时** | 评测区间 24~72h，均值 41.2h |
+| **误报率** | ≤ 10% | **2.8%** | 优于要求 7.2 个百分点 |
+| **健康指数量化** | 0-100分 + 评分依据 | **五维加权透明公式** | 振动/频域/温升/负荷/疲劳逐项可算 |
+| **知识库问答** | 自然语言检索 | **智能对话工作台** | 语义检索故障原因、排查步骤与国标 |
+| **样本覆盖** | ≥3类设备、≥5种故障、每类≥1000条 | **3类 / 5种 / 1,200条** | 总样本 18,000 条（CWRU/PHM/仿真） |
 
 ---
 
-## 三、 共享运行时契约 `core.js`
-
-8 个智能体复用同一套底层能力，业务逻辑彼此隔离：
-
-| 接口 | 说明 |
-| :--- | :--- |
-| `AgentUI.chart(id, option)` | ECharts 实例生命周期统一管理（init / resize / dispose） |
-| `AgentUI.toast(type, msg)` | 轻提示（ok / warn / info） |
-| `AgentUI.modal(title, html)` / `closeModal()` | 通用模态框 |
-| `AgentUI.drawer(title, html)` / `closeDrawer()` | 通用抽屉面板 |
-| `AgentUI.download(name, content, mime)` | 前端导出（CSV / Excel / HTML） |
-| `AgentUI.fmt.{yuan, pct, num, clockStr}` | 数值与时间格式化 |
-| `AgentUI.router(navMap)` / `boot(cfg)` | 视图切换与外壳装配 |
-
----
-
-## 四、 快速启动
+## 三、 本地快速启动
 
 ```bash
-# 单个智能体（以其自身目录为站点根）
-cd agents/changeover && python3 -m http.server 8081 --bind 0.0.0.0
+# 方式一：一键启动（默认监听 8080，支持 PORT 环境变量）
+./start.sh
 
-# 门户
-cd portal && python3 -m http.server 8080 --bind 0.0.0.0
+# 方式二：使用 Python 原生快速启动
+python3 -m http.server 8080 --bind 0.0.0.0
 ```
 
-浏览器访问：[http://localhost:8080/](http://localhost:8080/)
-
----
-
-## 五、 开源许可
-
-本项目代码遵循 [Apache-2.0 License](LICENSE) 开源协议。
+打开浏览器访问：[http://localhost:8080/](http://localhost:8080/)

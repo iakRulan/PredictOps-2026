@@ -441,7 +441,8 @@
       if (srcEl) {
         if (lastAlert) {
           const own = !!ownAlert;
-          srcEl.innerHTML = `来源：<b>${lastAlert.deviceName}（${lastAlert.device}）</b> · ${lastAlert.stateLabel}${own ? "" : " · 全厂最近"}`;
+          const tag = own ? "" : (lastAlert.historical ? " · 历史记录" : " · 全厂最近");
+          srcEl.innerHTML = `来源：<b>${lastAlert.deviceName}（${lastAlert.device}）</b> · ${lastAlert.stateLabel}${tag}`;
         } else {
           srcEl.textContent = "暂无预警记录";
         }
@@ -473,10 +474,11 @@
         return `<div class="alert-row ${crit ? "critical" : ""}">
           <div class="ar-top">
             <span class="pill ${crit ? "pill-danger" : "pill-warn"}">${crit ? "故障预警" : "劣化预警"}</span>
+            ${a.historical ? `<span class="pill pill-muted" style="font-size:10px">历史</span>` : ""}
             <span class="ar-device">${a.deviceName}（${a.device}）</span>
             <span class="ar-id">${a.id}</span>
             <div class="spacer" style="flex:1"></div>
-            <span class="ar-time">${a.time}</span>
+            <span class="ar-time">${a.time}${a.ts ? " · " + relTime(a.ts) : ""}</span>
           </div>
           <div class="ar-fields">
             <div class="ar-field"><span class="k">故障类型</span><span class="v ${crit ? "danger" : "warn"}">${a.stateLabel}</span></div>
@@ -497,7 +499,7 @@
         const ch = this.engine.get(d.id);
         const st = global.IOT.STATES[ch.state];
         const h = ch.health();
-        const rate = st.level === 0 ? "0.2" : st.level === 1 ? "1.5" : "3.8";
+        const rate = ch.degradeRate().toFixed(2);
         return `<tr>
             <td><b>${d.name}</b><br/><span class="mono" style="color:var(--txt-2);font-size:11px">${d.id}</span></td>
             <td><span class="pill pill-${st.level === 0 ? "ok" : st.level === 1 ? "warn" : "danger"}">${st.label}</span></td>
@@ -923,7 +925,7 @@
         return `<div class="ans-title">${dev.def.name}（${dev.def.id}）剩余寿命预测</div>
           <div class="kv"><span class="k">预计可运行：</span><b>${this.humanRul(dev.rul())}</b></div>
           <div class="kv"><span class="k">健康指数：</span><b>${dev.health()}</b> 分（0-100）</div>
-          <div class="kv"><span class="k">劣化速率：</span>${global.IOT.STATES[dev.state].level === 0 ? "0.2 分/天（平稳）" : global.IOT.STATES[dev.state].level === 1 ? "1.5 分/天（缓慢劣化）" : "3.8 分/天（快速劣化）"}</div>
+          <div class="kv"><span class="k">劣化速率：</span>${dev.degradeRate().toFixed(2)} 分/天（${global.IOT.STATES[dev.state].level === 0 ? "平稳" : global.IOT.STATES[dev.state].level === 1 ? "缓慢劣化" : "快速劣化"}）</div>
           <div class="kv"><span class="k">建议：</span>${dev.rul() < 72 ? "立即生成高优先级工单，备件预占并安排停机窗口。" : dev.rul() < 300 ? "纳入近期检修计划，缩短点检周期至 3 天。" : "按计划维护即可，持续跟踪趋势。"}</div>`;
       }
 
@@ -1049,7 +1051,7 @@
         const ch = this.engine.get(d.id);
         const st = global.IOT.STATES[ch.state];
         return `<tr><td>${d.name}<br><small>${d.id}</small></td><td>${d.model}</td><td>${st.label}</td>
-          <td>${ch.health()}</td><td>${this.humanRul(ch.rul())}</td><td>${st.level === 0 ? "0.2" : st.level === 1 ? "1.5" : "3.8"} 分/天</td></tr>`;
+          <td>${ch.health()}</td><td>${this.humanRul(ch.rul())}</td><td>${ch.degradeRate().toFixed(2)} 分/天</td></tr>`;
       }).join("");
       const al = this.engine.alertLog[0];
       const woList = this.workOrders.length ? this.workOrders.map(w => {
@@ -1175,6 +1177,15 @@ ${woList}
 
   /* ---------------- 辅助 ---------------- */
   function escapeHtml(s) { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; }
+  function relTime(ts) {
+    if (!ts) return "";
+    const m = Math.round((Date.now() - ts) / 60000);
+    if (m < 1) return "刚刚";
+    if (m < 60) return m + " 分钟前";
+    const h = Math.round(m / 60);
+    if (h < 48) return h + " 小时前";
+    return Math.round(h / 24) + " 天前";
+  }
   function svgEmpty() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>`; }
   function icon(name) {
     const map = {

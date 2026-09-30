@@ -83,6 +83,7 @@
     init() {
       this.engine = new global.IOT.SimEngine();
       this.bindNav();
+      this.bindTopbarActions();
       this.buildDeviceStrip();
       this.buildStateSelector();
       this.bindCursor();
@@ -131,15 +132,51 @@
 
     switchView(view) {
       this.currentView = view;
-      if (view !== "all-tracks" && global.Tracks) global.Tracks.leave();
       document.querySelectorAll(".nav-item").forEach(b => b.classList.toggle("active", b.dataset.view === view));
       document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + view));
       if (view === "perception") this.renderPerception();
       if (view === "inference") this.renderInference();
       if (view === "decision") this.renderDecision();
       if (view === "knowledge") this.renderKnowledge();
-      if (view === "all-tracks" && global.Tracks) global.Tracks.render();
+      if (view === "dataset" && global.PredictEval) global.PredictEval.render();
       setTimeout(() => global.Charts.resizeAll(), 60);
+    },
+
+    /* ---------------- 顶栏快捷操作 ---------------- */
+    bindTopbarActions() {
+      const qf = document.getElementById("btn-quick-fault");
+      if (qf) {
+        qf.addEventListener("click", () => {
+          this.engine.setState(this.engine.selected, "fault-bpfi");
+          this.buildStateSelector();
+          this.renderPerception(true);
+          this.triggerAlertFlow(this.engine.current(), "fault-bpfi");
+          this.toast("warn", "⚡ 已快速注入轴承内圈故障，早期预警已触发，工单自动生成！");
+        });
+      }
+      const qn = document.getElementById("btn-quick-normal");
+      if (qn) {
+        qn.addEventListener("click", () => {
+          this.engine.setState(this.engine.selected, "normal");
+          this.buildStateSelector();
+          this.renderPerception(true);
+          this.toast("ok", "✅ 设备已恢复正常运行态健康基线");
+        });
+      }
+      const exp = document.getElementById("btn-topbar-export");
+      if (exp) {
+        exp.addEventListener("click", () => this.exportReport());
+      }
+      const fs = document.getElementById("btn-fullscreen");
+      if (fs) {
+        fs.addEventListener("click", () => {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          } else {
+            document.exitFullscreen().catch(() => {});
+          }
+        });
+      }
     },
 
     /* ---------------- 设备选择 ---------------- */
@@ -246,7 +283,6 @@
       wrap.innerHTML = `
         <div class="panel-head">
           <h3>基准数据集验证</h3>
-          <span class="sub">NASA CWRU / PHM Society 公开数据集 · 特征频率理论值与算法识别值比对</span>
           <div class="spacer"></div>
           <div class="segmented" id="dataset-switch">
             <button data-ds="cwru" class="${this.dataset === "cwru" ? "active" : ""}">NASA CWRU 轴承数据集</button>
@@ -842,7 +878,7 @@
         <div class="kv"><span class="k">预警：</span>提前 <b>${alert.leadHours}h</b>，置信度 <b>${alert.confidence}%</b>，误报率 <b>${alert.falseRate}%</b></div>
         <div class="kv"><span class="k">建议：</span>${alert.desc}</div>
         ${kb ? `<div class="kv"><span class="k">关联知识：</span><b>${kb.title}</b>（可在知识库查看完整排查流程）</div>` : ""}
-        <div class="kv"><span class="k">下一步：</span>已自动生成检修工单并联动备件库存，前往「决策层」跟进闭环。</div>`;
+        <div class="kv"><span class="k">下一步：</span>已自动生成检修工单并联动备件库存，前往「工单备件」跟进闭环。</div>`;
     },
 
     kbAnswer(e) {
@@ -893,7 +929,7 @@
           <ol>${rows.map(r => `<li>${r.code} 识别值 <b>${r.measured} Hz</b>（偏差 ±${r.dev}%）→ ${r.verdict}</li>`).join("")}</ol>
           <div class="kv"><span class="k">判定方法：</span>对振动信号做包络解调，提取特征频率峰值，与理论值偏差 &lt; 2% 判定为有效识别；BPFI 主导提示内圈故障，BPFO 主导提示外圈故障。</div>
           <div class="kv"><span class="k">参考：</span><code>CWRU Bearing Data Center · ISO 10816</code></div>
-          <div class="kv"><span class="k">说明：</span>可在「感知层 → 基准数据集验证」切换 CWRU / PHM 数据源并载入标定样本，实时查看比对表。</div>`;
+          <div class="kv"><span class="k">说明：</span>可在「时序监控 → 基准数据集验证」切换 CWRU / PHM 数据源并载入标定样本，实时查看比对表。</div>`;
       }
 
       if (intent === "score") {
@@ -907,7 +943,7 @@
           <b>计算公式</b>
           <ol>${m.map(x => `<li><code>${x.formula}</code></li>`).join("")}</ol>
           <div class="kv"><span class="k">判断阈值：</span>H ≥ 85 正常运行 · 60 ≤ H &lt; 85 亚健康（加强监测） · H &lt; 60 需停机检修</div>
-          <div class="kv"><span class="k">说明：</span>点击「推理层 → 健康指数卡片」的「查看评分依据」可展开完整明细与实时子分数。</div>`;
+          <div class="kv"><span class="k">说明：</span>点击「预测维护 → 健康指数卡片」的「查看评分依据」可展开完整明细与实时子分数。</div>`;
       }
 
       if (intent === "rul") {
@@ -946,7 +982,7 @@
         const counts = this.woCounts();
         return `<div class="ans-title">工单与闭环状态</div>
           <div class="kv"><span class="k">待处理：</span><b>${counts.pending}</b> · 处理中 <b>${counts.processing}</b> · 已完成 <b>${counts.done}</b> · 已闭环 <b>${counts.closed}</b></div>
-          ${this.workOrders.slice(0, 3).map(w => `<div class="kv"><span class="k">${w.id}：</span>${w.title} → ${WO_FLOW_LABEL[w.status]}</div>`).join("") || "<div class='kv'>当前无工单，可在决策层模拟异常触发。</div>"}`;
+          ${this.workOrders.slice(0, 3).map(w => `<div class="kv"><span class="k">${w.id}：</span>${w.title} → ${WO_FLOW_LABEL[w.status]}</div>`).join("") || "<div class='kv'>当前无工单，可在「工单备件」模拟异常触发。</div>"}`;
       }
 
       if (intent === "alert") {
@@ -1138,7 +1174,7 @@ ${woList}
       const refresh = document.getElementById("btn-refresh");
       if (refresh) refresh.addEventListener("click", () => {
         this.renderDecision();
-        this.toast("info", "决策层数据已刷新");
+        this.toast("info", "工单与备件数据已刷新");
       });
       // 通用模态框
       const mmask = document.getElementById("modal-mask");

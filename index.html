@@ -4,9 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>智维 PredictOps · 工业设备智能健康管理与预测性维护平台</title>
-<meta name="description" content="面向制造业关键设备的智能管理与预测性维护系统，覆盖感知层、推理层、决策层与知识层。" />
+<meta name="description" content="面向制造业关键设备的智能管理与预测性维护系统，提供设备时序监控、预测维护、工单流转与智能诊断。" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1018'/%3E%3Cpath d='M8 20l6-9 4 6 3-4 3 7' stroke='%2322d3ee' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
-<link rel="stylesheet" href="assets/css/style.css" />
+<link rel="stylesheet" href="assets/core.css" />
 </head>
 <body>
 <div class="app">
@@ -26,10 +26,7 @@
 
   <!-- ================= 顶栏 ================= -->
   <header class="topbar">
-    <div class="topbar-title">
-      设备智能管理与预测性维护系统
-      <small>工业设备健康管理 · 预测性维护 · 智能诊断</small>
-    </div>
+    <div class="topbar-title">设备智能管理与预测性维护系统</div>
     <div class="topbar-spacer"></div>
     <div class="kpi-strip">
       <div class="kpi-chip"><em>预警准确率</em><b id="kpi-accuracy">94.6%</b></div>
@@ -37,26 +34,43 @@
       <div class="kpi-chip"><em>实时告警</em><b id="kpi-alerts">0</b></div>
       <div class="kpi-chip"><em>在监设备</em><b id="kpi-devices">3</b></div>
     </div>
+    <div class="topbar-actions" style="display:flex;align-items:center;gap:8px">
+      <button class="btn btn-sm" id="btn-quick-fault" style="border-color:rgba(239,68,68,0.4);color:var(--red);background:rgba(239,68,68,0.12)" title="快速注入轴承内圈故障并联动告警与自动工单">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        注入故障
+      </button>
+      <button class="btn btn-sm" id="btn-quick-normal" style="border-color:rgba(34,197,94,0.4);color:var(--green);background:rgba(34,197,94,0.12)" title="恢复正常运行态">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        正常态
+      </button>
+      <button class="btn btn-sm btn-primary" id="btn-topbar-export" title="导出诊断分析与工单报表">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        导出报表
+      </button>
+      <button class="btn btn-sm" id="btn-fullscreen" title="全屏切换">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+      </button>
+    </div>
     <span class="pill pill-info"><span class="dot pulse"></span>数据采集中</span>
     <span class="mono" id="clock" style="color:var(--txt-1);font-size:12.5px;min-width:64px;text-align:right">--:--:--</span>
   </header>
 
   <!-- ================= 侧边导航 ================= -->
   <aside class="sidebar">
-    <div class="nav-label">系统层级</div>
+    <div class="nav-label">功能模块</div>
 
     <button class="nav-item active" data-view="perception">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M2 12h4l2.5-7 3.5 14 3-9 2 2h5" />
       </svg>
-      感知层 · 时序监控
+      时序监控
     </button>
 
     <button class="nav-item" data-view="inference">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" />
       </svg>
-      推理层 · 预测维护
+      预测维护
       <span class="nav-badge" id="nav-alert-badge">0</span>
     </button>
 
@@ -64,7 +78,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 5h10a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6M9 3v4M7 11l2 2 4-4" />
       </svg>
-      决策层 · 工单备件
+      工单备件
     </button>
 
     <button class="nav-item" data-view="knowledge">
@@ -72,16 +86,16 @@
         <path d="M4 5a2 2 0 012-2h11a1 1 0 011 1v14a1 1 0 01-1 1H6a2 2 0 01-2-2V5z" />
         <path d="M4 17a2 2 0 012-2h12M8 7h6M8 10h6" />
       </svg>
-      知识层 · 诊断问答
+      诊断问答
     </button>
 
-    <div class="nav-label" style="margin-top:16px">解决方案</div>
-    <button class="nav-item" data-view="all-tracks">
+    <div class="nav-label" style="margin-top:16px">数据评估</div>
+
+    <button class="nav-item" data-view="dataset">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
-        <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+        <ellipse cx="12" cy="6" rx="7" ry="3" /><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6" /><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" />
       </svg>
-      智能应用套件
+      数据集与评估
     </button>
 
     <div class="sidebar-foot">
@@ -95,11 +109,10 @@
   <!-- ================= 主内容区 ================= -->
   <main class="main">
 
-    <!-- ======== 感知层 ======== -->
+    <!-- ======== 时序监控 ======== -->
     <section class="view active" id="view-perception">
       <div class="section-head">
-        <h2>工业时序监控</h2>
-        <p>采集振动（加速度/位移）、温度、电流信号，建立设备健康基线</p>
+        <h2>时序监控</h2>
         <div class="spacer"></div>
         <span class="pill pill-muted">健康分 <b id="m-health" class="mono" style="margin-left:5px">--</b></span>
         <span id="state-banner" class="pill pill-ok"><span class="dot"></span>正常态</span>
@@ -110,7 +123,6 @@
       <div class="panel mt">
         <div class="panel-head">
           <h3>工况切换与故障模拟</h3>
-          <span class="sub">模拟数控机床 / 空压机 / 离心泵的轴承内圈、外圈故障等典型工况</span>
           <div class="spacer"></div>
           <div class="segmented" id="state-selector"><!-- JS 渲染 --></div>
         </div>
@@ -148,37 +160,39 @@
 
       <div class="grid g-23 mt">
         <div class="panel">
-          <div class="panel-head"><h3>振动加速度 / 位移</h3><span class="sub">双轴 · 含健康基线</span></div>
+          <div class="panel-head"><h3>振动时序分析</h3></div>
           <div class="chart chart-lg" id="chart-vib"></div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>振动频谱 · 特征频率提取</h3><span class="sub">包络谱分析</span></div>
-          <div class="chart" id="chart-spectrum" style="height:300px"></div>
-          <div class="cursor-bar">
-            <span class="lbl">告警游标</span>
-            <input type="range" id="spec-cursor" min="0" max="1000" step="20" value="60" />
-            <span class="cursor-readout" id="spec-cursor-readout">拖动游标查看频点幅值</span>
+          <div class="panel-head">
+            <h3>振动频谱分析</h3>
+            <div class="spacer"></div>
+            <div class="cursor-bar" style="margin:0;padding:0;background:transparent;border:none">
+              <span class="lbl" style="font-size:11px;color:var(--txt-2)">游标</span>
+              <input type="range" id="spec-cursor" min="0" max="1000" step="20" value="60" style="width:110px" />
+              <span class="cursor-readout" id="spec-cursor-readout" style="font-size:11px;color:var(--cyan)">--</span>
+            </div>
           </div>
+          <div class="chart" id="chart-spectrum" style="height:300px"></div>
         </div>
       </div>
 
       <div class="grid g-2 mt">
         <div class="panel">
-          <div class="panel-head"><h3>温度时序曲线</h3><span class="sub">一阶惯性模型 · 温升趋势</span></div>
+          <div class="panel-head"><h3>温度时序监测</h3></div>
           <div class="chart chart-sm" id="chart-temp"></div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>电流时序曲线</h3><span class="sub">负载波动监测</span></div>
+          <div class="panel-head"><h3>负载电流监测</h3></div>
           <div class="chart chart-sm" id="chart-current"></div>
         </div>
       </div>
     </section>
 
-    <!-- ======== 推理层 ======== -->
+    <!-- ======== 预测维护 ======== -->
     <section class="view" id="view-inference">
       <div class="section-head">
-        <h2>预测性维护推理</h2>
-        <p>故障早期预警 · 健康指数量化 · 剩余寿命（RUL）推演</p>
+        <h2>预测维护</h2>
         <div class="spacer"></div>
         <span id="infer-state-badge" class="pill pill-ok"><span class="dot pulse"></span>--</span>
       </div>
@@ -209,7 +223,7 @@
       <div class="grid g-3 mt">
         <div class="panel">
           <div class="panel-head">
-            <h3>健康指数</h3><span class="sub">0-100</span>
+            <h3>健康指数</h3>
             <div class="spacer"></div>
             <button class="btn btn-sm btn-ghost" id="btn-score-detail">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 16v-4M12 8h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -220,11 +234,11 @@
           <div class="note" id="infer-feature">频谱无异常特征频率，各维度指标正常</div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>健康五维雷达</h3><span class="sub">当前状态 vs 健康基线</span></div>
+          <div class="panel-head"><h3>健康五维评估</h3></div>
           <div class="chart chart-sm" id="chart-radar"></div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>劣化趋势推演</h3><span class="sub">近 90 天健康分</span></div>
+          <div class="panel-head"><h3>劣化趋势推演</h3></div>
           <div class="chart chart-sm" id="chart-degrade"></div>
         </div>
       </div>
@@ -232,7 +246,6 @@
       <div class="panel mt">
         <div class="panel-head">
           <h3>剩余使用寿命（RUL）预测</h3>
-          <span class="sub">历史健康分 + 劣化趋势外推，含置信区间与停机阈值</span>
           <div class="spacer"></div>
           <span class="pill pill-ok" id="rul-badge">RUL --</span>
         </div>
@@ -241,11 +254,11 @@
 
       <div class="grid g-32 mt">
         <div class="panel">
-          <div class="panel-head"><h3>设备健康台账</h3><span class="sub">实时评分与检修建议</span></div>
+          <div class="panel-head"><h3>设备健康台账</h3></div>
           <div class="table-wrap" id="health-table"></div>
         </div>
         <div class="panel">
-          <div class="panel-head"><h3>最近预警事件流</h3><span class="sub">时间 · 设备 · 故障类型 · 提前时长 · 置信度</span></div>
+          <div class="panel-head"><h3>预警事件流</h3></div>
           <div id="alert-list" class="alert-stream">
             <div class="empty">暂无预警</div>
           </div>
@@ -253,11 +266,10 @@
       </div>
     </section>
 
-    <!-- ======== 决策层 ======== -->
+    <!-- ======== 工单备件 ======== -->
     <section class="view" id="view-decision">
       <div class="section-head">
-        <h2>智能工单与备件流转</h2>
-        <p>异常自动触发检修工单，联动备件库存与供应链，支持处置闭环</p>
+        <h2>工单备件</h2>
         <div class="spacer"></div>
         <button class="btn btn-sm" id="btn-refresh">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M20 11a8 8 0 10-2 5M20 5v6h-6"/></svg>
@@ -265,7 +277,7 @@
         </button>
         <button class="btn btn-sm" id="btn-export">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
-          导出维护分析报表
+          导出报表
         </button>
         <button class="btn btn-sm btn-primary" id="btn-demo-wo">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -298,10 +310,7 @@
 
       <div class="grid g-32 mt">
         <div class="panel">
-          <div class="panel-head">
-            <h3>智能检修工单</h3>
-            <span class="sub">故障原因 / 处理措施 / 推荐备件 / 闭环流转</span>
-          </div>
+          <div class="panel-head"><h3>智能检修工单</h3></div>
           <div class="wo-list" id="wo-list"><div class="empty">暂无工单</div></div>
         </div>
         <div class="grid" style="grid-template-columns:1fr;gap:14px;align-content:start">
@@ -318,7 +327,7 @@
 
       <div class="grid g-32 mt">
         <div class="panel">
-          <div class="panel-head"><h3>备件库存与供应链状态</h3><span class="sub">安全库存联动</span></div>
+          <div class="panel-head"><h3>备件库存明细</h3></div>
           <div class="table-wrap" id="parts-table" style="max-height:360px;overflow-y:auto"></div>
         </div>
         <div class="panel">
@@ -328,16 +337,15 @@
       </div>
     </section>
 
-    <!-- ======== 知识层 ======== -->
+    <!-- ======== 诊断问答 ======== -->
     <section class="view" id="view-knowledge">
       <div class="section-head">
-        <h2>设备维修知识库与智能问答</h2>
-        <p>内置典型故障排查知识，支持自然语言结构化诊断</p>
+        <h2>诊断问答</h2>
       </div>
 
       <div class="grid g-23">
         <div class="panel">
-          <div class="panel-head"><h3>知识库检索</h3><span class="sub">12 类典型故障</span></div>
+          <div class="panel-head"><h3>知识库检索</h3></div>
           <div class="kb-tags mb" id="kb-tags"></div>
           <div class="kb-list" id="kb-list"></div>
         </div>
@@ -345,7 +353,6 @@
         <div class="panel">
           <div class="panel-head">
             <h3>智能诊断问答</h3>
-            <span class="sub">自然语言 · 结构化诊断方案</span>
             <div class="spacer"></div>
             <span class="pill pill-info"><span class="dot pulse"></span>在线</span>
           </div>
@@ -388,14 +395,12 @@
       </div>
     </section>
 
-    <!-- ======== 智能应用套件 ======== -->
-    <section class="view" id="view-all-tracks">
+    <!-- ======== 数据集与评估 ======== -->
+    <section class="view" id="view-dataset">
       <div class="section-head">
-        <h2>智能应用套件 · 多场景解决方案</h2>
-        <p>覆盖换产协同、能源调度、图纸解析、设备运维、质量归因、经营分析、智能客服等工业与通用场景</p>
+        <h2>数据集与评估</h2>
       </div>
-      <div class="track-tabs" id="track-tabs"><!-- JS 渲染 --></div>
-      <div id="track-content"><!-- JS 渲染 --></div>
+      <div id="eval-root"><!-- 由 eval.js 渲染 --></div>
     </section>
 
   </main>
@@ -427,12 +432,12 @@
   <div class="modal-body" id="modal-body"></div>
 </div>
 
-<script src="assets/vendor/echarts.min.js"></script>
-<script src="assets/js/data.js"></script>
-<script src="assets/js/dataset.js"></script>
-<script src="assets/js/knowledge.js"></script>
-<script src="assets/js/charts.js"></script>
-<script src="assets/js/tracks.js"></script>
-<script src="assets/js/app.js"></script>
+<script src="assets/echarts.min.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/dataset.js"></script>
+<script src="assets/knowledge.js"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/eval.js"></script>
+<script src="assets/app.js"></script>
 </body>
 </html>
