@@ -139,7 +139,7 @@
     </div>
 
     <div class="panel mb">
-      <div class="panel-head"><h3>数据集概览</h3></div>
+      <div class="panel-head"><h3>数据集概览</h3><span class="sub">三源融合 · 训练/验证/测试划分</span></div>
       <div class="grid g-32" style="gap:14px">
         <div>
           <div class="table-wrap"><table class="data">
@@ -150,34 +150,37 @@
           <div class="grid g-3 mt">
             ${splitCards()}
           </div>
-          <div class="note" style="margin-top:10px">样本覆盖 1 Hz 趋势段与 12 kHz 高频振动段；按分层抽样划分，各工况比例均衡。</div>
+          <div class="note" style="margin-top:10px">样本为时序窗口：每个（设备 × 工况）单元含 1,200 条样本，覆盖 1 Hz 趋势段与 12 kHz 高频振动段；划分按分层抽样，保证各工况比例一致。</div>
         </div>
         <div>
-          <div class="panel-head"><h3>样本划分比例</h3></div>
+          <div class="panel-head"><h3>训练 / 验证 / 测试划分</h3><span class="sub">累计 ${TOTAL.toLocaleString()} 条</span></div>
           <div class="chart" id="ev-split" style="height:250px"></div>
         </div>
       </div>
     </div>
 
     <div class="panel mb">
-      <div class="panel-head"><h3>样本分布</h3></div>
+      <div class="panel-head"><h3>样本分布 · 设备 × 工况</h3><span class="sub">堆叠柱状图 · 每单元 ${PER_CELL.toLocaleString()} 条</span></div>
       <div class="chart" id="ev-dist" style="height:300px"></div>
     </div>
 
     <div class="grid g-4 mb">
       ${kpiCard("is-green", "准确率", pct(M.accuracy, 1), "", "测试集 " + M.correct.toLocaleString() + " / " + M.total.toLocaleString())}
-      ${kpiCard("is-amber", "误报率", pct(M.falseAlarmRate, 1), "", "误报预警 / 总预警")}
+      ${kpiCard("is-amber", "误报率", pct(M.falseAlarmRate, 1), "", "误报预警 / 总预警（预警级）")}
       ${kpiCard("is-red", "漏报率", pct(M.missRate, 2), "", "故障判为正常 " + M.missCount + " 条 / " + M.faultTotal + " 条")}
       ${kpiCard("is-cyan", "平均提前预警", lead.avg.toFixed(1), "小时", "预警窗口 24 ~ 72 小时")}
     </div>
 
     <div class="grid g-32 mb">
       <div class="panel">
-        <div class="panel-head"><h3>混淆矩阵</h3></div>
+        <div class="panel-head"><h3>混淆矩阵 · 5×5 工况分类</h3>
+          <div class="spacer"></div>
+          <button class="btn btn-sm" id="btn-metric-basis">查看口径</button>
+        </div>
         <div class="chart" id="ev-cm" style="height:380px"></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><h3>分类指标评估</h3></div>
+        <div class="panel-head"><h3>各类别 精确率 / 召回率 / F1</h3><span class="sub">宏平均 F1 = ${pct(M.macro.f1, 1)}</span></div>
         <div class="table-wrap">
           <table class="data"><thead><tr><th>工况类别</th><th>精确率</th><th>召回率</th><th>F1</th><th>样本</th></tr></thead>
           <tbody>${M.perClass.map(x => `<tr><td><b>${x.short}</b></td>
@@ -197,33 +200,32 @@
     <div class="panel mb">
       <div class="panel-head"><h3>预警提前时间分布</h3></div>
       <div class="chart" id="ev-lead" style="height:280px"></div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head"><h3>指标口径与评估说明</h3></div>
-      <div class="grid g-2" style="gap:14px">
-        <div>
-          <div class="note">
-            <b>1. 混淆矩阵口径</b><br/>
-            以目标工况为阳性：TP=该工况正确识别数，FN=该工况被判为其他工况数，FP=其他工况被误判为该工况数，TN=其余。<br/><br/>
-            <b>2. 分类指标</b><br/>
-            精确率 P = TP / (TP + FP)；召回率 R = TP / (TP + FN)；F1 = 2PR / (P + R)；宏平均 = 五类指标算术平均。<br/><br/>
-            <b>3. 总体准确率</b><br/>
-            准确率 = 对角线之和 / 测试集总数 = ${M.correct.toLocaleString()} / ${M.total.toLocaleString()} = ${pct(M.accuracy, 1)}。
-          </div>
-        </div>
-        <div>
-          <div class="note">
-            <b>4. 误报率</b><br/>
-            误报率 = 误报预警次数 / 总预警次数（按 24 小时去重，预警级统计，来自在线运行日志）= ${pct(M.falseAlarmRate, 1)}。<br/><br/>
-            <b>5. 漏报率</b><br/>
-            漏报率 = FN / (TP + FN)（真实故障被判为正常态）= ${M.missCount} / ${M.faultTotal} = ${pct(M.missRate, 2)}。<br/><br/>
-            <b>6. 提前预警时长</b><br/>
-            提前预警时长 = 首次稳态预警时刻到实际失效时刻的时间差；预警窗口定义为 24 ~ 72 小时，本数据集平均 ${lead.avg.toFixed(1)} 小时，分布见上图。
-          </div>
-        </div>
-      </div>
     </div>`;
+  }
+
+  function metricBasisHtml(M, lead) {
+    const pct = (v, d) => (v * 100).toFixed(d == null ? 1 : d) + "%";
+    return `
+      <div class="note" style="line-height:1.9">
+        <b>1. 混淆矩阵口径</b><br/>
+        以目标工况为阳性：TP = 该工况正确识别数，FN = 该工况被判为其他工况数，FP = 其他工况被误判为该工况数，TN = 其余。<br/><br/>
+        <b>2. 分类指标</b><br/>
+        精确率 P = TP / (TP + FP)；召回率 R = TP / (TP + FN)；F1 = 2PR / (P + R)；宏平均 = 五类指标算术平均。<br/><br/>
+        <b>3. 总体准确率</b><br/>
+        准确率 = 对角线之和 / 测试集总数 = ${M.correct.toLocaleString()} / ${M.total.toLocaleString()} = ${pct(M.accuracy, 1)}。<br/><br/>
+        <b>4. 误报率</b><br/>
+        误报率 = 误报预警次数 / 总预警次数（按 24 小时去重，预警级统计，来自在线运行日志）= ${pct(M.falseAlarmRate, 1)}。<br/><br/>
+        <b>5. 漏报率</b><br/>
+        漏报率 = FN / (TP + FN)（真实故障被判为正常态）= ${M.missCount} / ${M.faultTotal} = ${pct(M.missRate, 2)}。<br/><br/>
+        <b>6. 提前预警时长</b><br/>
+        提前预警时长 = 首次稳态预警时刻到实际失效时刻的时间差；预警窗口定义为 24 ~ 72 小时，本数据集平均 ${lead.avg.toFixed(1)} 小时。
+      </div>`;
+  }
+
+  function openBasis(M, lead) {
+    const html = metricBasisHtml(M, lead);
+    if (global.AgentUI && global.AgentUI.modal) global.AgentUI.modal("指标口径与判定依据", html);
+    else if (global.App && global.App.openModal) global.App.openModal("指标口径与判定依据", html);
   }
 
   function splitCards() {
@@ -334,6 +336,8 @@
       mounted = true;
     }
     drawCharts(M, lead);
+    const bb = document.getElementById("btn-metric-basis");
+    if (bb && !bb.__bound) { bb.__bound = true; bb.addEventListener("click", () => openBasis(M, lead)); }
     // 延迟重排，确保隐藏容器切换为可见后尺寸正确
     setTimeout(resize, 60);
   }

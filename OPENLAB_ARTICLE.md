@@ -136,23 +136,23 @@
 
 以下截图均来自 COSMO Code 云端开发环境的实时运行画面（`https://8084-08fe446a69af16a6.code.cosmoplat.cn/`）：
 
-![图1 感知层 · 多维时序监控与 NASA CWRU 基准数据集特征频率验证](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/619283840-fileOfnull.png)
+![图1 感知层 · 多维时序监控与 NASA CWRU 基准数据集特征频率验证](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/1171329863-fileOfnull.png)
 
 *图1 · 感知层：三台设备实时健康分、CWRU 6 组标定样本、特征频率理论值与算法识别值比对（偏差 <2%）*
 
-![图2 感知层 · 注入轴承内圈故障后的特征频识别与预警](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/65987642-fileOfnull.png)
+![图2 感知层 · 注入轴承内圈故障后的特征频识别与预警](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/882596515-fileOfnull.png)
 
 *图2 · 故障注入实测：离心泵 BPFI 特征频 160.7 Hz 被识别（偏差 ±0.5%），系统提前 27 小时预警（置信度 96.1%）*
 
-![图3 推理层 · 早期预警、健康指数与 RUL 推演](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/868709534-fileOfnull.png)
+![图3 推理层 · 早期预警、健康指数与 RUL 推演](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/707173831-fileOfnull.png)
 
 *图3 · 推理层：预警准确率 94.6%、误报率 2.9%、最近预警提前 27h（置信度 96.1%）、五维雷达、健康指数 26 分、RUL 剩余 7 小时*
 
-![图4 决策层 · 自动工单与备件联动](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/1199189152-fileOfnull.png)
+![图4 决策层 · 自动工单与备件联动](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/1968451200-fileOfnull.png)
 
 *图4 · 决策层：自动生成工单 WO-1001（BPFI 特征+处置 SOP），维修成本估算 ¥3,940、预计停机 6.5 小时，联动备件库存水位与供应链预警*
 
-![图5 数据集与模型评估视图](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/321190529-fileOfnull.png)
+![图5 数据集与模型评估视图](https://hd-oss.cosmoplat.com/hdCosmo51:cosmo-sns-prod/2/2026/9/30/null/1026347374-fileOfnull.png)
 
 *图5 · 数据集与评估：3 类设备 × 5 种工况 × 1,200 条/类 = 18,000 条样本，三源融合（CWRU/PHM/自建仿真），训练/验证/测试 70%/15%/15% 分层抽样*
 

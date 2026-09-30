@@ -285,38 +285,44 @@
         </tr>`;
       }).join("");
 
+      const expanded = !!this.datasetExpanded;
       wrap.innerHTML = `
         <div class="panel-head">
           <h3>基准数据集验证</h3>
-          <span class="sub">NASA CWRU / PHM Society 公开数据集 · 特征频率理论值与算法识别值比对</span>
           <div class="spacer"></div>
           <div class="segmented" id="dataset-switch">
-            <button data-ds="cwru" class="${this.dataset === "cwru" ? "active" : ""}">NASA CWRU 轴承数据集</button>
-            <button data-ds="phm" class="${this.dataset === "phm" ? "active" : ""}">PHM Society 工业时序</button>
+            <button data-ds="cwru" class="${this.dataset === "cwru" ? "active" : ""}">NASA CWRU</button>
+            <button data-ds="phm" class="${this.dataset === "phm" ? "active" : ""}">PHM Society</button>
           </div>
+          <button class="btn btn-sm" id="dataset-toggle">${expanded ? "收起" : "展开"}</button>
         </div>
-        <div class="grid g-23" style="gap:14px">
-          <div>
-            <div class="ds-meta">
-              <div class="ds-meta-row"><span class="k">数据源</span><span class="v">${ds.source}</span></div>
-              <div class="ds-meta-row"><span class="k">采样率</span><span class="v mono">${ds.sampling}</span></div>
-              <div class="ds-meta-row"><span class="k">负载</span><span class="v mono">${ds.load}</span></div>
-              <div class="ds-meta-row"><span class="k">基准转速</span><span class="v mono">${speed} rpm（转频 ${rot.toFixed(1)} Hz）</span></div>
-              <div class="ds-meta-row"><span class="k">样本数</span><span class="v mono">${ds.samples.length} 组标定实验</span></div>
+        <div class="ds-summary">
+          <span class="pill pill-info">${ds.short}</span>
+          <span class="ds-summary-text">${ds.samples.length} 组标定实验 · 采样率 ${ds.sampling} · 基准转速 ${speed} rpm（转频 ${rot.toFixed(1)} Hz）</span>
+        </div>
+        <div class="ds-detail" style="display:${expanded ? "block" : "none"}">
+          <div class="grid g-23 mt" style="gap:16px">
+            <div>
+              <div class="ds-meta">
+                <div class="ds-meta-row"><span class="k">数据源</span><span class="v">${ds.source}</span></div>
+                <div class="ds-meta-row"><span class="k">采样率</span><span class="v mono">${ds.sampling}</span></div>
+                <div class="ds-meta-row"><span class="k">负载</span><span class="v mono">${ds.load}</span></div>
+                <div class="ds-meta-row"><span class="k">基准转速</span><span class="v mono">${speed} rpm（转频 ${rot.toFixed(1)} Hz）</span></div>
+                <div class="ds-meta-row"><span class="k">样本数</span><span class="v mono">${ds.samples.length} 组标定实验</span></div>
+              </div>
+              <div class="ds-samples mt">${sampleChips}</div>
             </div>
-            <div class="note mt" style="margin-bottom:10px">${ds.desc}</div>
-            <div class="ds-samples">${sampleChips}</div>
-          </div>
-          <div>
-            <div class="table-wrap">
-              <table class="data">
-                <thead><tr><th>特征分量</th><th>理论系数</th><th>理论值 (Hz)</th><th>算法识别值 (Hz)</th><th>偏差</th><th>判定</th></tr></thead>
-                <tbody>${tableRows}</tbody>
-              </table>
-            </div>
-            <div class="note" style="margin-top:9px">
-              计算模型：BPFI = 5.415·f<sub>r</sub>，BPFO = 3.585·f<sub>r</sub>，BSF = 2.357·f<sub>r</sub>，FTF = 0.398·f<sub>r</sub>（f<sub>r</sub> 为转频）。
-              算法通过包络解调提取特征频率，与理论值偏差 <b>&lt; 2%</b> 判定为有效识别，可作为故障类型判定依据。
+            <div>
+              <div class="table-wrap">
+                <table class="data">
+                  <thead><tr><th>特征分量</th><th>理论系数</th><th>理论值 (Hz)</th><th>算法识别值 (Hz)</th><th>偏差</th><th>判定</th></tr></thead>
+                  <tbody>${tableRows}</tbody>
+                </table>
+              </div>
+              <div class="ds-formula" style="margin-top:9px">
+                计算模型：BPFI = 5.415·f<sub>r</sub>，BPFO = 3.585·f<sub>r</sub>，BSF = 2.357·f<sub>r</sub>，FTF = 0.398·f<sub>r</sub>（f<sub>r</sub> 为转频）。
+                算法通过包络解调提取特征频率，与理论值偏差 <b>&lt; 2%</b> 判定为有效识别。
+              </div>
             </div>
           </div>
         </div>`;
@@ -325,6 +331,8 @@
         b.addEventListener("click", () => this.switchDataset(b.dataset.ds)));
       wrap.querySelectorAll("[data-sample]").forEach(b =>
         b.addEventListener("click", () => this.loadDatasetSample(b.dataset.sample)));
+      const tg = document.getElementById("dataset-toggle");
+      if (tg) tg.addEventListener("click", () => { this.datasetExpanded = !this.datasetExpanded; this.renderDatasetPanel(); });
     },
 
     loadDatasetSample(sampleId) {
@@ -704,21 +712,16 @@
       const wrap = document.getElementById("parts-table");
       if (!wrap) return;
       wrap.innerHTML = `<table class="data">
-        <thead><tr><th>备件名称</th><th>编码</th><th>库存</th><th>安全线</th><th>月均消耗</th><th>预计可用</th><th>供应商</th><th>交期</th><th>状态</th></tr></thead>
+        <thead><tr><th>备件名称</th><th>库存</th><th>预计可用</th><th>状态</th></tr></thead>
         <tbody>${PARTS.map(p => {
         const ratio = p.stock / p.min;
         const st = ratio < 1 ? ["告急", "danger"] : ratio < 1.4 ? ["偏低", "warn"] : ["充足", "ok"];
         const days = availableDays(p);
         const dayCls = days < 30 ? "color:var(--red)" : days < 90 ? "color:var(--amber)" : "color:var(--txt-1)";
         return `<tr>
-            <td><b>${p.name}</b><br/><span style="color:var(--txt-2);font-size:10.5px">${p.devices.join(" / ")}</span></td>
-            <td class="mono">${p.code}</td>
+            <td><b>${p.name}</b></td>
             <td class="mono">${p.stock} ${p.unit}</td>
-            <td class="mono" style="color:var(--txt-2)">${p.min} ${p.unit}</td>
-            <td class="mono">${p.rate} ${p.unit}/月</td>
             <td class="mono" style="${dayCls}">${days >= 999 ? "—" : days + " 天"}</td>
-            <td>${p.supplier}</td>
-            <td class="mono">${p.lead} 天</td>
             <td><span class="pill pill-${st[1]}">${st[0]}</span></td>
           </tr>`;
       }).join("")}</tbody></table>`;
@@ -733,7 +736,7 @@
         return `<div class="tl-item ${crit ? "danger" : "warn"}">
           <div class="tl-time">${p.code} · ${p.supplier}</div>
           <div class="tl-text">${p.name} ${crit ? "库存低于安全线，已触发加急采购" : "库存偏低，建议补货"}</div>
-          <div class="tl-text" style="color:var(--txt-2);font-size:11.5px">当前 ${p.stock}${p.unit} / 安全 ${p.min}${p.unit} · 标准交期 ${p.lead} 天 · ETA ${crit ? Math.max(1, Math.round(p.lead * 0.6)) : p.lead} 天</div>
+          <div class="tl-text tl-sub">当前 ${p.stock}${p.unit} / 安全 ${p.min}${p.unit} · 标准交期 ${p.lead} 天 · ETA ${crit ? Math.max(1, Math.round(p.lead * 0.6)) : p.lead} 天</div>
         </div>`;
       }).join("") || `<div class="empty">供应链状态正常，无预警项</div>`;
     },
