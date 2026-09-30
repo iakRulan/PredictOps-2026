@@ -83,6 +83,7 @@
     init() {
       this.engine = new global.IOT.SimEngine();
       this.bindNav();
+      this.bindTopbarActions();
       this.buildDeviceStrip();
       this.buildStateSelector();
       this.bindCursor();
@@ -129,9 +130,50 @@
       });
     },
 
+    /* ---------------- 顶栏快捷操作 ---------------- */
+    bindTopbarActions() {
+      const qf = document.getElementById("btn-quick-fault");
+      if (qf) {
+        qf.addEventListener("click", () => {
+          const id = this.engine.selected;
+          this.engine.setState(id, "fault-bpfi");
+          this.buildStateSelector();
+          this.onStateChanged(id, "fault-bpfi");
+          this.renderPerception(true);
+          this.renderDatasetPanel();
+          this.toast("warn", "⚡ 已快速注入轴承内圈故障，早期预警已触发，工单自动生成！");
+        });
+      }
+      const qn = document.getElementById("btn-quick-normal");
+      if (qn) {
+        qn.addEventListener("click", () => {
+          const id = this.engine.selected;
+          this.engine.setState(id, "normal");
+          this.buildStateSelector();
+          this.onStateChanged(id, "normal");
+          this.renderPerception(true);
+          this.renderDatasetPanel();
+          this.toast("ok", "✅ 设备已恢复正常运行态健康基线");
+        });
+      }
+      const exp = document.getElementById("btn-topbar-export");
+      if (exp) {
+        exp.addEventListener("click", () => this.exportReport());
+      }
+      const fs = document.getElementById("btn-fullscreen");
+      if (fs) {
+        fs.addEventListener("click", () => {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          } else {
+            document.exitFullscreen().catch(() => {});
+          }
+        });
+      }
+    },
+
     switchView(view) {
       this.currentView = view;
-      if (view !== "all-tracks" && global.Tracks) global.Tracks.leave();
       document.querySelectorAll(".nav-item").forEach(b => b.classList.toggle("active", b.dataset.view === view));
       document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + view));
       if (view === "perception") this.renderPerception();
@@ -139,7 +181,6 @@
       if (view === "decision") this.renderDecision();
       if (view === "knowledge") this.renderKnowledge();
       if (view === "dataset" && global.PredictEval) global.PredictEval.render();
-      if (view === "all-tracks" && global.Tracks) global.Tracks.render();
       setTimeout(() => global.Charts.resizeAll(), 60);
     },
 

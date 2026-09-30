@@ -130,36 +130,29 @@
       });
     },
 
-    switchView(view) {
-      this.currentView = view;
-      document.querySelectorAll(".nav-item").forEach(b => b.classList.toggle("active", b.dataset.view === view));
-      document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + view));
-      if (view === "perception") this.renderPerception();
-      if (view === "inference") this.renderInference();
-      if (view === "decision") this.renderDecision();
-      if (view === "knowledge") this.renderKnowledge();
-      if (view === "dataset" && global.PredictEval) global.PredictEval.render();
-      setTimeout(() => global.Charts.resizeAll(), 60);
-    },
-
     /* ---------------- 顶栏快捷操作 ---------------- */
     bindTopbarActions() {
       const qf = document.getElementById("btn-quick-fault");
       if (qf) {
         qf.addEventListener("click", () => {
-          this.engine.setState(this.engine.selected, "fault-bpfi");
+          const id = this.engine.selected;
+          this.engine.setState(id, "fault-bpfi");
           this.buildStateSelector();
+          this.onStateChanged(id, "fault-bpfi");
           this.renderPerception(true);
-          this.triggerAlertFlow(this.engine.current(), "fault-bpfi");
+          this.renderDatasetPanel();
           this.toast("warn", "⚡ 已快速注入轴承内圈故障，早期预警已触发，工单自动生成！");
         });
       }
       const qn = document.getElementById("btn-quick-normal");
       if (qn) {
         qn.addEventListener("click", () => {
-          this.engine.setState(this.engine.selected, "normal");
+          const id = this.engine.selected;
+          this.engine.setState(id, "normal");
           this.buildStateSelector();
+          this.onStateChanged(id, "normal");
           this.renderPerception(true);
+          this.renderDatasetPanel();
           this.toast("ok", "✅ 设备已恢复正常运行态健康基线");
         });
       }
@@ -177,6 +170,18 @@
           }
         });
       }
+    },
+
+    switchView(view) {
+      this.currentView = view;
+      document.querySelectorAll(".nav-item").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+      document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + view));
+      if (view === "perception") this.renderPerception();
+      if (view === "inference") this.renderInference();
+      if (view === "decision") this.renderDecision();
+      if (view === "knowledge") this.renderKnowledge();
+      if (view === "dataset" && global.PredictEval) global.PredictEval.render();
+      setTimeout(() => global.Charts.resizeAll(), 60);
     },
 
     /* ---------------- 设备选择 ---------------- */
@@ -283,6 +288,7 @@
       wrap.innerHTML = `
         <div class="panel-head">
           <h3>基准数据集验证</h3>
+          <span class="sub">NASA CWRU / PHM Society 公开数据集 · 特征频率理论值与算法识别值比对</span>
           <div class="spacer"></div>
           <div class="segmented" id="dataset-switch">
             <button data-ds="cwru" class="${this.dataset === "cwru" ? "active" : ""}">NASA CWRU 轴承数据集</button>
@@ -476,7 +482,8 @@
       if (srcEl) {
         if (lastAlert) {
           const own = !!ownAlert;
-          srcEl.innerHTML = `来源：<b>${lastAlert.deviceName}（${lastAlert.device}）</b> · ${lastAlert.stateLabel}${own ? "" : " · 全厂最近"}`;
+          const tag = own ? "" : (lastAlert.historical ? " · 历史记录" : " · 全厂最近");
+          srcEl.innerHTML = `来源：<b>${lastAlert.deviceName}（${lastAlert.device}）</b> · ${lastAlert.stateLabel}${tag}`;
         } else {
           srcEl.textContent = "暂无预警记录";
         }
@@ -508,10 +515,11 @@
         return `<div class="alert-row ${crit ? "critical" : ""}">
           <div class="ar-top">
             <span class="pill ${crit ? "pill-danger" : "pill-warn"}">${crit ? "故障预警" : "劣化预警"}</span>
+            ${a.historical ? `<span class="pill pill-muted" style="font-size:10px">历史</span>` : ""}
             <span class="ar-device">${a.deviceName}（${a.device}）</span>
             <span class="ar-id">${a.id}</span>
             <div class="spacer" style="flex:1"></div>
-            <span class="ar-time">${a.time}</span>
+            <span class="ar-time">${a.time}${a.ts ? " · " + relTime(a.ts) : ""}</span>
           </div>
           <div class="ar-fields">
             <div class="ar-field"><span class="k">故障类型</span><span class="v ${crit ? "danger" : "warn"}">${a.stateLabel}</span></div>
@@ -532,7 +540,7 @@
         const ch = this.engine.get(d.id);
         const st = global.IOT.STATES[ch.state];
         const h = ch.health();
-        const rate = st.level === 0 ? "0.2" : st.level === 1 ? "1.5" : "3.8";
+        const rate = ch.degradeRate().toFixed(2);
         return `<tr>
             <td><b>${d.name}</b><br/><span class="mono" style="color:var(--txt-2);font-size:11px">${d.id}</span></td>
             <td><span class="pill pill-${st.level === 0 ? "ok" : st.level === 1 ? "warn" : "danger"}">${st.label}</span></td>
@@ -878,7 +886,7 @@
         <div class="kv"><span class="k">预警：</span>提前 <b>${alert.leadHours}h</b>，置信度 <b>${alert.confidence}%</b>，误报率 <b>${alert.falseRate}%</b></div>
         <div class="kv"><span class="k">建议：</span>${alert.desc}</div>
         ${kb ? `<div class="kv"><span class="k">关联知识：</span><b>${kb.title}</b>（可在知识库查看完整排查流程）</div>` : ""}
-        <div class="kv"><span class="k">下一步：</span>已自动生成检修工单并联动备件库存，前往「工单备件」跟进闭环。</div>`;
+        <div class="kv"><span class="k">下一步：</span>已自动生成检修工单并联动备件库存，前往「决策层」跟进闭环。</div>`;
     },
 
     kbAnswer(e) {
@@ -929,7 +937,7 @@
           <ol>${rows.map(r => `<li>${r.code} 识别值 <b>${r.measured} Hz</b>（偏差 ±${r.dev}%）→ ${r.verdict}</li>`).join("")}</ol>
           <div class="kv"><span class="k">判定方法：</span>对振动信号做包络解调，提取特征频率峰值，与理论值偏差 &lt; 2% 判定为有效识别；BPFI 主导提示内圈故障，BPFO 主导提示外圈故障。</div>
           <div class="kv"><span class="k">参考：</span><code>CWRU Bearing Data Center · ISO 10816</code></div>
-          <div class="kv"><span class="k">说明：</span>可在「时序监控 → 基准数据集验证」切换 CWRU / PHM 数据源并载入标定样本，实时查看比对表。</div>`;
+          <div class="kv"><span class="k">说明：</span>可在「感知层 → 基准数据集验证」切换 CWRU / PHM 数据源并载入标定样本，实时查看比对表。</div>`;
       }
 
       if (intent === "score") {
@@ -943,7 +951,7 @@
           <b>计算公式</b>
           <ol>${m.map(x => `<li><code>${x.formula}</code></li>`).join("")}</ol>
           <div class="kv"><span class="k">判断阈值：</span>H ≥ 85 正常运行 · 60 ≤ H &lt; 85 亚健康（加强监测） · H &lt; 60 需停机检修</div>
-          <div class="kv"><span class="k">说明：</span>点击「预测维护 → 健康指数卡片」的「查看评分依据」可展开完整明细与实时子分数。</div>`;
+          <div class="kv"><span class="k">说明：</span>点击「推理层 → 健康指数卡片」的「查看评分依据」可展开完整明细与实时子分数。</div>`;
       }
 
       if (intent === "rul") {
@@ -958,7 +966,7 @@
         return `<div class="ans-title">${dev.def.name}（${dev.def.id}）剩余寿命预测</div>
           <div class="kv"><span class="k">预计可运行：</span><b>${this.humanRul(dev.rul())}</b></div>
           <div class="kv"><span class="k">健康指数：</span><b>${dev.health()}</b> 分（0-100）</div>
-          <div class="kv"><span class="k">劣化速率：</span>${global.IOT.STATES[dev.state].level === 0 ? "0.2 分/天（平稳）" : global.IOT.STATES[dev.state].level === 1 ? "1.5 分/天（缓慢劣化）" : "3.8 分/天（快速劣化）"}</div>
+          <div class="kv"><span class="k">劣化速率：</span>${dev.degradeRate().toFixed(2)} 分/天（${global.IOT.STATES[dev.state].level === 0 ? "平稳" : global.IOT.STATES[dev.state].level === 1 ? "缓慢劣化" : "快速劣化"}）</div>
           <div class="kv"><span class="k">建议：</span>${dev.rul() < 72 ? "立即生成高优先级工单，备件预占并安排停机窗口。" : dev.rul() < 300 ? "纳入近期检修计划，缩短点检周期至 3 天。" : "按计划维护即可，持续跟踪趋势。"}</div>`;
       }
 
@@ -982,7 +990,7 @@
         const counts = this.woCounts();
         return `<div class="ans-title">工单与闭环状态</div>
           <div class="kv"><span class="k">待处理：</span><b>${counts.pending}</b> · 处理中 <b>${counts.processing}</b> · 已完成 <b>${counts.done}</b> · 已闭环 <b>${counts.closed}</b></div>
-          ${this.workOrders.slice(0, 3).map(w => `<div class="kv"><span class="k">${w.id}：</span>${w.title} → ${WO_FLOW_LABEL[w.status]}</div>`).join("") || "<div class='kv'>当前无工单，可在「工单备件」模拟异常触发。</div>"}`;
+          ${this.workOrders.slice(0, 3).map(w => `<div class="kv"><span class="k">${w.id}：</span>${w.title} → ${WO_FLOW_LABEL[w.status]}</div>`).join("") || "<div class='kv'>当前无工单，可在决策层模拟异常触发。</div>"}`;
       }
 
       if (intent === "alert") {
@@ -1084,7 +1092,7 @@
         const ch = this.engine.get(d.id);
         const st = global.IOT.STATES[ch.state];
         return `<tr><td>${d.name}<br><small>${d.id}</small></td><td>${d.model}</td><td>${st.label}</td>
-          <td>${ch.health()}</td><td>${this.humanRul(ch.rul())}</td><td>${st.level === 0 ? "0.2" : st.level === 1 ? "1.5" : "3.8"} 分/天</td></tr>`;
+          <td>${ch.health()}</td><td>${this.humanRul(ch.rul())}</td><td>${ch.degradeRate().toFixed(2)} 分/天</td></tr>`;
       }).join("");
       const al = this.engine.alertLog[0];
       const woList = this.workOrders.length ? this.workOrders.map(w => {
@@ -1174,7 +1182,7 @@ ${woList}
       const refresh = document.getElementById("btn-refresh");
       if (refresh) refresh.addEventListener("click", () => {
         this.renderDecision();
-        this.toast("info", "工单与备件数据已刷新");
+        this.toast("info", "决策层数据已刷新");
       });
       // 通用模态框
       const mmask = document.getElementById("modal-mask");
@@ -1210,6 +1218,15 @@ ${woList}
 
   /* ---------------- 辅助 ---------------- */
   function escapeHtml(s) { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; }
+  function relTime(ts) {
+    if (!ts) return "";
+    const m = Math.round((Date.now() - ts) / 60000);
+    if (m < 1) return "刚刚";
+    if (m < 60) return m + " 分钟前";
+    const h = Math.round(m / 60);
+    if (h < 48) return h + " 小时前";
+    return Math.round(h / 24) + " 天前";
+  }
   function svgEmpty() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>`; }
   function icon(name) {
     const map = {
