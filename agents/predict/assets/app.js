@@ -420,11 +420,14 @@
       if (!wrap) return;
       const realAvailable = !!(global.CWRU && global.CWRU.ready() && global.CWRU.samples().length);
       const mode = realAvailable ? this.dsMode : "sim";
-      // 实测视图与设备/工况无关，但换样本要重绘，故 key 含样本号
-      const key = mode + (mode === "real" ? ":" + this.dsSample : "");
+      const ch0 = this.engine.current();
+      // 守卫的 key 必须覆盖面板真正依赖的输入：实测只看所选样本，仿真随设备与工况变化
+      const key = mode === "real"
+        ? "real:" + this.dsSample
+        : "sim:" + ch0.def.id + ":" + ch0.state;
       if (this._dsRendered === key) return;
       this._dsRendered = key;
-      const ch = this.engine.current();
+      const ch = ch0;
       const meta = global.Datasets.META.cwru;
 
       const tabs = `<div class="segmented segmented-xs" id="ds-mode" role="group" aria-label="数据来源">
@@ -1315,12 +1318,16 @@
     },
 
     greeting() {
+      const real = global.CWRU && global.CWRU.ready()
+        ? `并已接入 <b>${global.CWRU.samples().length} 只</b> NASA CWRU 真实轴承波形（特征频率与分类指标由页面现场解调实测）。`
+        : "";
       return `<div class="ans-title">设备智能运维助手已就绪</div>
-        我已接入 <b>3 台</b>关键设备（数控机床 / 空压机 / 离心泵）的振动、温度、电流实时数据与 <b>${global.KB.entries.length} 条</b>维修知识条目。<br/>
+        我已接入 <b>3 台</b>关键设备（数控机床 / 空压机 / 离心泵）的振动、温度、电流实时数据与 <b>${global.KB.entries.length} 条</b>维修知识条目${real}<br/>
         你可以直接提问，例如：<br/>
         · 轴承温度过高怎么排查？<br/>
         · PMP-01 的剩余寿命还有多久？<br/>
-        · 空压机排气温度报警怎么处理？`;
+        · NASA CWRU 轴承故障特征如何判断？<br/>
+        · 当前预警准确率和误报率多少？`;
     },
 
     proactiveAnalysis(ch) {
@@ -1461,11 +1468,14 @@
 
       if (intent === "alert") {
         const o = this.engine.overview();
-        return `<div class="ans-title">预警机制说明</div>
+        const cv = global.CWRU && global.CWRU.ready() ? global.CWRU.validate() : null;
+        return `<div class="ans-title">预警机制与指标口径</div>
           <div class="kv"><span class="k">预警窗口：</span>提前 <b>24~72 小时</b>（劣化态 48~72h，故障态 24~36h）</div>
-          <div class="kv"><span class="k">预警准确率：</span><b>${o.accuracy}%</b>（要求 &gt;92%）</div>
-          <div class="kv"><span class="k">误报率：</span><b>${o.falseRate}%</b>（要求 &lt;5%）</div>
-          <div class="kv"><span class="k">当前告警：</span><b>${o.alertCount}</b> 条</div>`;
+          <div class="kv"><span class="k">赛题方向性指标：</span>准确率 ≥ 85% · 提前 ≥ 24 小时 · 误报率 ≤ 10%（官方表头为「建议目标值」，非硬性门槛）</div>
+          ${cv ? `<div class="kv"><span class="k">公开数据集实测：</span>NASA CWRU ${cv.bySample.files} 只真实 .mat / ${cv.bySample.n} 段窗口，按样本留一（LOSO）准确率 <b>${(cv.bySample.accuracy * 100).toFixed(1)}%</b>，宏平均 F1 <b>${cv.bySample.macroF1.toFixed(3)}</b>；按窗口留一 ${(cv.byWindow.accuracy * 100).toFixed(1)}% 偏乐观，仅作对照</div>` : ""}
+          <div class="kv"><span class="k">在线仿真运行值：</span>准确率 <b>${o.accuracy}%</b> · 误报率 <b>${o.falseRate}%</b> · 当前告警 <b>${o.alertCount}</b> 条
+            <span style="color:var(--txt-2)">（SimEngine 运行态指标，随工况浮动，与上行的真实数据集测量分列，不互相替代）</span></div>
+          <div class="kv"><span class="k">误报率为何不用真实数据：</span>需轴承全寿命失效记录与真实失效时刻，公开 CWRU 样本为稳态故障快照，不具备该条件。</div>`;
       }
 
       // 诊断类

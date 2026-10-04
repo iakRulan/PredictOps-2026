@@ -3,7 +3,7 @@
   "source": "NASA CWRU Bearing Data Center · https://engineering.case.edu/bearingdatacenter",
   "catalog": "NASA CWRU Bearing Data Center",
   "catalogFetchedAt": null,
-  "generated": "2026-10-04T02:19:13.349Z",
+  "generated": "2026-10-04T03:47:36.930Z",
   "algorithm": "assets/dsp.js（浏览器与构建期同一份实现）",
   "rule": "判定条件 |偏差| ≤ 2% 且 包络谱信噪比 ≥ 8"
  },
@@ -52,7 +52,8 @@
    "offset": 0,
    "length": 65536,
    "scale": 0.00000861405119127828,
-   "peak": 0.2823
+   "peak": 0.2823,
+   "evalWindows": 8
   },
   {
    "id": "105",
@@ -105,7 +106,8 @@
    "offset": 196608,
    "length": 16384,
    "scale": 0.0000483582473408845,
-   "peak": 1.5846
+   "peak": 1.5846,
+   "evalWindows": 8
   },
   {
    "id": "106",
@@ -158,7 +160,8 @@
    "offset": 245760,
    "length": 16384,
    "scale": 0.000048244229945821425,
-   "peak": 1.5808
+   "peak": 1.5808,
+   "evalWindows": 8
   },
   {
    "id": "107",
@@ -211,7 +214,8 @@
    "offset": 294912,
    "length": 16384,
    "scale": 0.00004692559398552667,
-   "peak": 1.5376
+   "peak": 1.5376,
+   "evalWindows": 8
   },
   {
    "id": "108",
@@ -264,7 +268,8 @@
    "offset": 344064,
    "length": 16384,
    "scale": 0.0000468611493709258,
-   "peak": 1.5355
+   "peak": 1.5355,
+   "evalWindows": 8
   },
   {
    "id": "118",
@@ -309,7 +314,8 @@
    "offset": 393216,
    "length": 16384,
    "scale": 0.000016046709035616927,
-   "peak": 0.5258
+   "peak": 0.5258,
+   "evalWindows": 8
   },
   {
    "id": "119",
@@ -354,7 +360,8 @@
    "offset": 442368,
    "length": 16384,
    "scale": 0.000015724485962612572,
-   "peak": 0.5152
+   "peak": 0.5152,
+   "evalWindows": 8
   },
   {
    "id": "120",
@@ -399,7 +406,8 @@
    "offset": 491520,
    "length": 16384,
    "scale": 0.000015248587270175371,
-   "peak": 0.4997
+   "peak": 0.4997,
+   "evalWindows": 8
   },
   {
    "id": "121",
@@ -444,7 +452,8 @@
    "offset": 540672,
    "length": 16384,
    "scale": 0.000019040904975534327,
-   "peak": 0.6239
+   "peak": 0.6239,
+   "evalWindows": 8
   },
   {
    "id": "122",
@@ -489,7 +498,8 @@
    "offset": 589824,
    "length": 65536,
    "scale": 0.00002072974920827944,
-   "peak": 0.6793
+   "peak": 0.6793,
+   "evalWindows": 8
   },
   {
    "id": "130",
@@ -542,7 +552,8 @@
    "offset": 786432,
    "length": 16384,
    "scale": 0.0001082669525294636,
-   "peak": 3.5476
+   "peak": 3.5476,
+   "evalWindows": 8
   },
   {
    "id": "131",
@@ -595,7 +606,8 @@
    "offset": 835584,
    "length": 16384,
    "scale": 0.00009372973465892095,
-   "peak": 3.0712
+   "peak": 3.0712,
+   "evalWindows": 8
   },
   {
    "id": "132",
@@ -648,7 +660,8 @@
    "offset": 884736,
    "length": 16384,
    "scale": 0.00008937972317336214,
-   "peak": 2.9287
+   "peak": 2.9287,
+   "evalWindows": 8
   },
   {
    "id": "133",
@@ -701,7 +714,8 @@
    "offset": 933888,
    "length": 16384,
    "scale": 0.00009418828287819636,
-   "peak": 3.0863
+   "peak": 3.0863,
+   "evalWindows": 8
   },
   {
    "id": "135",
@@ -754,7 +768,8 @@
    "offset": 983040,
    "length": 65536,
    "scale": 0.00019963019704784282,
-   "peak": 6.5413
+   "peak": 6.5413,
+   "evalWindows": 8
   },
   {
    "id": "144",
@@ -807,7 +822,8 @@
    "offset": 1179648,
    "length": 16384,
    "scale": 0.0000947211902681651,
-   "peak": 3.1037
+   "peak": 3.1037,
+   "evalWindows": 8
   },
   {
    "id": "169",
@@ -860,7 +876,8 @@
    "offset": 1228800,
    "length": 16384,
    "scale": 0.00006136614493416803,
-   "peak": 2.0108
+   "peak": 2.0108,
+   "evalWindows": 8
   },
   {
    "id": "209",
@@ -913,7 +930,8 @@
    "offset": 1277952,
    "length": 16384,
    "scale": 0.00010468531914106903,
-   "peak": 3.4302
+   "peak": 3.4302,
+   "evalWindows": 8
   },
   {
    "id": "97",
@@ -958,7 +976,8 @@
    "offset": 1327104,
    "length": 65536,
    "scale": 0.000009499012843597334,
-   "peak": 0.3113
+   "peak": 0.3113,
+   "evalWindows": 8
   },
   {
    "id": "98",
@@ -1003,7 +1022,8 @@
    "offset": 1523712,
    "length": 65536,
    "scale": 0.000007671789863629213,
-   "peak": 0.2514
+   "peak": 0.2514,
+   "evalWindows": 8
   },
   {
    "id": "99",
@@ -1048,7 +1068,8 @@
    "offset": 1720320,
    "length": 65536,
    "scale": 0.000008423052273511576,
-   "peak": 0.276
+   "peak": 0.276,
+   "evalWindows": 8
   }
  ],
  "windows": [

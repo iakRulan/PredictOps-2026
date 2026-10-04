@@ -220,6 +220,7 @@
         <div class="empty">未载入 assets/data/cwru.bin，真实样本实测路径不可用（构建期运行 <code>node tools/cwru-extract.js</code>）。</div></div>`;
     }
     const cv = C.isCrossValidated() ? C.validate() : null;
+    const nWin = (C.state.index && C.state.index.windows ? C.state.index.windows.length : 0);   // 窗口数以索引为权威
     const list = C.samples();
     const pct = v => (v * 100).toFixed(1) + "%";
     const NAME = { NO: "正常基线", IR: "内圈故障", OR: "外圈故障", B: "滚珠故障" };
@@ -254,7 +255,7 @@
             <tr><th>类别</th><th>P</th><th>R</th><th>F1</th><th>N</th><th>文件</th></tr>
             ${cv.bySample.per.map(x => `<tr><td class="rowh">${NAME[x.label] || x.label}</td><td>${x.precision.toFixed(3)}</td>
               <td>${x.recall.toFixed(3)}</td><td>${x.f1.toFixed(3)}</td><td>${x.support}</td><td>${x.files}</td></tr>`).join("")}
-          </table>` : `<div class="empty">留一法交叉验证计算中（需解调 ${list.reduce((a, x) => a + (x.evalWindows || 0), 0) * 2} 段窗口的两遍协议对照）…</div>`;
+          </table>` : `<div class="empty">留一法交叉验证计算中（需对 ${nWin * 2} 段真实窗口做两遍协议对照解调）…</div>`;
 
     return `<div class="panel mb">
       <div class="panel-head"><h3>公开数据集实测 · NASA CWRU 原始波形</h3>
@@ -262,9 +263,9 @@
       </div>
       <div class="grid g-4 mb">
         ${kpiCard("is-green", "元素判定一致率", agree.filter(x => x.agree).length + "/" + agree.length, "", "官方目录为真值，算法判据实测")}
-        ${kpiCard("is-cyan", "可比样本 / 真实窗口", list.filter(x => x.comparable !== false).length + " / " + list.reduce((a, x) => a + (x.evalWindows || 0), 0), "", "3.7 MB 随包分发 · 全部含 SHA-256 溯源")}
+        ${kpiCard("is-cyan", "可比样本 / 真实窗口", list.filter(x => x.comparable !== false).length + " / " + nWin, "", "真实波形窗口随包分发 · 每只含 SHA-256 溯源")}
         ${kpiCard("is-violet", "最小特征频率偏差", Math.min.apply(null, list.map(s => { const a = C.analyze(s.id); return a.dominant ? Math.abs(a.dominant.dev) : 99; })).toFixed(2), "%", "6205-2RS 理论系数 vs 包络谱实测")}
-        <div id="ev-cv-slot">${cv ? kpiCard("is-amber", "准确率（LOSO）", pct(cv.bySample.accuracy), "", cv.bySample.correct + " / " + cv.bySample.n + " 段窗口 · 同类中心排除同一 .mat 全部窗口") : kpiCard("is-amber", "留一法交叉验证", "计算中…", "", "需解调 336 段窗口，已延后至空闲时段")}</div>
+        <div id="ev-cv-slot">${cv ? kpiCard("is-amber", "准确率（LOSO）", pct(cv.bySample.accuracy), "", cv.bySample.correct + " / " + cv.bySample.n + " 段窗口 · 同类中心排除同一 .mat 全部窗口") : kpiCard("is-amber", "留一法交叉验证", "计算中…", "", "需对 ${nWin * 2} 段窗口做两遍解调，已延后至空闲时段")}</div>
       </div>
       <div class="loo-wrap">
         <div>
@@ -291,7 +292,7 @@
         <b>3. 总体准确率</b><br/>
         准确率 = 对角线之和 / 测试集总数 = ${M.correct.toLocaleString()} / ${M.total.toLocaleString()} = ${pct(M.accuracy, 1)}。<br/><br/>
         <b>4. 误报率</b><br/>
-        误报率 = 误报预警次数 / 总预警次数（按 24 小时去重，预警级统计，来自在线运行日志）= ${pct(M.falseAlarmRate, 1)}。<br/><br/>
+        误报率 = 误报预警次数 / 总预警次数（按 24 小时去重的预警级统计；取自 SimEngine 设定值并随工况漂移，非真实运行日志）= ${pct(M.falseAlarmRate, 1)}。<br/><br/>
         <b>5. 漏报率</b><br/>
         漏报率 = FN / (TP + FN)（真实故障被判为正常态）= ${M.missCount} / ${M.faultTotal} = ${pct(M.missRate, 2)}。<br/><br/>
         <b>6. 提前预警时长</b><br/>

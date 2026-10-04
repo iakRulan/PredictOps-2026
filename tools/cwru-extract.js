@@ -144,7 +144,8 @@ function main(srcDir, outDir) {
 
     const q1 = quantize(cal);   // 注意：Buffer.from(typedArray) 只按元素数取字节，必须传 .buffer
     blobs.push(Buffer.from(q1.out.buffer));
-    index.samples.push(Object.assign({}, rec, { kind: "cal", offset, length: wl.cal, scale: q1.scale, peak: q1.peak }));
+    const entry = Object.assign({}, rec, { kind: "cal", offset, length: wl.cal, scale: q1.scale, peak: q1.peak });
+    index.samples.push(entry);
     offset += wl.cal;
 
     let evalCount = 0;
@@ -162,6 +163,7 @@ function main(srcDir, outDir) {
       offset += wl.evalW; evalCount++;
     }
     rec.evalWindows = evalCount;
+    entry.evalWindows = evalCount;      // 已 push 的是副本，必须回填，否则产物里没有这个字段
 
     console.log([
       id.padEnd(5), (fsHz / 1000) + "k",
