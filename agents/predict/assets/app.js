@@ -76,12 +76,12 @@
     workOrders: [],
     woSeq: 1001,
     currentView: "perception",
-    rendered: {},
-    dataset: "cwru",
-    datasetSample: null,
+    paused: false,
+    kbCat: "全部",
 
     init() {
       this.engine = new global.IOT.SimEngine();
+      this.seedHistoryOrders();
       this.bindNav();
       this.bindTopbarActions();
       this.buildDeviceStrip();
@@ -89,6 +89,7 @@
       this.bindCursor();
       this.buildKB();
       this.buildChat();
+      this.bindShortcuts();
       this.renderDatasetPanel();
       this.renderPerception(true);
       this.updateTopbar();
@@ -96,10 +97,25 @@
       this.start();
       global.addEventListener("resize", () => global.Charts.resizeAll());
       setTimeout(() => this.pushAi(this.greeting()), 400);
+      this.loadRealData();
+    },
+
+    /* 真实波形异步载入：感知层先渲染，波形到位后无感升级到实测路径 */
+    loadRealData() {
+      if (!global.CWRU) return;
+      global.CWRU.ensure().then(() => {
+        this._dsRendered = null;
+        this.renderDatasetPanel();
+        const n = global.CWRU.samples().length, w = global.CWRU.state.index.windows.length;
+        this.toast("ok", `已载入 NASA CWRU 真实波形：${n} 只 .mat 样本 / ${w} 段评测窗，特征频率改为实测`);
+      }).catch(() => {
+        this.toast("warn", "CWRU 真实波形未随包提供（assets/data/cwru.bin 缺失），基准数据集视图停留在模型仿真路径");
+      });
     },
 
     /* ---------------- 实时循环 ---------------- */
     start() {
+      if (this.timer) clearInterval(this.timer);
       this.timer = setInterval(() => {
         this.tickCount++;
         this.engine.tick();
@@ -110,17 +126,50 @@
       }, 1400);
     },
 
+    setPaused(v) {
+      this.paused = v;
+      if (v) clearInterval(this.timer);
+      else this.start();
+      const btn = document.getElementById("btn-pause");
+      const label = document.getElementById("pause-label");
+      const badge = document.getElementById("live-badge");
+      if (btn) btn.setAttribute("aria-pressed", String(v));
+      if (label) label.textContent = v ? "继续" : "暂停";
+      if (badge) {
+        badge.className = "pill pill-" + (v ? "muted" : "info");
+        badge.innerHTML = v
+          ? `<span class="dot"></span>数据流已暂停`
+          : `<span class="dot pulse"></span>数据采集中`;
+      }
+      document.body.classList.toggle("is-paused", v);
+      this.toast("info", v ? "实时数据流已暂停，图表与读数保持当前帧" : "实时数据流已恢复");
+    },
+
     updateTopbar() {
       const o = this.engine.overview();
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
       set("kpi-accuracy", o.accuracy + "%");
-      set("kpi-false", o.falseRate + "%");
       set("kpi-alerts", o.alertCount);
       set("kpi-devices", global.IOT.DEVICES.length);
       const badge = document.getElementById("nav-alert-badge");
-      if (badge) badge.textContent = o.alertCount;
+      if (badge) {
+        badge.textContent = o.alertCount;
+        const crit = this.engine.alertLog.some(a => a.level === "critical" && !a.handled);
+        badge.classList.toggle("hot", crit);
+        badge.closest(".nav-item")?.setAttribute("aria-label", `推理层 · 预测维护，${o.alertCount} 条预警`);
+      }
+      const chip = document.querySelector('.kpi-chip[data-goto="inference"]');
+      if (chip) chip.classList.toggle("alert", o.alertCount > 0);
       const clock = document.getElementById("clock");
       if (clock) clock.textContent = U.clockStr(new Date());
+      const trend = document.getElementById("m-trend");
+      if (trend) {
+        const ch = this.engine.current();
+        const st = global.IOT.STATES[ch.state];
+        const map = { 0: ["平稳", "var(--green)"], 1: ["缓慢下降", "var(--amber)"], 2: ["快速劣化", "var(--red)"] };
+        const m = map[st.level];
+        trend.innerHTML = `<b style="color:${m[1]}">${m[0]}</b> · 累计运行 ${ch.def.runHours.toLocaleString()} h`;
+      }
     },
 
     /* ---------------- 导航 ---------------- */
@@ -128,73 +177,112 @@
       document.querySelectorAll(".nav-item").forEach(btn => {
         btn.addEventListener("click", () => this.switchView(btn.dataset.view));
       });
+      document.querySelectorAll(".kpi-chip[data-goto]").forEach(chip => {
+        chip.addEventListener("click", () => {
+          this.switchView(chip.dataset.goto);
+          if (chip.dataset.goto === "inference") {
+            setTimeout(() => document.getElementById("alert-list")
+              ?.scrollIntoView({ behavior: "smooth", block: "center" }), 220);
+          }
+        });
+      });
     },
 
     /* ---------------- 顶栏快捷操作 ---------------- */
     bindTopbarActions() {
       const qf = document.getElementById("btn-quick-fault");
       if (qf) {
-        qf.addEventListener("click", () => {
-          const id = this.engine.selected;
-          this.engine.setState(id, "fault-bpfi");
-          this.buildStateSelector();
-          this.onStateChanged(id, "fault-bpfi");
-          this.renderPerception(true);
-          this.renderDatasetPanel();
-          this.toast("warn", "⚡ 已快速注入轴承内圈故障，早期预警已触发，工单自动生成！");
-        });
+        qf.addEventListener("click", () => this.injectFault());
       }
       const qn = document.getElementById("btn-quick-normal");
       if (qn) {
-        qn.addEventListener("click", () => {
-          const id = this.engine.selected;
-          this.engine.setState(id, "normal");
-          this.buildStateSelector();
-          this.onStateChanged(id, "normal");
-          this.renderPerception(true);
-          this.renderDatasetPanel();
-          this.toast("ok", "✅ 设备已恢复正常运行态健康基线");
-        });
+        qn.addEventListener("click", () => this.restoreNormal());
       }
       const exp = document.getElementById("btn-topbar-export");
-      if (exp) {
-        exp.addEventListener("click", () => this.exportReport());
-      }
+      if (exp) exp.addEventListener("click", () => this.exportReport());
+      const pause = document.getElementById("btn-pause");
+      if (pause) pause.addEventListener("click", () => this.setPaused(!this.paused));
+
       const fs = document.getElementById("btn-fullscreen");
       if (fs) {
         fs.addEventListener("click", () => {
-          if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(() => {});
-          } else {
-            document.exitFullscreen().catch(() => {});
-          }
+          if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+          else document.exitFullscreen().catch(() => {});
+        });
+        global.addEventListener("fullscreenchange", () => {
+          const on = !!document.fullscreenElement;
+          fs.innerHTML = on ? "⛶ 退出全屏" : "🖥 全屏演示";
+          fs.classList.toggle("pill-ok", on);
+          fs.classList.toggle("pill-info", !on);
         });
       }
     },
 
+    injectFault() {
+      const id = this.engine.selected;
+      if (this.engine.get(id).state === "fault-bpfi") {
+        this.toast("info", `${this.engine.get(id).def.name} 已处于轴承内圈故障工况`);
+        return;
+      }
+      this.engine.setState(id, "fault-bpfi");
+      this.buildStateSelector();
+      this.onStateChanged(id, "fault-bpfi");
+      this.renderPerception(true);
+      this.renderDatasetPanel();
+      this.toast("warn", "⚡ 已快速注入轴承内圈故障，早期预警已触发，工单自动生成！", {
+        label: "查看工单", view: "decision"
+      });
+    },
+
+    restoreNormal() {
+      const id = this.engine.selected;
+      if (this.engine.get(id).state === "normal") {
+        this.toast("info", `${this.engine.get(id).def.name} 已处于正常态健康基线`);
+        return;
+      }
+      this.engine.setState(id, "normal");
+      this.buildStateSelector();
+      this.onStateChanged(id, "normal");
+      this.renderPerception(true);
+      this.renderDatasetPanel();
+      this.toast("ok", "✅ 设备已恢复正常运行态健康基线");
+    },
+
     switchView(view) {
       this.currentView = view;
-      document.querySelectorAll(".nav-item").forEach(b => b.classList.toggle("active", b.dataset.view === view));
+      document.querySelectorAll(".nav-item").forEach(b => {
+        const on = b.dataset.view === view;
+        b.classList.toggle("active", on);
+        if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+      });
       document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + view));
+      // 设备上下文只对数据视图有意义，知识/数据集视图收起，避免占用视线
+      const ctx = document.getElementById("context-bar");
+      if (ctx) ctx.hidden = (view === "knowledge" || view === "dataset");
+      global.scrollTo({ top: 0, behavior: "auto" });
+
       if (view === "perception") this.renderPerception();
       if (view === "inference") this.renderInference();
       if (view === "decision") this.renderDecision();
       if (view === "knowledge") this.renderKnowledge();
       if (view === "dataset" && global.PredictEval) global.PredictEval.render();
-      setTimeout(() => global.Charts.resizeAll(), 60);
+      requestAnimationFrame(() => global.Charts.resizeAll());
     },
 
-    /* ---------------- 设备选择 ---------------- */
+    /* ---------------- 设备选择（全局上下文条） ---------------- */
     buildDeviceStrip() {
       const wrap = document.getElementById("device-strip");
       if (!wrap) return;
       wrap.innerHTML = global.IOT.DEVICES.map(d => {
         const ch = this.engine.get(d.id);
-        return `<button class="device-card${d.id === this.engine.selected ? " active" : ""}" data-device="${d.id}">
+        const lv = global.IOT.STATES[ch.state].level;
+        return `<button class="device-card lv-${lv}${d.id === this.engine.selected ? " active" : ""}"
+          data-device="${d.id}" aria-pressed="${d.id === this.engine.selected}"
+          title="${d.name} · ${d.id} · ${d.model} · ${d.location}">
           <span class="device-icon">${icon(d.icon)}</span>
           <span class="device-meta">
             <span class="name">${d.name}</span>
-            <span class="code">${d.id} · ${d.model}</span>
+            <span class="code">${d.id} · ${global.IOT.STATES[ch.state].label}</span>
           </span>
           <span class="device-state">
             <span class="hi" data-hi="${d.id}">${ch.health()}</span>
@@ -204,16 +292,66 @@
       }).join("");
       wrap.querySelectorAll(".device-card").forEach(card => {
         card.addEventListener("click", () => {
-          this.engine.select(card.dataset.device);
-          wrap.querySelectorAll(".device-card").forEach(c => c.classList.toggle("active", c === card));
+          if (card.dataset.device === this.engine.selected) {
+            if (this.currentView !== "perception") this.switchView("perception");
+            return;
+          }
+          this.selectDevice(card.dataset.device);
           const ch = this.engine.current();
-          ch.cursor = null;
-          this.syncCursorSlider(ch);
-          this.buildStateSelector();
-          this.renderPerception(true);
-          this.renderDatasetPanel();
+          this.toast("info", `已切换监控对象：${ch.def.name}（${ch.def.id}）· ${global.IOT.STATES[ch.state].label}`);
         });
       });
+      this.buildSpecSnap();
+    },
+
+    /** 切换当前监控设备并联动全部下游视图；返回 false 表示目标即当前设备 */
+    selectDevice(id) {
+      if (!this.engine.get(id) || id === this.engine.selected) return false;
+      this.engine.select(id);
+      const ch = this.engine.current();
+      ch.cursor = null;
+      this.syncCursorSlider(ch);
+      this.syncDeviceCards();
+      this.buildStateSelector();
+      this.renderPerception(true);
+      this.renderDatasetPanel();
+      if (this.currentView === "decision") { this.renderWorkOrders(); this.updateDecisionMetrics(); }
+      return true;
+    },
+
+    syncDeviceCards() {
+      document.querySelectorAll("#device-strip .device-card").forEach(c => {
+        const on = c.dataset.device === this.engine.selected;
+        c.classList.toggle("active", on);
+        c.setAttribute("aria-pressed", String(on));
+        const lv = global.IOT.STATES[this.engine.get(c.dataset.device).state].level;
+        c.classList.toggle("lv-0", lv === 0);
+        c.classList.toggle("lv-1", lv === 1);
+        c.classList.toggle("lv-2", lv === 2);
+      });
+    },
+
+    /* ---------------- 频谱游标快速定位 ---------------- */
+    buildSpecSnap() {
+      const wrap = document.getElementById("spec-snap");
+      if (!wrap) return;
+      const ch = this.engine.current();
+      const rot = ch.def.base.speed / 60;
+      const st = global.IOT.STATES[ch.state];
+      const pts = [["1X", rot], ["2X", rot * 2]];
+      if (st.freq === "BPFI") pts.push(["BPFI", rot * 5.42]);
+      if (st.freq === "BPFO") pts.push(["BPFO", rot * 3.58]);
+      wrap.innerHTML = pts.map(([k, f]) =>
+        `<button data-snap="${Math.round(f / 20) * 20}" title="游标定位到 ${k} ≈ ${f.toFixed(0)} Hz">${k}</button>`
+      ).join("");
+      wrap.querySelectorAll("[data-snap]").forEach(b => b.addEventListener("click", () => {
+        const cur = this.engine.current();
+        cur.cursor = Number(b.dataset.snap);
+        const slider = document.getElementById("spec-cursor");
+        if (slider) slider.value = cur.cursor;
+        global.Charts.renderSpectrum("chart-spectrum", cur);
+        this.updateCursorReadout(cur);
+      }));
     },
 
     /* ---------------- 频谱告警游标 ---------------- */
@@ -247,106 +385,173 @@
       el.innerHTML = `游标 <b>${idx * 20} Hz</b> · 幅值 <b>${spec.vals[idx]}</b> m/s²`;
     },
 
-    /* ---------------- 基准数据源（CWRU / PHM） ---------------- */
-    switchDataset(key) {
-      if (!global.Datasets.defs[key]) return;
-      this.dataset = key;
-      this.datasetSample = null;
+    /* ---------------- 基准数据集：实测（真实波形）/ 模型仿真 双路径 ---------------- */
+    dsMode: "real",
+    dsSample: "105",
+
+    switchMode(mode) {
+      this.dsMode = mode;
       this.renderDatasetPanel();
-      this.toast("info", "已切换数据源：" + global.Datasets.defs[key].name);
+    },
+
+    cvNoteHtml() {
+      const b = global.CWRU.validate().bySample, w = global.CWRU.validate().byWindow;
+      const dg = b.degenerate.length
+        ? `；${b.degenerate.map(L => global.Datasets.ELEMENT_LABEL[L] || L).join("、")} 类可用文件不足 2 只，无法留一，已从准确率中剔除`
+        : "";
+      return `<b>留一法实测分类</b>：按样本文件（LOSO，申报口径）<b>${(b.accuracy * 100).toFixed(1)}%</b>（${b.correct}/${b.n} 段窗口 · ${b.files} 只 .mat），宏平均 F1 <b>${b.macroF1.toFixed(3)}</b>${dg}；
+        按窗口留一（LOO，同文件窗口相关，偏乐观，仅对照）${(w.accuracy * 100).toFixed(1)}%。逐类明细见「数据集与评估」视图。`;
+    },
+
+    /** 空闲时补算交叉验证并回填占位，避免解调上百段窗口阻塞首屏 */
+    scheduleCrossValidation() {
+      if (!global.CWRU || !global.CWRU.ready() || global.CWRU.isCrossValidated()) return;
+      const run = () => {
+        global.CWRU.validate();                       // 空闲时段解调，不阻塞任何一次交互
+        const slot = document.getElementById("ds-cv");
+        if (slot) slot.outerHTML = this.cvNoteHtml();
+        if (this.currentView === "dataset" && global.PredictEval) global.PredictEval.refresh();
+      };
+      (global.requestIdleCallback || (fn => setTimeout(fn, 200)))(run, { timeout: 4000 });
     },
 
     renderDatasetPanel() {
       const wrap = document.getElementById("dataset-panel");
       if (!wrap) return;
-      const ds = global.Datasets.defs[this.dataset];
+      const realAvailable = !!(global.CWRU && global.CWRU.ready() && global.CWRU.samples().length);
+      const mode = realAvailable ? this.dsMode : "sim";
+      // 实测视图与设备/工况无关，但换样本要重绘，故 key 含样本号
+      const key = mode + (mode === "real" ? ":" + this.dsSample : "");
+      if (this._dsRendered === key) return;
+      this._dsRendered = key;
       const ch = this.engine.current();
-      const speed = ds.defaultSpeed;
-      const rows = global.Datasets.identify(ch.state, speed);
-      const rot = speed / 60;
+      const meta = global.Datasets.META.cwru;
 
-      const sampleChips = ds.samples.map(s => {
-        const active = this.datasetSample === s.id;
-        return `<button class="ds-sample ${active ? "active" : ""}" data-sample="${s.id}">
-          <span class="ds-sample-label">${s.label}</span>
-          <span class="ds-sample-meta">${s.sr} · ${s.load}${s.dia !== "—" ? " · " + s.dia : ""}</span>
+      const tabs = `<div class="segmented segmented-xs" id="ds-mode" role="group" aria-label="数据来源">
+        <button data-ds-mode="real" class="${mode === "real" ? "active" : ""}" ${realAvailable ? "" : "disabled"}
+          title="构建期从官网 .mat 抽取的真实加速度窗口，页面现场做 FFT 与 Hilbert 包络解调">
+          实测 · CWRU${realAvailable ? "（" + global.CWRU.samples().length + " 只真实样本）" : "（波形未载入）"}</button>
+        <button data-ds-mode="sim" class="${mode === "sim" ? "active" : ""}"
+          title="本系统 SimEngine 生成的 1 Hz 时序；频谱为模型合成，用于交互演示">模型仿真</button>
+      </div>`;
+      const head = `<div class="panel-head"><h3>基准数据集验证</h3><div class="spacer"></div>${tabs}</div>`;
+
+      if (mode === "sim") {
+        const rows = global.Datasets.identifySim(ch.state, meta.simSpeed || 1797);
+        wrap.innerHTML = head + `
+          <div class="ds-source">${meta.name} · ${meta.bearing}<br/>
+            ${meta.source} · ${meta.sampling} · ${meta.load}</div>
+          <div class="ds-flag warn-flag">当前为<b>模型仿真</b>路径：下表数值来自本系统合成的频谱，
+            仅演示判读逻辑，不构成对真实信号的测量。</div>
+          <div class="table-wrap mt">
+            <table class="data">
+              <thead><tr><th>特征分量</th><th>理论系数</th><th>理论值 (Hz)</th><th>模型输出 (Hz)</th><th>差值</th><th>说明</th></tr></thead>
+              <tbody>${rows.map(r => `<tr>
+                <td><b>${r.code}</b> <span class="ds-td-sub">${r.name}</span></td>
+                <td class="mono">${r.factor.toFixed(4)}X</td>
+                <td class="mono">${r.theory}</td>
+                <td class="mono" style="color:${r.detected ? "var(--red)" : "var(--txt-1)"};font-weight:${r.detected ? 700 : 400}">${r.measured}</td>
+                <td class="mono">±${r.dev}%</td>
+                <td><span class="pill pill-${r.detected ? "danger" : "muted"}" style="font-size:10px">${r.verdict}</span></td>
+              </tr>`).join("")}</tbody>
+            </table>
+          </div>
+          <div class="ds-formula">当前仿真工况：<b>${global.IOT.STATES[ch.state].label}</b>（${ch.def.name} / ${ch.def.id}）·
+            理论系数取自 6205-2RS 几何参数：BPFI = 5.4152·f<sub>r</sub>，BPFO = 3.5840·f<sub>r</sub>，BSF = 2.3569·f<sub>r</sub>，FTF = 0.3982·f<sub>r</sub>。</div>`;
+        wrap.querySelectorAll("[data-ds-mode]").forEach(b => b.addEventListener("click", () => this.switchMode(b.dataset.dsMode)));
+        return;
+      }
+
+      /* ---------- 实测路径：真实波形 ---------- */
+      const list = global.CWRU.samples();
+      if (!list.some(s => s.id === this.dsSample)) this.dsSample = list[0].id;
+      const chips = list.map(s => {
+        const el = s.catalog ? s.catalog.element : "?";
+        return `<button class="ds-sample ${s.id === this.dsSample ? "active" : ""}" data-real-sample="${s.id}"
+          title="${s.file} · SHA-256 ${s.sha256.slice(0, 16)}… · 变量 ${s.variable} · ${s.sampleCount} 点">
+          <span class="ds-sample-label">${s.id}.mat</span>
+          <span class="ds-sample-meta">${global.Datasets.ELEMENT_LABEL[el] || el}${s.catalog.diameter ? " " + s.catalog.diameter + "″" : ""} · ${s.catalog.hp}HP · ${(s.fs / 1000)}k</span>
         </button>`;
       }).join("");
 
-      const tableRows = rows.map(r => {
-        const ok = r.detected;
-        return `<tr>
-          <td><b>${r.code}</b> <span style="color:var(--txt-2);font-size:10.5px">${r.name}</span></td>
-          <td class="mono">${r.factor.toFixed(3)}X</td>
-          <td class="mono">${r.theory}</td>
-          <td class="mono" style="color:${ok ? "var(--red)" : "var(--txt-1)"};font-weight:${ok ? 700 : 400}">${r.measured}</td>
-          <td class="mono">±${r.dev}%</td>
-          <td><span class="pill pill-${ok ? "danger" : "muted"}" style="font-size:10px">${r.verdict}</span></td>
-        </tr>`;
-      }).join("");
-
-      const expanded = !!this.datasetExpanded;
-      wrap.innerHTML = `
-        <div class="panel-head">
-          <h3>基准数据集验证</h3>
-          <div class="spacer"></div>
-          <div class="segmented" id="dataset-switch">
-            <button data-ds="cwru" class="${this.dataset === "cwru" ? "active" : ""}">NASA CWRU</button>
-            <button data-ds="phm" class="${this.dataset === "phm" ? "active" : ""}">PHM Society</button>
-          </div>
-          <button class="btn btn-sm" id="dataset-toggle">${expanded ? "收起" : "展开"}</button>
+      wrap.innerHTML = head + `
+        <div class="ds-source">${meta.name} · ${meta.bearing}<br/>
+          ${meta.source} · ${meta.sampling} · ${meta.load} ·
+          <a href="${meta.url}" target="_blank" rel="noopener">${meta.url.replace("https://", "")}</a></div>
+        <div class="ds-samples">${chips}</div>
+        <div class="grid g-2 mt">
+          <div><div class="ds-chart-cap">真实时域波形 · 驱动端加速度</div><div class="chart chart-sm" id="chart-real-wave"></div></div>
+          <div><div class="ds-chart-cap">原始频谱（机械分量 1X / 2X 可见）</div><div class="chart chart-sm" id="chart-real-raw"></div></div>
         </div>
-        <div class="ds-summary">
-          <span class="pill pill-info">${ds.short}</span>
-          <span class="ds-summary-text">${ds.samples.length} 组标定实验 · 采样率 ${ds.sampling} · 基准转速 ${speed} rpm（转频 ${rot.toFixed(1)} Hz）</span>
-        </div>
-        <div class="ds-detail" style="display:${expanded ? "block" : "none"}">
-          <div class="grid g-23 mt" style="gap:16px">
-            <div>
-              <div class="ds-meta">
-                <div class="ds-meta-row"><span class="k">数据源</span><span class="v">${ds.source}</span></div>
-                <div class="ds-meta-row"><span class="k">采样率</span><span class="v mono">${ds.sampling}</span></div>
-                <div class="ds-meta-row"><span class="k">负载</span><span class="v mono">${ds.load}</span></div>
-                <div class="ds-meta-row"><span class="k">基准转速</span><span class="v mono">${speed} rpm（转频 ${rot.toFixed(1)} Hz）</span></div>
-                <div class="ds-meta-row"><span class="k">样本数</span><span class="v mono">${ds.samples.length} 组标定实验</span></div>
-              </div>
-              <div class="ds-samples mt">${sampleChips}</div>
-            </div>
-            <div>
-              <div class="table-wrap">
-                <table class="data">
-                  <thead><tr><th>特征分量</th><th>理论系数</th><th>理论值 (Hz)</th><th>算法识别值 (Hz)</th><th>偏差</th><th>判定</th></tr></thead>
-                  <tbody>${tableRows}</tbody>
-                </table>
-              </div>
-              <div class="ds-formula" style="margin-top:9px">
-                计算模型：BPFI = 5.415·f<sub>r</sub>，BPFO = 3.585·f<sub>r</sub>，BSF = 2.357·f<sub>r</sub>，FTF = 0.398·f<sub>r</sub>（f<sub>r</sub> 为转频）。
-                算法通过包络解调提取特征频率，与理论值偏差 <b>&lt; 2%</b> 判定为有效识别。
-              </div>
-            </div>
-          </div>
-        </div>`;
+        <div class="ds-chart-cap mt">包络谱 · Hilbert 解调 —— 特征频率实测所在</div>
+        <div class="chart" id="chart-real-env" style="height:230px"></div>
+        <div class="table-wrap mt" id="ds-real-table"></div>
+        <div id="ds-real-foot"></div>`;
 
-      wrap.querySelectorAll("#dataset-switch button").forEach(b =>
-        b.addEventListener("click", () => this.switchDataset(b.dataset.ds)));
-      wrap.querySelectorAll("[data-sample]").forEach(b =>
-        b.addEventListener("click", () => this.loadDatasetSample(b.dataset.sample)));
-      const tg = document.getElementById("dataset-toggle");
-      if (tg) tg.addEventListener("click", () => { this.datasetExpanded = !this.datasetExpanded; this.renderDatasetPanel(); });
+      wrap.querySelectorAll("[data-ds-mode]").forEach(b => b.addEventListener("click", () => this.switchMode(b.dataset.dsMode)));
+      wrap.querySelectorAll("[data-real-sample]").forEach(b => b.addEventListener("click", () => {
+        this.dsSample = b.dataset.realSample;
+        this.renderDatasetPanel();
+        const s = global.CWRU.sample(this.dsSample);
+        this.toast("info", `已载入真实样本 ${s.file}（${s.variable}，${s.sampleCount.toLocaleString()} 点 @ ${s.fs} Hz）`);
+      }));
+      this.renderRealViews();
+      this.scheduleCrossValidation();
     },
 
-    loadDatasetSample(sampleId) {
-      const ds = global.Datasets.defs[this.dataset];
-      const s = ds.samples.find(x => x.id === sampleId);
-      if (!s) return;
-      this.datasetSample = sampleId;
-      const id = this.engine.selected;
-      this.engine.setState(id, s.state);
-      this.buildStateSelector();
-      this.renderDatasetPanel();
-      this.renderPerception(true);
-      this.toast(s.state === "normal" ? "ok" : "warn",
-        `已载入 ${s.label}（${ds.short}）→ 当前设备切换至 ${global.IOT.STATES[s.state].label}`);
+    renderRealViews() {
+      const a = global.CWRU.analyze(this.dsSample);
+      if (!a) return;
+      const s = a.sample, C = global.Charts;
+      C.renderRealWave("chart-real-wave", a.x, a.fs);
+      C.renderSpectrumLine("chart-real-raw", a.rawSpec, Math.min(2000, a.fs / 2 - 200), [
+        { freq: a.fr, label: "1X " + a.fr.toFixed(1), color: "#22d3ee", type: "dashed" },
+        { freq: 2 * a.fr, label: "2X", color: "#3b82f6", type: "dotted" }
+      ], { yName: "g" });
+      const marks = a.table.filter(t => t.code !== "1X" && t.code !== "2X").map(t =>
+        ({
+          freq: t.measured || t.theory,
+          label: t.code + (t.valid ? " ✓" : "") + " " + (t.measured || 0).toFixed(1) + "Hz",
+          color: t.valid ? "#ef4444" : "#63748a", width: t.valid ? 1.4 : 1,
+          type: t.valid ? "solid" : "dotted", pos: "insideEndBottom"
+        }));
+      C.renderSpectrumLine("chart-real-env", a.envSpec, 1500, marks, { yName: "包络幅值", color: "#f472b6" });
+
+      document.getElementById("ds-real-table").innerHTML = `
+        <table class="data">
+          <thead><tr><th>特征分量</th><th>系数</th><th>理论值 (Hz)</th><th>实测值 (Hz)</th><th>偏差</th><th>包络SNR</th><th>判定</th></tr></thead>
+          <tbody>${a.table.map(t => `<tr>
+            <td><b>${t.code}</b> <span class="ds-td-sub">${t.name}</span></td>
+            <td class="mono">${t.factor.toFixed(4)}X</td>
+            <td class="mono">${t.theory.toFixed(1)}</td>
+            <td class="mono" style="color:${t.valid ? "var(--red)" : "var(--txt-1)"};font-weight:${t.valid ? 700 : 400}">${t.measured ? t.measured.toFixed(1) : "—"}</td>
+            <td class="mono">${t.measured ? (t.dev >= 0 ? "+" : "") + t.dev.toFixed(2) + "%" : "—"}</td>
+            <td class="mono">${t.snr ? t.snr.toFixed(1) : "—"}</td>
+            <td><span class="pill pill-${t.valid ? "danger" : "muted"}" style="font-size:10px">${t.valid ? "检出 · 吻合" : (t.detected ? "峰值不足" : "未检出")}</span></td>
+          </tr>`).join("")}</tbody>
+        </table>`;
+
+      const RULE = global.DSP.RULE;
+      const truth = s.catalog ? global.Datasets.ELEMENT_LABEL[s.catalog.element] : "—";
+      const pred = a.dominant ? a.dominant.code : "NORMAL";
+      // 交叉验证需解调上百段真实窗口（约 3 s），不能卡在首屏渲染里，先占位后回填
+      const cvNote = global.CWRU.isCrossValidated()
+        ? this.cvNoteHtml() : `<span id="ds-cv">留一法交叉验证计算中…</span>`;
+      document.getElementById("ds-real-foot").innerHTML = `
+        <div class="ds-flag ${s.agree === false ? "warn-flag" : "ok-flag"}">
+          算法判定 <b>${pred}</b> 对照官方目录真值 <b>${truth}${s.catalog.diameter ? " " + s.catalog.diameter + "″" : ""} @ ${s.catalog.hp}HP</b> →
+          ${s.agree === null ? "不计入比对（该组为另一型号轴承，6205 系数不适用）" : (s.agree ? "一致 ✓" : "不一致 ✗（弱冲击特征低于判定门限）")}
+        </div>
+        <div class="ds-formula">
+          判定规则：|偏差| ≤ ${RULE.devTol}% 且 包络谱信噪比 ≥ ${RULE.snrTol}。理论值由官方目录标称转速 ${s.rpmTheory} rpm 导出，
+          实测值由本页面 JS 对真实波形现场解调得到，两侧互不依赖。<br/>
+          解调带 ${s.demodBand[0]}–${s.demodBand[1]} Hz（共振峰 ${s.resonanceHz} Hz 自动选取）· 分析窗 ${s.windowSec} s · 峭度 K=${s.kurtosis} ·
+          理论转速取官方目录标称值（本样本 ${s.rpmTheory} rpm = ${s.fr ? s.fr.toFixed(2) : (s.rpmTheory / 60).toFixed(2)} Hz）。<br/>
+          ${cvNote}
+        </div>
+        <div class="ds-prov mono">溯源：${s.file} · ${s.bytes.toLocaleString()} 字节 · SHA-256 ${s.sha256.slice(0, 32)}… ·
+          变量 ${s.variable} · ${s.sampleCount.toLocaleString()} 点 / ${(s.sampleCount / s.fs).toFixed(2)} s @ ${s.fs} Hz
+          ${s.fsCheck.pageDeclared ? ` · 目录页标注 ${s.fsCheck.pageDeclared / 1000}k，与长度反推${s.fsCheck.agree ? "一致" : "不一致（以长度反推为准）"}` : ""}</div>`;
     },
 
     buildStateSelector() {
@@ -354,13 +559,19 @@
       if (!wrap) return;
       const ch = this.engine.current();
       wrap.innerHTML = Object.values(global.IOT.STATES).map(s =>
-        `<button data-state="${s.key}" class="${ch.state === s.key ? "active" : ""}">${s.label}</button>`
+        `<button data-state="${s.key}" class="${ch.state === s.key ? "active" : ""}"
+          aria-pressed="${ch.state === s.key}" title="${s.desc}">${s.label}</button>`
       ).join("");
       wrap.querySelectorAll("button").forEach(btn => {
         btn.addEventListener("click", () => {
           const id = this.engine.selected;
+          if (this.engine.get(id).state === btn.dataset.state) return;
           this.engine.setState(id, btn.dataset.state);
-          wrap.querySelectorAll("button").forEach(b => b.classList.toggle("active", b === btn));
+          wrap.querySelectorAll("button").forEach(b => {
+            const on = b === btn;
+            b.classList.toggle("active", on);
+            b.setAttribute("aria-pressed", String(on));
+          });
           this.onStateChanged(id, btn.dataset.state);
           this.renderPerception(true);
           this.renderDatasetPanel();
@@ -376,22 +587,30 @@
       if (!banner) return;
       const cls = st.level === 0 ? "ok" : st.level === 1 ? "warn" : "danger";
       banner.className = "pill pill-" + cls;
-      banner.innerHTML = `<span class="dot"></span>${st.label} · ${ch.def.name}`;
+      banner.innerHTML = `<span class="dot${st.level > 0 ? " pulse" : ""}"></span>${st.label} · ${ch.def.name}`;
       const desc = document.getElementById("state-desc");
-      if (desc) desc.textContent = st.desc;
+      if (desc) {
+        desc.textContent = st.desc;
+        desc.classList.remove("lv-1", "lv-2");
+        if (st.level > 0) desc.classList.add("lv-" + st.level);
+      }
+      this.syncDeviceCards();
     },
 
     onStateChanged(deviceId, stateKey) {
       const ch = this.engine.get(deviceId);
       const alert = ch.alert();
       if (alert) {
+        const res = this.createWorkOrder(alert);
         this.toast(alert.level === "critical" ? "danger" : "warn",
-          `[${alert.level === "critical" ? "故障预警" : "劣化预警"}] ${alert.deviceName} 触发告警，提前 ${alert.leadHours}h，置信度 ${alert.confidence}%`);
-        this.createWorkOrder(alert);
+          `[${alert.level === "critical" ? "故障预警" : "劣化预警"}] ${alert.deviceName} 触发告警，提前 ${alert.leadHours}h，置信度 ${alert.confidence}%`,
+          { label: "查看工单", view: "decision" });
+        if (res.duplicate) {
+          this.toast("info", `${res.wo.id} 已在流转中，未重复派工`, { label: "前往处理", view: "decision" });
+        }
       } else {
         this.toast("ok", `${ch.def.name} 已回归正常工况`);
       }
-      this.loadParts();
       if (this.currentView === "inference") { this.renderAlertList(); this.renderHealthTable(); this.updateInference(true); }
       if (this.currentView === "decision") { this.renderWorkOrders(); this.updateDecisionMetrics(); }
       const st = global.IOT.STATES[stateKey];
@@ -402,14 +621,14 @@
     renderPerception(force) {
       const ch = this.engine.current();
       this.updateStateBanner();
-      global.Charts.renderTrend("chart-vib", ch);
-      global.Charts.renderTrend("chart-temp", ch);
-      global.Charts.renderTrend("chart-current", ch);
+      global.Charts.renderTrend("chart-vib", ch, force);
+      global.Charts.renderTrend("chart-temp", ch, force);
+      global.Charts.renderTrend("chart-current", ch, force);
       global.Charts.renderSpectrum("chart-spectrum", ch);
       this.syncCursorSlider(ch);
       this.updateMetrics(ch);
-      this.updateInference(true);
-      this.rendered.perception = true;
+      this.updateDeviceHealth();
+      this.buildSpecSnap();
     },
 
     updatePerception() {
@@ -437,12 +656,6 @@
       set("m-health", hi);
       const el = document.getElementById("m-health");
       if (el) el.style.color = hi >= 85 ? "var(--green)" : hi >= 60 ? "var(--amber)" : "var(--red)";
-      const trend = document.getElementById("m-trend");
-      if (trend) {
-        const st = global.IOT.STATES[ch.state];
-        const map = { 0: ["平稳", "var(--green)"], 1: ["缓慢下降", "var(--amber)"], 2: ["快速劣化", "var(--red)"] };
-        trend.innerHTML = `趋势：<b style="color:${map[st.level][1]}">${map[st.level][0]}</b> · 运行 ${ch.def.runHours.toLocaleString()} h`;
-      }
       // 实时 sparkline 趋势微图
       if (window.Charts) {
         global.Charts.renderSparkline("spark-acc", h.acc, "#22d3ee");
@@ -450,12 +663,34 @@
         global.Charts.renderSparkline("spark-temp", h.temp, "#f59e0b");
         global.Charts.renderSparkline("spark-current", h.current, "#22c55e");
       }
+      // 说明性小字已折叠为悬停提示，保持版面简洁同时可查阈值
+      const tip = (id, txt) => {
+        const el = document.getElementById(id);
+        const card = el && el.closest(".metric");
+        if (card) card.title = txt;
+      };
+      const d = ch.def;
+      tip("m-acc", `振动加速度 · 近 60s 滚动窗口\n健康基线 ${d.base.acc.toFixed(2)} m/s² · 报警上限 ${d.limits.acc} m/s²`);
+      tip("m-disp", `振动位移 · 峰峰值监测\n健康基线 ${d.base.disp.toFixed(1)} µm`);
+      tip("m-temp", `轴承温度\n健康基线 ${d.base.temp} ℃ · 预警 ${d.limits.temp} ℃ · 停机 ${d.limits.temp + 12} ℃`);
+      tip("m-current", `运行电流\n额定 ${d.base.current} A · 上限 ${d.limits.current} A`);
     },
 
     updateDeviceHealth() {
       global.IOT.DEVICES.forEach(d => {
+        const ch = this.engine.get(d.id);
         const el = document.querySelector(`[data-hi="${d.id}"]`);
-        if (el) el.textContent = this.engine.get(d.id).health();
+        if (!el) return;
+        const h = ch.health();
+        el.textContent = h;
+        el.style.color = h >= 85 ? "var(--green)" : h >= 60 ? "var(--amber)" : "var(--red)";
+        const card = el.closest(".device-card");
+        const lv = global.IOT.STATES[ch.state].level;
+        if (card) {
+          ["lv-0", "lv-1", "lv-2"].forEach((c, i) => card.classList.toggle(c, i === lv));
+          const code = card.querySelector(".code");
+          if (code) code.textContent = `${d.id} · ${global.IOT.STATES[ch.state].label}`;
+        }
       });
     },
 
@@ -475,14 +710,11 @@
       else if (this.tickCount % 4 === 0) global.Charts.renderDegrade("chart-degrade", ch);
 
       // 预警指标：优先当前设备，否则回退到全厂最近一次预警
-      const o = this.engine.overview();
       const ownAlert = ch.alert();
       const lastAlert = ownAlert || this.engine.alertLog[0] || null;
       const lead = lastAlert ? lastAlert.leadHours : "--";
       const conf = lastAlert ? lastAlert.confidence : "--";
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-      set("i-accuracy", o.accuracy);
-      set("i-false", o.falseRate);
       set("i-lead", lead);
       set("i-conf", conf);
       set("i-rul", this.humanRul(ch.rul()));
@@ -503,7 +735,11 @@
         badge.innerHTML = `<span class="dot pulse"></span>${ch.def.name} · ${st.label}`;
       }
       const ft = document.getElementById("infer-feature");
-      if (ft) ft.textContent = ownAlert ? ownAlert.feature : "频谱无异常特征频率，各维度指标正常";
+      if (ft) {
+        ft.textContent = ownAlert ? ownAlert.feature : "频谱无异常特征频率，各维度指标正常";
+        ft.classList.toggle("lv-2", !!ownAlert && ownAlert.level === "critical");
+        ft.classList.toggle("lv-1", !!ownAlert && ownAlert.level !== "critical");
+      }
     },
 
     humanRul(rul) {
@@ -520,7 +756,8 @@
       }
       wrap.innerHTML = alerts.map(a => {
         const crit = a.level === "critical";
-        return `<div class="alert-row ${crit ? "critical" : ""}">
+        return `<div class="alert-row ${crit ? "critical" : ""}" data-focus-device="${a.device}" role="button" tabindex="0"
+          title="点击切换到 ${a.deviceName}（${a.device}）的监控视图">
           <div class="ar-top">
             <span class="pill ${crit ? "pill-danger" : "pill-warn"}">${crit ? "故障预警" : "劣化预警"}</span>
             ${a.historical ? `<span class="pill pill-muted" style="font-size:10px">历史</span>` : ""}
@@ -534,9 +771,20 @@
             <div class="ar-field"><span class="k">提前预警时长</span><span class="v">${a.leadHours} h</span></div>
             <div class="ar-field"><span class="k">模型置信度</span><span class="v">${a.confidence}%</span></div>
           </div>
-          <div class="note" style="margin-top:8px">特征：${a.feature} · 误报率 ${a.falseRate}%</div>
+          <div class="ar-note">特征：${a.feature} · 误报率 ${a.falseRate}%${a.handled ? " · 已复位" : ""}</div>
         </div>`;
       }).join("");
+      const focus = el => {
+        const id = el.dataset.focusDevice;
+        if (id === this.engine.selected) { this.switchView("perception"); return; }
+        this.selectDevice(id);
+        this.switchView("perception");
+        this.toast("info", `已按预警定位到 ${this.engine.current().def.name}（${id}）`);
+      };
+      wrap.querySelectorAll("[data-focus-device]").forEach(el => {
+        el.addEventListener("click", () => focus(el));
+        el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); focus(el); } });
+      });
     },
 
     renderHealthTable() {
@@ -549,19 +797,65 @@
         const st = global.IOT.STATES[ch.state];
         const h = ch.health();
         const rate = ch.degradeRate().toFixed(2);
-        return `<tr>
+        return `<tr data-focus-device="${d.id}" tabindex="0" title="点击切换到 ${d.name} 的监控视图"
+            class="${d.id === this.engine.selected ? "row-active" : ""}">
             <td><b>${d.name}</b><br/><span class="mono" style="color:var(--txt-2);font-size:11px">${d.id}</span></td>
             <td><span class="pill pill-${st.level === 0 ? "ok" : st.level === 1 ? "warn" : "danger"}">${st.label}</span></td>
-            <td><span class="mono" style="font-weight:700;color:${h >= 85 ? "var(--green)" : h >= 60 ? "var(--amber)" : "var(--red)"}">${h}</span></td>
+            <td><span class="mono" style="font-weight:700;color:${h >= 85 ? "var(--green)" : h >= 60 ? "var(--amber)" : "var(--red)"}">${h}</span>
+              <span class="bar-track"><span class="bar-fill ${h >= 85 ? "ok" : h >= 60 ? "warn" : "danger"}" style="width:${h}%"></span></span></td>
             <td class="mono">${this.humanRul(ch.rul())}</td>
             <td class="mono">${rate} 分/天</td>
             <td>${h >= 85 ? "正常运行" : h >= 60 ? "加强监测" : "需停机检修"}</td>
           </tr>`;
       }).join("")}</tbody></table>`;
+      const gotoDevice = id => {
+        this.selectDevice(id);
+        this.switchView("perception");
+      };
+      wrap.querySelectorAll("[data-focus-device]").forEach(tr => {
+        tr.addEventListener("click", () => gotoDevice(tr.dataset.focusDevice));
+        tr.addEventListener("keydown", e => { if (e.key === "Enter") gotoDevice(tr.dataset.focusDevice); });
+      });
     },
 
     /* ---------------- 决策层 ---------------- */
+    /** 预置历史工单：与预置历史预警对应，避免决策层首访空白 */
+    seedHistoryOrders() {
+      const mk = (id, device, deviceName, stateKey, agoH, partsIds, downtime, labor, conf) => {
+        const st = global.IOT.STATES[stateKey];
+        const t0 = Date.now() - agoH * 3600 * 1000;
+        const parts = partsIds.map(pid => {
+          const p = PARTS.find(x => x.id === pid);
+          return p && Object.assign({}, p, { qty: p.name.includes("轴承") ? 2 : 1 });
+        }).filter(Boolean);
+        const partsCost = parts.reduce((s, p) => s + p.qty * (p.price || 0), 0);
+        return {
+          id, device, deviceName, title: deviceName + " " + st.label + " 检修",
+          priority: st.level === 2 ? "high" : "mid", status: "closed",
+          cause: st.desc,
+          feature: st.freq ? st.freq + " 特征频率 + 谐波能量上升" : "全频段能量抬升",
+          measure: FAULT_MEASURE[stateKey] || FAULT_MEASURE.degraded,
+          parts, cost: { partsCost, labor, total: partsCost + labor, downtime },
+          leadHours: 48, confidence: conf, createdAt: stamp(new Date(t0)), historical: true,
+          timeline: WO_FLOW.map((s, i) =>
+            ({ t: stamp(new Date(t0 + i * 2.5 * 3600 * 1000)), e: WO_FLOW_LABEL[s] })),
+          hasInventoryRisk: false
+        };
+      };
+      // 历史单沿用低位编号，新派工单仍自 WO-1001 起
+      this.workOrders.push(
+        mk("WO-0912", "AC-01", "螺杆空压机", "degraded", 74, ["SP-1006", "SP-1007"], 3.5, 1400, 91.6),
+        mk("WO-0918", "PMP-01", "离心泵", "fault-bpfo", 30, ["SP-1003", "SP-1010"], 6, 2800, 94.2)
+      );
+    },
+
     createWorkOrder(alert) {
+      const dup = this.workOrders.find(w =>
+        w.device === alert.device && w.status !== "closed" && w.title === alert.deviceName + " " + alert.stateLabel + " 检修");
+      if (dup) {
+        dup.timeline.push({ t: U.clockStr(new Date()), e: "重复预警归并至当前工单" });
+        return { wo: dup, duplicate: true };
+      }
       const parts = recommendParts(alert.device, alert.state);
       const priority = alert.level === "critical" ? "high" : "mid";
       const cost = estimateCost(parts, priority);
@@ -584,9 +878,11 @@
         hasInventoryRisk: parts.some(p => p.stock < p.min)
       };
       this.workOrders.unshift(wo);
-      if (!this.rendered.decision) return;
+      this.woFilter = "open";                   // 新单落地后默认聚焦待办
+      if (this.currentView !== "decision") return { wo };
       this.renderWorkOrders();
       this.updateDecisionMetrics();
+      return { wo };
     },
 
     renderDecision() {
@@ -595,7 +891,6 @@
       this.renderSupplyChain();
       this.updateDecisionMetrics();
       global.Charts.renderParts("chart-parts", PARTS);
-      this.rendered.decision = true;
     },
 
     updateDecision() {
@@ -623,28 +918,76 @@
       return c;
     },
 
+    woFilter: "open",
+
+    renderWoFilter() {
+      const wrap = document.getElementById("wo-filter");
+      if (!wrap) return;
+      const c = this.woCounts();
+      const defs = [
+        ["open", "待办", c.pending + c.processing],
+        ["done", "已完成", c.done],
+        ["closed", "已闭环", c.closed],
+        ["all", "全部", this.workOrders.length]
+      ];
+      wrap.innerHTML = defs.map(([k, label, n]) =>
+        `<button data-wo-filter="${k}" class="${this.woFilter === k ? "active" : ""}" aria-pressed="${this.woFilter === k}">${label} <b>${n}</b></button>`
+      ).join("");
+      wrap.querySelectorAll("[data-wo-filter]").forEach(b => b.addEventListener("click", () => {
+        this.woFilter = b.dataset.woFilter;
+        this.renderWorkOrders();
+      }));
+    },
+
+    woVisible() {
+      const f = this.woFilter;
+      if (f === "all") return this.workOrders;
+      if (f === "open") return this.workOrders.filter(w => w.status === "pending" || w.status === "processing");
+      if (f === "done") return this.workOrders.filter(w => w.status === "done");
+      return this.workOrders.filter(w => w.status === "closed");
+    },
+
     renderWorkOrders() {
       const wrap = document.getElementById("wo-list");
       if (!wrap) return;
-      if (!this.workOrders.length) {
-        wrap.innerHTML = `<div class="empty">${svgEmpty()}当前无派工单<br/>切换设备工况或点击「模拟异常触发工单」体验闭环流程</div>`;
+      // 默认聚焦待办，但无待办可看时自动回落到「全部」，避免首访面对空列表
+      if (this.woFilter === "open" && !this.woVisible().length && this.workOrders.length) this.woFilter = "all";
+      this.renderWoFilter();
+      const list = this.woVisible();
+      if (!list.length) {
+        const other = this.workOrders.length - list.length;
+        wrap.innerHTML = `<div class="empty">${svgEmpty()}${this.woFilter === "open" && !this.workOrders.length
+          ? `当前无派工单<br/><button class="btn btn-sm btn-primary" data-act="demo-wo">模拟异常触发工单</button>`
+          : `「${{ open: "待办", done: "已完成", closed: "已闭环", all: "全部" }[this.woFilter]}」分类下暂无工单${other ? `<br/><button class="btn btn-sm btn-ghost" data-act="wo-all">查看全部 ${this.workOrders.length} 条</button>` : ""}`}</div>`;
+        const a = wrap.querySelector("[data-act]");
+        if (a) a.addEventListener("click", () => {
+          if (a.dataset.act === "demo-wo") this.simulateFaultWO();
+          else { this.woFilter = "all"; this.renderWorkOrders(); }
+        });
         return;
       }
-      wrap.innerHTML = this.workOrders.map(w => {
+      wrap.innerHTML = list.map(w => {
         const idx = WO_FLOW.indexOf(w.status);
         const flow = WO_FLOW.map((f, i) =>
           `<span class="flow-step ${i < idx ? "done" : i === idx ? "now" : ""}">${WO_FLOW_LABEL[f]}</span>`
         ).join('<span class="flow-arrow">→</span>');
         const partsHtml = w.parts.length
-          ? w.parts.map(p => `<span class="pill ${p.stock < p.min ? "pill-danger" : "pill-muted"}" style="font-size:10.5px">${p.name} ×${p.qty}${p.stock < p.min ? " · 告急" : ""}</span>`).join(" ")
+          ? w.parts.map(p => {
+            const live = PARTS.find(x => x.id === p.id) || p;
+            const low = live.stock < live.min;
+            return `<span class="pill ${low ? "pill-danger" : "pill-muted"}" style="font-size:10.5px"
+              title="${p.name} · 库存 ${live.stock}${p.unit} / 安全 ${p.min}${p.unit} · ${p.supplier} · 交期 ${p.lead} 天">${p.name} ×${p.qty}${low ? " · 告急" : ""}</span>`;
+          }).join(" ")
           : `<span class="pill pill-muted" style="font-size:10.5px">无需备件</span>`;
         const c = w.cost || { partsCost: 0, labor: 0, total: 0, downtime: 0 };
+        const next = w.status === "pending" ? "受理派工" : w.status === "processing" ? "完成维修" : "确认闭环";
         return `<div class="wo-card pri-${w.priority}">
           <div class="wo-top">
             <span class="wo-id">${w.id}</span>
             <span class="wo-title">${w.title}</span>
             <span class="pill ${w.priority === "high" ? "pill-danger" : "pill-warn"}">${w.priority === "high" ? "高优先级" : "中优先级"}</span>
           </div>
+          <div class="wo-meta">创建于 ${w.createdAt}${w.historical ? " · 历史记录" : ""} · 提前预警 ${w.leadHours}h${w.partsReserved ? " · <b class=\"ok\">备件已出库</b>" : ""}</div>
           <div class="wo-body">
             <div><b>故障特征：</b>${w.feature}</div>
             <div><b>可能原因：</b>${w.cause}</div>
@@ -659,7 +1002,7 @@
           </div>
           <div class="wo-flow">${flow}</div>
           <div class="wo-actions">
-            ${w.status !== "closed" ? `<button class="btn btn-sm btn-primary" data-wo-adv="${w.id}">${w.status === "pending" ? "受理派工" : w.status === "processing" ? "完成维修" : "确认闭环"}</button>` : ""}
+            ${w.status !== "closed" ? `<button class="btn btn-sm btn-primary" data-wo-adv="${w.id}">${next}</button>` : ""}
             <button class="btn btn-sm btn-ghost" data-wo-view="${w.id}">查看详情</button>
             ${w.status === "closed" ? `<span class="pill pill-ok">已于 ${w.timeline[w.timeline.length - 1].t} 闭环</span>` : ""}
           </div>
@@ -669,16 +1012,48 @@
       wrap.querySelectorAll("[data-wo-view]").forEach(b => b.addEventListener("click", () => this.openWoDrawer(b.dataset.woView)));
     },
 
+    /** 受理派工时按工单清单实扣备件库存，形成 预警 → 工单 → 备件 闭环 */
+    reserveParts(w) {
+      const taken = [];
+      w.parts.forEach(p => {
+        const live = PARTS.find(x => x.id === p.id);
+        if (!live || w.partsReserved) return;
+        const n = Math.min(p.qty, live.stock);
+        if (n > 0) { live.stock -= n; taken.push(`${live.name} −${n}${live.unit}（余 ${live.stock}）`); }
+      });
+      if (taken.length && !w.partsReserved) w.partsReserved = true;
+      return taken;
+    },
+
     advanceWo(id) {
       const w = this.workOrders.find(x => x.id === id);
       if (!w) return;
       const idx = WO_FLOW.indexOf(w.status);
       if (idx >= WO_FLOW.length - 1) return;
+      const prev = WO_FLOW_LABEL[w.status];
       w.status = WO_FLOW[idx + 1];
       w.timeline.push({ t: U.clockStr(new Date()), e: WO_FLOW_LABEL[w.status] });
+      let taken = [];
+      if (w.status === "processing") taken = this.reserveParts(w);
+      // 流转后若已不属于当前筛选分类，自动切到「全部」，避免卡片从眼前凭空消失
+      const still = this.woVisible().some(x => x.id === w.id);
+      if (!still) this.woFilter = "all";
       this.renderWorkOrders();
       this.updateDecisionMetrics();
-      this.toast(w.status === "closed" ? "ok" : "info", `${w.id} 状态更新为「${WO_FLOW_LABEL[w.status]}」`);
+      this.renderPartsTable();
+      this.renderSupplyChain();
+      global.Charts.renderParts("chart-parts", PARTS);
+      if (!still) {
+        const btn = document.querySelector(`[data-wo-view="${w.id}"]`);
+        const card = btn && btn.closest(".wo-card");
+        if (card) { card.classList.add("just-updated"); setTimeout(() => card.classList.remove("just-updated"), 1600); }
+      }
+      const last = w.status === "closed";
+      this.toast(last ? "ok" : "info",
+        `${w.id} ${prev} → ${WO_FLOW_LABEL[w.status]}${last ? " · 累计闭环 " + this.woCounts().closed + " 单" : ""}`);
+      if (taken.length) {
+        this.toast("warn", `已预占备件：${taken.join("，")}，库存低于安全线项 ${PARTS.filter(p => p.stock < p.min).length} 个`);
+      }
     },
 
     openWoDrawer(id) {
@@ -700,12 +1075,29 @@
         <div class="field"><label>可能原因</label><div class="note">${w.cause}</div></div>
         <div class="field"><label>处理措施</label><div class="note">${w.measure}</div></div>
         <div class="field"><label>推荐备件清单</label>
-          ${w.parts.map(p => `<div class="note">· ${p.name}（${p.code}）× ${p.qty} · 单价 ${yuan(p.price)} · 库存 ${p.stock}${p.unit} / 安全 ${p.min}${p.unit} · ${p.supplier} · 交期 ${p.lead} 天</div>`).join("") || "<div class='note'>—</div>"}
+          ${w.parts.map(p => {
+          const live = PARTS.find(x => x.id === p.id) || p;
+          return `<div class="note">· ${p.name}（${p.code}）× ${p.qty} · 单价 ${yuan(p.price)} · 库存 ${live.stock}${p.unit} / 安全 ${p.min}${p.unit} · ${p.supplier} · 交期 ${p.lead} 天${live.stock < live.min ? ` <b style="color:var(--red)">告急</b>` : ""}</div>`;
+        }).join("") || "<div class='note'>—</div>"}
         </div>
         <div class="field"><label>流转记录</label>
           <div class="timeline">${w.timeline.map(t => `<div class="tl-item"><div class="tl-time">${t.t}</div><div class="tl-text">${t.e}</div></div>`).join("")}</div>
+        </div>
+        <div class="drawer-actions">
+          ${w.status !== "closed" ? `<button class="btn btn-primary" data-drawer-adv="${w.id}">${w.status === "pending" ? "受理派工（并出库备件）" : w.status === "processing" ? "完成维修" : "确认闭环"}</button>` : `<span class="pill pill-ok">工单已闭环</span>`}
+          <button class="btn" data-drawer-device="${w.device}">定位到该设备</button>
         </div>`;
       this.openDrawer();
+      body.querySelectorAll("[data-drawer-adv]").forEach(b => b.addEventListener("click", () => {
+        this.advanceWo(b.dataset.drawerAdv);
+        this.openWoDrawer(b.dataset.drawerAdv);
+      }));
+      body.querySelectorAll("[data-drawer-device]").forEach(b => b.addEventListener("click", () => {
+        const id = b.dataset.drawerDevice;
+        this.closeDrawer();
+        this.selectDevice(id);
+        this.switchView("perception");
+      }));
     },
 
     renderPartsTable() {
@@ -741,19 +1133,22 @@
       }).join("") || `<div class="empty">供应链状态正常，无预警项</div>`;
     },
 
-    loadParts() { /* 预留：工况变化时刷新备件联动 */ },
-
     simulateFaultWO() {
       const ch = this.engine.current();
-      const target = ch.state === "normal" ? "fault-bpfi" : ch.state;
       if (ch.state === "normal") {
         this.engine.setState(this.engine.selected, "fault-bpfi");
         this.buildStateSelector();
+        this.updateStateBanner();
       }
       const alert = this.engine.get(this.engine.selected).alert();
-      if (alert) { this.createWorkOrder(alert); this.toast("warn", "已按当前工况生成示范工单"); }
+      const res = alert ? this.createWorkOrder(alert) : null;
+      this.woFilter = "open";
       this.switchView("decision");
-      setTimeout(() => this.renderDecision(), 80);
+      if (res && alert) {
+        this.toast(res.duplicate ? "info" : "warn", res.duplicate
+          ? `${res.wo.id} 已在流转中，已跳到该工单`
+          : `已按「${alert.stateLabel}」生成示范工单 ${res.wo.id}`);
+      }
     },
 
     /* ---------------- 知识层 ---------------- */
@@ -762,34 +1157,56 @@
       const tags = document.getElementById("kb-tags");
       if (!wrap || !tags) return;
       const cats = ["全部", ...global.KB.categories];
-      tags.innerHTML = cats.map((c, i) => `<button class="kb-tag ${i === 0 ? "active" : ""}" data-cat="${c}">${c}</button>`).join("");
+      tags.innerHTML = cats.map(c =>
+        `<button class="kb-tag ${c === this.kbCat ? "active" : ""}" data-cat="${c}" aria-pressed="${c === this.kbCat}">${c}</button>`
+      ).join("");
       tags.querySelectorAll(".kb-tag").forEach(b => b.addEventListener("click", () => {
-        tags.querySelectorAll(".kb-tag").forEach(x => x.classList.toggle("active", x === b));
-        this.renderKBList(b.dataset.cat);
+        this.kbCat = b.dataset.cat;
+        this.renderKBTags();
+        this.renderKBList(this.kbCat);
       }));
-      this.renderKBList("全部");
+      this.renderKBList(this.kbCat);
+    },
+
+    renderKBTags() {
+      const tags = document.getElementById("kb-tags");
+      if (!tags) return;
+      tags.querySelectorAll(".kb-tag").forEach(x => {
+        const on = x.dataset.cat === this.kbCat;
+        x.classList.toggle("active", on);
+        x.setAttribute("aria-pressed", String(on));
+      });
+    },
+
+    bindKBList(wrap) {
+      wrap.querySelectorAll("[data-kb]").forEach(el => {
+        const pick = () => {
+          wrap.querySelectorAll(".kb-item").forEach(x => x.classList.toggle("picked", x === el));
+          this.pushAi(this.kbAnswer(global.KB.byId(el.dataset.kb)));
+        };
+        el.addEventListener("click", pick);
+        el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+      });
     },
 
     renderKBList(cat) {
       const wrap = document.getElementById("kb-list");
       if (!wrap) return;
+      this.kbCat = cat;
       const list = cat === "全部" ? global.KB.entries : global.KB.byCategory(cat);
       wrap.innerHTML = list.map(e => `
-        <div class="kb-item" data-kb="${e.id}">
+        <div class="kb-item" data-kb="${e.id}" role="button" tabindex="0" title="${escapeHtml(e.summary).replace(/"/g, "'")} · 点击查看完整处置流程">
           <div class="t">${e.title}</div>
           <div class="d">${e.summary}</div>
           <div class="tags"><span>${e.cat}</span><span>风险：${e.severity}</span>${e.tags.slice(0, 3).map(t => `<span>${t}</span>`).join("")}</div>
         </div>`).join("");
-      wrap.querySelectorAll("[data-kb]").forEach(el => el.addEventListener("click", () => {
-        this.pushAi(this.kbAnswer(global.KB.byId(el.dataset.kb)));
-        document.querySelector('[data-view="knowledge"]').scrollIntoView({ behavior: "smooth" });
-      }));
+      this.bindKBList(wrap);
     },
 
     renderKnowledge() {
-      this.renderKBList("全部");
-      const tags = document.getElementById("kb-tags");
-      if (tags) tags.querySelectorAll(".kb-tag").forEach((x, i) => x.classList.toggle("active", i === 0));
+      this.renderKBList(this.kbCat);
+      this.renderKBTags();
+      this.markChatUnread(false);
     },
 
     buildChat() {
@@ -801,6 +1218,14 @@
         if (!q) return;
         input.value = "";
         this.askQuestion(q);
+      });
+      const clear = document.getElementById("btn-chat-clear");
+      if (clear) clear.addEventListener("click", () => {
+        const log = document.getElementById("chat-log");
+        if (!log) return;
+        log.innerHTML = "";
+        this.pushAi(this.greeting());
+        this.toast("info", "对话记录已清空");
       });
       // 事件委托：覆盖静态快捷胶囊与动态联想气泡（均带 data-ask）
       document.addEventListener("click", e => {
@@ -822,6 +1247,13 @@
       if (rel.length) this.pushRelated(rel);
     },
 
+    trimChat() {
+      const log = document.getElementById("chat-log");
+      if (!log) return;
+      const MAX = 60;
+      while (log.children.length > MAX) log.removeChild(log.firstChild);
+    },
+
     pushRelated(list) {
       const log = document.getElementById("chat-log");
       if (!log) return;
@@ -832,7 +1264,7 @@
         <div class="quick-ask">${list.map(q => `<button data-ask="${escapeHtml(q)}">${escapeHtml(q)}</button>`).join("")}</div>
       </div>`;
       log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
+      this.scrollChat(log);
     },
 
     relatedFor(intent) {
@@ -850,6 +1282,18 @@
       return M[intent] || M.diagnose;
     },
 
+    scrollChat(log) {
+      this.trimChat();
+      log.scrollTop = log.scrollHeight;
+      if (this.currentView !== "knowledge") this.markChatUnread(true);
+    },
+
+    markChatUnread(on) {
+      const nav = document.querySelector('.nav-item[data-view="knowledge"]');
+      if (!nav) return;
+      nav.classList.toggle("has-new", on);
+    },
+
     pushUser(text) {
       const log = document.getElementById("chat-log");
       if (!log) return;
@@ -857,7 +1301,7 @@
       div.className = "msg user";
       div.innerHTML = `<div class="avatar">我</div><div class="bubble">${escapeHtml(text)}</div>`;
       log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
+      this.scrollChat(log);
     },
 
     pushAi(html) {
@@ -867,7 +1311,7 @@
       div.className = "msg ai";
       div.innerHTML = `<div class="avatar">AI</div><div class="bubble">${html}</div>`;
       log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
+      this.scrollChat(log);
     },
 
     greeting() {
@@ -928,19 +1372,38 @@
       }
 
       if (intent === "cwru") {
-        const ds = global.Datasets.defs[this.dataset];
-        const speed = ds.defaultSpeed, rot = speed / 60;
-        const rows = global.Datasets.identify(this.engine.current().state, speed);
+        const meta = global.Datasets.META.cwru;
+        const real = global.CWRU && global.CWRU.ready();
+        if (real) {
+          const list = global.CWRU.samples();
+          const rows = list.map(s => {
+            const a = global.CWRU.analyze(s.id);
+            const hit = a.dominant;
+            return `<li><b>${s.id}.mat</b>（目录真值 ${global.Datasets.ELEMENT_LABEL[s.catalog.element]}${s.catalog.diameter ? " " + s.catalog.diameter + "″" : ""} / ${s.catalog.hp}HP / ${s.rpmTheory} rpm，${s.fs / 1000}k）→ 实测判定 <b>${hit ? hit.code : "NORMAL"}</b>${hit ? `，实测 ${hit.measured.toFixed(1)} Hz，偏差 ${hit.dev >= 0 ? "+" : ""}${hit.dev.toFixed(2)}%，SNR ${hit.snr.toFixed(1)}` : ""} → ${s.agree === null ? "异型号不计入" : (s.agree ? "一致 ✓" : "不一致 ✗")}</li>`;
+          }).join("");
+          const cv = global.CWRU.validate();
+          const agree = list.filter(s => s.agree !== null && s.comparable !== false);
+          return `<div class="ans-title">NASA CWRU 真实波形 · 特征频率实测结果</div>
+            <div class="kv"><span class="k">数据源：</span>${meta.name}（${meta.source}）· ${meta.sampling}</div>
+            <div class="kv"><span class="k">理论模型：</span>${meta.bearing}</div>
+            <b>逐样本实测（包络解调，${list.length} 只 .mat 原始驱动端加速度）</b>
+            <ol>${rows}</ol>
+            <div class="kv"><span class="k">判定规则：</span>|实测 − 理论| ≤ ${global.DSP.RULE.devTol}% 且包络信噪比 ≥ ${global.DSP.RULE.snrTol}；理论侧用官方目录标称转速，实测侧由页面 JS 现场解调，两侧互不依赖。</div>
+            <div class="kv"><span class="k">元素判定一致率：</span><b>${agree.filter(s => s.agree).length} / ${agree.length}</b></div>
+            <div class="kv"><span class="k">留一法分类：</span>按样本文件（LOSO，申报口径）<b>${(cv.bySample.accuracy * 100).toFixed(1)}%</b>（${cv.bySample.correct}/${cv.bySample.n} 段窗口 · ${cv.bySample.files} 只文件），宏平均 F1 <b>${cv.bySample.macroF1.toFixed(3)}</b>；按窗口留一（LOO）${(cv.byWindow.accuracy * 100).toFixed(1)}% 仅作对照 —— 同一只文件切出的窗口高度相关，按窗口留一会虚高。</div>
+            ${cv.bySample.degenerate.length ? `<div class="kv"><span class="k">参照不足：</span>${cv.bySample.degenerate.map(L => global.Datasets.ELEMENT_LABEL[L] || L).join("、")} 类可用文件不足 2 只，已从 LOSO 中剔除。</div>` : ""}
+            <div class="kv"><span class="k">弱项说明：</span>滚珠故障（B007）包络信噪比低于门限、部分窗口判入相邻类；0.028″ 组为另一型号轴承，6205 系数不适用，已剔除 —— 均如实标注，未做粉饰。</div>
+            <div class="kv"><span class="k">溯源：</span>每只样本记录 .mat 文件名、字节数与 SHA-256，见「感知层 → 基准数据集验证 → 实测」。</div>`;
+        }
+        const speed = 1797, rot = speed / 60;
+        const rows = global.Datasets.theory(speed);
         return `<div class="ans-title">NASA CWRU 轴承故障特征频率判定</div>
-          <div class="kv"><span class="k">数据源：</span>${ds.name}（${ds.source}）</div>
+          <div class="kv"><span class="k">数据源：</span>${meta.name}（${meta.source}）</div>
           <div class="kv"><span class="k">基准转速：</span>${speed} rpm，转频 f<sub>r</sub> = <b>${rot.toFixed(2)} Hz</b></div>
           <b>特征频率理论模型</b>
-          <ul>${rows.map(r => `<li>${r.code}（${r.name}）= ${r.factor.toFixed(3)} × f<sub>r</sub> = <b>${r.theory} Hz</b></li>`).join("")}</ul>
-          <b>算法识别结果（包络解调）</b>
-          <ol>${rows.map(r => `<li>${r.code} 识别值 <b>${r.measured} Hz</b>（偏差 ±${r.dev}%）→ ${r.verdict}</li>`).join("")}</ol>
-          <div class="kv"><span class="k">判定方法：</span>对振动信号做包络解调，提取特征频率峰值，与理论值偏差 &lt; 2% 判定为有效识别；BPFI 主导提示内圈故障，BPFO 主导提示外圈故障。</div>
-          <div class="kv"><span class="k">参考：</span><code>CWRU Bearing Data Center · ISO 10816</code></div>
-          <div class="kv"><span class="k">说明：</span>可在「感知层 → 基准数据集验证」切换 CWRU / PHM 数据源并载入标定样本，实时查看比对表。</div>`;
+          <ul>${rows.map(r => `<li>${r.code}（${r.name}）= ${r.factor.toFixed(4)} × f<sub>r</sub> = <b>${r.hz.toFixed(1)} Hz</b></li>`).join("")}</ul>
+          <div class="kv"><span class="k">判定方法：</span>对振动信号做带通 + Hilbert 包络解调，提取特征频率峰值，与理论值偏差 ≤ 2% 且信噪比 ≥ 8 判定为有效识别。</div>
+          <div class="kv"><span class="k">当前状态：</span>真实波形尚未载入（assets/data/cwru.bin 缺失），以上为理论模型。</div>`;
       }
 
       if (intent === "score") {
@@ -1033,10 +1496,16 @@
       if (b) b.innerHTML = html;
       document.getElementById("modal-mask")?.classList.add("open");
       document.getElementById("modal")?.classList.add("open");
+      this.lastFocus = document.activeElement;
+      const close = document.getElementById("modal-close");
+      if (close) setTimeout(() => close.focus(), 30);
     },
     closeModal() {
       document.getElementById("modal-mask")?.classList.remove("open");
-      document.getElementById("modal")?.classList.remove("open");
+      const m = document.getElementById("modal");
+      const was = m?.classList.contains("open");
+      m?.classList.remove("open");
+      if (was && this.lastFocus) this.lastFocus.focus();
     },
 
     /* ---------------- 健康指数评分依据与计算公式 ---------------- */
@@ -1090,7 +1559,7 @@
     buildReportHtml() {
       const now = new Date();
       const ts = now.toLocaleString("zh-CN");
-      const ds = global.Datasets.defs[this.dataset];
+      const ds = global.Datasets.META.cwru;
       const devRows = global.IOT.DEVICES.map(d => {
         const ch = this.engine.get(d.id);
         const st = global.IOT.STATES[ch.state];
@@ -1115,8 +1584,22 @@
         return `<tr><td>${p.name}<br><small>${p.code}</small></td><td>${p.stock} ${p.unit}</td><td>${p.min} ${p.unit}</td>
           <td>${p.rate} ${p.unit}/月</td><td>${days >= 999 ? "—" : days + " 天"}</td><td>${p.supplier}</td><td>${p.lead} 天</td><td>${st}</td></tr>`;
       }).join("");
-      const theo = global.Datasets.identify(this.engine.current().state, ds.defaultSpeed).map(r =>
-        `<tr><td>${r.code}（${r.name}）</td><td>${r.factor.toFixed(3)}X</td><td>${r.theory} Hz</td><td>${r.measured} Hz</td><td>±${r.dev}%</td><td>${r.verdict}</td></tr>`).join("");
+      const theo = (global.CWRU && global.CWRU.ready())
+        ? global.CWRU.samples().map(s => {
+          const a = global.CWRU.analyze(s.id);
+          const hit = a.dominant;
+          return `<tr><td>${s.id}.mat<br><small>${s.fs / 1000}k · ${s.sampleCount.toLocaleString()} 点</small></td>
+            <td>${global.Datasets.ELEMENT_LABEL[s.catalog.element]}${s.catalog.diameter ? " " + s.catalog.diameter + "″" : ""} / ${s.catalog.hp}HP</td>
+            <td class="mono">${s.rpmTheory} rpm</td>
+            <td><b>${hit ? hit.code : "NORMAL"}</b></td>
+            <td class="mono">${hit ? hit.theory.toFixed(1) + " Hz" : "—"}</td>
+            <td class="mono">${hit ? hit.measured.toFixed(1) + " Hz" : "—"}</td>
+            <td class="mono">${hit ? (hit.dev >= 0 ? "+" : "") + hit.dev.toFixed(2) + "%" : "—"}</td>
+            <td>${s.agree === null ? "异型号不计入" : (s.agree ? "一致" : "不一致")}</td>
+            <td><small>${s.sha256.slice(0, 16)}…</small></td></tr>`;
+        }).join("")
+        : `<tr><td colspan="9">真实波形未载入（assets/data/cwru.bin 缺失），本节仅保留理论系数模型：${global.Datasets.theory(1797).map(r => r.code + "=" + r.hz.toFixed(1) + "Hz").join("，")}。</td></tr>`;
+      const looRep = (global.CWRU && global.CWRU.ready()) ? global.CWRU.leaveOneOut() : null;
 
       return `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <title>PredictOps 工业维护分析与工单报表</title>
@@ -1162,9 +1645,11 @@ ${woList}
 <table><thead><tr><th>备件</th><th>库存</th><th>安全线</th><th>月均消耗</th><th>预计可用</th><th>供应商</th><th>交期</th><th>状态</th></tr></thead>
 <tbody>${partsRows}</tbody></table>
 
-<h2>五、基准数据集特征频率验证（${ds.short}）</h2>
-<table><thead><tr><th>特征分量</th><th>理论系数</th><th>理论值</th><th>算法识别值</th><th>偏差</th><th>判定</th></tr></thead>
+<h2>五、基准数据集特征频率实测（${ds.short} 真实波形）</h2>
+<table><thead><tr><th>样本文件</th><th>官方目录真值</th><th>标称转速</th><th>算法实测判定</th><th>理论值</th><th>实测值</th><th>偏差</th><th>一致性</th><th>SHA-256（截）</th></tr></thead>
 <tbody>${theo}</tbody></table>
+<p>${looRep ? `留一法实测分类（按样本文件 LOSO，同类中心排除同一 .mat 的全部窗口）：${looRep.files} 只可比样本 / ${looRep.windows} 段真实窗口，最近中心分类，准确率 <b>${(looRep.accuracy * 100).toFixed(1)}%</b>（${looRep.correct}/${looRep.n}），宏平均 F1 <b>${looRep.macroF1.toFixed(3)}</b>${looRep.degenerate.length ? `；${looRep.degenerate.join("/")} 类可用文件不足 2 只，已剔除` : ""}。按窗口留一（LOO，含同文件相关窗口，偏乐观）仅作对照，不作为申报口径。` : ""}
+理论侧取官方目录标称转速，实测侧由页面 JS 对原始波形做带通 + Hilbert 包络解调得出，两侧互不依赖。判定门限：|偏差| ≤ ${U.round(global.DSP.RULE.devTol, 0)}% 且包络信噪比 ≥ ${global.DSP.RULE.snrTol}。</p>
 
 <h2>六、维护建议</h2>
 <p>1. 对健康指数低于 60 的设备立即生成高优先级工单，锁定停机窗口并预占备件。</p>
@@ -1184,8 +1669,10 @@ ${woList}
       if (demo) demo.addEventListener("click", () => this.simulateFaultWO());
       const refresh = document.getElementById("btn-refresh");
       if (refresh) refresh.addEventListener("click", () => {
+        refresh.classList.add("spin");
         this.renderDecision();
-        this.toast("info", "决策层数据已刷新");
+        setTimeout(() => refresh.classList.remove("spin"), 520);
+        this.toast("info", "决策层数据已同步");
       });
       // 通用模态框
       const mmask = document.getElementById("modal-mask");
@@ -1200,27 +1687,114 @@ ${woList}
       if (exportBtn) exportBtn.addEventListener("click", () => this.exportReport());
       document.addEventListener("keydown", e => { if (e.key === "Escape") { this.closeModal(); this.closeDrawer(); } });
     },
+
+    /* ---------------- 键盘快捷键 ---------------- */
+    bindShortcuts() {
+      const VIEWS = ["perception", "inference", "decision", "knowledge", "dataset"];
+      document.addEventListener("keydown", e => {
+        const t = e.target, tag = t.tagName || "";
+        const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(tag) || t.isContentEditable;
+        if (e.key === "Escape") { this.closeModal(); this.closeDrawer(); return; }
+        if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+        // 焦点停在按钮上时，空格/回车属于原生激活，不再叠加全局快捷键
+        const activating = tag === "BUTTON" || tag === "A" || (t.getAttribute && t.getAttribute("role") === "button");
+        if (activating && (e.key === " " || e.key === "Enter")) return;
+
+        if (e.key >= "1" && e.key <= "5") { this.switchView(VIEWS[Number(e.key) - 1]); return; }
+        switch (e.key.toLowerCase()) {
+          case " ":
+          case "spacebar":
+            e.preventDefault(); this.setPaused(!this.paused); return;
+          case "f": this.injectFault(); return;
+          case "n": this.restoreNormal(); return;
+          case "e": this.exportReport(); return;
+          case "d": this.simulateFaultWO(); return;
+          case "/": {
+            e.preventDefault();
+            this.switchView("knowledge");
+            const el = document.getElementById("chat-input");
+            if (el) setTimeout(() => el.focus(), 60);
+            return;
+          }
+          case "?": this.openShortcuts(); return;
+        }
+      });
+      const btn = document.getElementById("btn-shortcuts");
+      if (btn) btn.addEventListener("click", () => this.openShortcuts());
+    },
+
+    openShortcuts() {
+      const rows = [
+        ["1 ~ 5", "切换 感知层 / 推理层 / 决策层 / 知识层 / 数据集与评估"],
+        ["空格", "暂停 / 继续 实时数据流"],
+        ["F", "对当前设备注入轴承内圈故障"],
+        ["N", "当前设备恢复正常态健康基线"],
+        ["D", "按当前工况模拟生成检修工单"],
+        ["E", "导出维护分析与工单报表"],
+        ["/", "聚焦智能诊断问答输入框"],
+        ["Esc", "关闭抽屉 / 弹窗"],
+        ["?", "打开本快捷键面板"]
+      ];
+      this.openModal("键盘快捷键 <span style=\"color:var(--txt-2);font-size:12px\">演示提效</span>",
+        `<div class="kbd-table">${rows.map(([k, v]) => `<div class="kbd-row"><kbd>${k}</kbd><span>${v}</span></div>`).join("")}</div>
+         <div class="note" style="display:block;margin-top:14px;color:var(--txt-2);font-size:11.5px">快捷键在输入框内输入时自动让位于文本录入。</div>`);
+    },
     openDrawer() {
       document.getElementById("drawer-mask")?.classList.add("open");
       document.getElementById("drawer")?.classList.add("open");
+      this.lastFocus = document.activeElement;
+      const close = document.getElementById("drawer-close");
+      if (close) setTimeout(() => close.focus(), 30);
     },
     closeDrawer() {
       document.getElementById("drawer-mask")?.classList.remove("open");
-      document.getElementById("drawer")?.classList.remove("open");
+      const d = document.getElementById("drawer");
+      const was = d?.classList.contains("open");
+      d?.classList.remove("open");
+      if (was && this.lastFocus) this.lastFocus.focus();
     },
-    toast(type, msg) {
+    toast(type, msg, action) {
       const wrap = document.getElementById("toast-wrap");
       if (!wrap) return;
+      while (wrap.children.length >= 3) wrap.removeChild(wrap.firstChild);
+      const color = type === "ok" ? "green" : type === "warn" ? "amber" : type === "danger" ? "red" : "cyan";
       const el = document.createElement("div");
       el.className = "toast " + (type === "info" ? "" : type);
-      el.innerHTML = `<span class="dot" style="color:var(--${type === "ok" ? "green" : type === "warn" ? "amber" : type === "danger" ? "red" : "cyan"})"></span>${escapeHtml(msg)}`;
+      el.innerHTML = `<span class="dot" style="color:var(--${color})"></span>` +
+        `<span class="toast-msg">${escapeHtml(msg)}</span>`;
+      if (action && action.view && action.label) {
+        const a = document.createElement("button");
+        a.className = "toast-act";
+        a.textContent = action.label + " ›";
+        a.addEventListener("click", () => { this.switchView(action.view); el.remove(); });
+        el.appendChild(a);
+      }
+      const x = document.createElement("button");
+      x.className = "toast-x";
+      x.setAttribute("aria-label", "关闭提示");
+      x.innerHTML = "×";
+      el.appendChild(x);
       wrap.appendChild(el);
-      setTimeout(() => { el.style.transition = "opacity .3s"; el.style.opacity = "0"; setTimeout(() => el.remove(), 300); }, 3800);
-    }
+
+      const life = type === "danger" ? 9000 : type === "ok" ? 3600 : 5200;
+      let timer = setTimeout(dismiss, life);
+      function dismiss() {
+        el.classList.add("out");
+        setTimeout(() => el.remove(), 240);
+      }
+      x.addEventListener("click", () => { clearTimeout(timer); dismiss(); });
+      // 悬停驻留：读得慢就不必担心提示消失
+      el.addEventListener("mouseenter", () => clearTimeout(timer));
+      el.addEventListener("mouseleave", () => { timer = setTimeout(dismiss, 1800); });
+    },
   };
 
   /* ---------------- 辅助 ---------------- */
   function escapeHtml(s) { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; }
+  function stamp(d) {
+    const p = n => String(n).padStart(2, "0");
+    return `${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
   function relTime(ts) {
     if (!ts) return "";
     const m = Math.round((Date.now() - ts) / 60000);

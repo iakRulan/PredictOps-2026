@@ -1,0 +1,2736 @@
+{
+ "provenance": {
+  "source": "NASA CWRU Bearing Data Center · https://engineering.case.edu/bearingdatacenter",
+  "catalog": "NASA CWRU Bearing Data Center",
+  "catalogFetchedAt": null,
+  "generated": "2026-10-04T02:19:13.349Z",
+  "algorithm": "assets/dsp.js（浏览器与构建期同一份实现）",
+  "rule": "判定条件 |偏差| ≤ 2% 且 包络谱信噪比 ≥ 8"
+ },
+ "unit": "g（官方驱动端加速度量纲）",
+ "samples": [
+  {
+   "id": "100",
+   "file": "100.mat",
+   "bytes": 7770624,
+   "sha256": "88a5990cb541320e91505a1d72139e1993500ffe6e292a451011667f4138ca78",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Fri Jan 28 11:25:48 2000",
+   "variable": "X100_DE_time",
+   "sampleCount": 485643,
+   "fs": 48000,
+   "durationS": 10.12,
+   "fsCheck": {
+    "lengthImplied": 48000,
+    "pageDeclared": 12000,
+    "agree": false
+   },
+   "catalog": {
+    "label": "Normal_3",
+    "element": "NO",
+    "diameter": null,
+    "loadZone": null,
+    "hp": 3,
+    "rpm": 1730,
+    "fs": 12000
+   },
+   "rpmTheory": 1730,
+   "shaftHzMeasured": 28.91,
+   "shaftBlindHz": 28.91,
+   "demodBand": [
+    7407,
+    9407
+   ],
+   "resonanceHz": 8407,
+   "windowSec": 1.365,
+   "kurtosis": 2.98,
+   "measured": [],
+   "verdict": "NORMAL",
+   "comparable": true,
+   "truth": "NORMAL",
+   "agree": true,
+   "kind": "cal",
+   "offset": 0,
+   "length": 65536,
+   "scale": 0.00000861405119127828,
+   "peak": 0.2823
+  },
+  {
+   "id": "105",
+   "file": "105.mat",
+   "bytes": 2910768,
+   "sha256": "f80b0ea04fd06b372a0eaec7c056543ea37e4bb4727a5b173d2a5bacd2aa9cab",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 13:49:59 2000",
+   "variable": "X105_DE_time",
+   "sampleCount": 121265,
+   "fs": 12000,
+   "durationS": 10.11,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "IR007_0",
+    "element": "IR",
+    "diameter": "0.007",
+    "loadZone": null,
+    "hp": 0,
+    "rpm": 1797,
+    "fs": 12000
+   },
+   "rpmTheory": 1797,
+   "shaftHzMeasured": 30,
+   "shaftBlindHz": 30,
+   "demodBand": [
+    2587,
+    4587
+   ],
+   "resonanceHz": 3587,
+   "windowSec": 1.365,
+   "kurtosis": 5.55,
+   "measured": [
+    {
+     "code": "BPFI",
+     "theory": 162.19,
+     "measured": 161.71,
+     "devPct": -0.29,
+     "snr": 44.5
+    }
+   ],
+   "verdict": "BPFI",
+   "comparable": true,
+   "truth": "BPFI",
+   "agree": true,
+   "kind": "cal",
+   "offset": 196608,
+   "length": 16384,
+   "scale": 0.0000483582473408845,
+   "peak": 1.5846
+  },
+  {
+   "id": "106",
+   "file": "106.mat",
+   "bytes": 2928192,
+   "sha256": "e5cec7cdd138e6cd1deb9ed8634e5aaa9bc1bd7094ddc075bff606580eb6e883",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 13:50:54 2000",
+   "variable": "X106_DE_time",
+   "sampleCount": 121991,
+   "fs": 12000,
+   "durationS": 10.17,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "IR007_1",
+    "element": "IR",
+    "diameter": "0.007",
+    "loadZone": null,
+    "hp": 1,
+    "rpm": 1772,
+    "fs": 12000
+   },
+   "rpmTheory": 1772,
+   "shaftHzMeasured": 29.47,
+   "shaftBlindHz": 29.47,
+   "demodBand": [
+    2539,
+    4539
+   ],
+   "resonanceHz": 3539,
+   "windowSec": 1.365,
+   "kurtosis": 5.37,
+   "measured": [
+    {
+     "code": "BPFI",
+     "theory": 159.93,
+     "measured": 159.56,
+     "devPct": -0.23,
+     "snr": 55.8
+    }
+   ],
+   "verdict": "BPFI",
+   "comparable": true,
+   "truth": "BPFI",
+   "agree": true,
+   "kind": "cal",
+   "offset": 245760,
+   "length": 16384,
+   "scale": 0.000048244229945821425,
+   "peak": 1.5808
+  },
+  {
+   "id": "107",
+   "file": "107.mat",
+   "bytes": 2931672,
+   "sha256": "111ba8996a115684661a13c913bd74d8029a59294492f88aec7b03e175fdd388",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 13:52:33 2000",
+   "variable": "X107_DE_time",
+   "sampleCount": 122136,
+   "fs": 12000,
+   "durationS": 10.18,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "IR007_2",
+    "element": "IR",
+    "diameter": "0.007",
+    "loadZone": null,
+    "hp": 2,
+    "rpm": 1750,
+    "fs": 12000
+   },
+   "rpmTheory": 1750,
+   "shaftHzMeasured": 29.17,
+   "shaftBlindHz": 29.17,
+   "demodBand": [
+    1862,
+    3862
+   ],
+   "resonanceHz": 2862,
+   "windowSec": 1.365,
+   "kurtosis": 5.6,
+   "measured": [
+    {
+     "code": "BPFI",
+     "theory": 157.94,
+     "measured": 157.4,
+     "devPct": -0.34,
+     "snr": 50.4
+    }
+   ],
+   "verdict": "BPFI",
+   "comparable": true,
+   "truth": "BPFI",
+   "agree": true,
+   "kind": "cal",
+   "offset": 294912,
+   "length": 16384,
+   "scale": 0.00004692559398552667,
+   "peak": 1.5376
+  },
+  {
+   "id": "108",
+   "file": "108.mat",
+   "bytes": 2950416,
+   "sha256": "d415f0e65128bfa0b118c2051c988fb0dc6ce3e4c8aa45fdc5ad1d0967462e7d",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 15:17:29 2000",
+   "variable": "X108_DE_time",
+   "sampleCount": 122917,
+   "fs": 12000,
+   "durationS": 10.24,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "IR007_3",
+    "element": "IR",
+    "diameter": "0.007",
+    "loadZone": null,
+    "hp": 3,
+    "rpm": 1730,
+    "fs": 12000
+   },
+   "rpmTheory": 1730,
+   "shaftHzMeasured": 28.64,
+   "shaftBlindHz": 28.64,
+   "demodBand": [
+    2591,
+    4591
+   ],
+   "resonanceHz": 3591,
+   "windowSec": 1.365,
+   "kurtosis": 5.23,
+   "measured": [
+    {
+     "code": "BPFI",
+     "theory": 156.14,
+     "measured": 154.87,
+     "devPct": -0.81,
+     "snr": 50.3
+    }
+   ],
+   "verdict": "BPFI",
+   "comparable": true,
+   "truth": "BPFI",
+   "agree": true,
+   "kind": "cal",
+   "offset": 344064,
+   "length": 16384,
+   "scale": 0.0000468611493709258,
+   "peak": 1.5355
+  },
+  {
+   "id": "118",
+   "file": "118.mat",
+   "bytes": 2942112,
+   "sha256": "b00628f8dd8d1d930af77fa465d1e5cdb385fe259489053f91f3680bda7f640e",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 13:55:05 2000",
+   "variable": "X118_DE_time",
+   "sampleCount": 122571,
+   "fs": 12000,
+   "durationS": 10.21,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "B007_0",
+    "element": "B",
+    "diameter": "0.007",
+    "loadZone": null,
+    "hp": 0,
+    "rpm": 1797,
+    "fs": 12000
+   },
+   "rpmTheory": 1797,
+   "shaftHzMeasured": 29.96,
+   "shaftBlindHz": 29.96,
+   "demodBand": [
+    2356,
+    4356
+   ],
+   "resonanceHz": 3356,
+   "windowSec": 1.365,
+   "kurtosis": 2.97,
+   "measured": [],
+   "verdict": "NORMAL",
+   "comparable": true,
+   "truth": "BSF",
+   "agree": false,
+   "kind": "cal",
+   "offset": 393216,
+   "length": 16384,
+   "scale": 0.000016046709035616927,
+   "peak": 0.5258
+  },
+  {
+   "id": "119",
+   "file": "119.mat",
+   "bytes": 2914248,
+   "sha256": "bc72d9df7668219e004a0f711232b23ec0aed393eb9bd8f9f5483426f6b51330",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 13:56:04 2000",
+   "variable": "X119_DE_time",
+   "sampleCount": 121410,
+   "fs": 12000,
+   "durationS": 10.12,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "B007_1",
+    "element": "B",
+    "diameter": "0.007",
+    "loadZone": null,
+    "hp": 1,
+    "rpm": 1772,
+    "fs": 12000
+   },
+   "rpmTheory": 1772,
+   "shaftHzMeasured": 29.46,
+   "shaftBlindHz": 29.46,
+   "demodBand": [
+    2478,
+    4478
+   ],
+   "resonanceHz": 3478,
+   "windowSec": 1.365,
+   "kurtosis": 3.02,
+   "measured": [],
+   "verdict": "NORMAL",
+   "comparable": true,
+   "truth": "BSF",
+   "agree": false,
+   "kind": "cal",
+   "offset": 442368,
+   "length": 16384,
+   "scale": 0.000015724485962612572,
+   "peak": 0.5152
+  },
+  {
+   "id": "120",
+   "file": "120.mat",
+   "bytes": 2917752,
+   "sha256": "e0b7a584c49af52335ff0904a97d4afcf02d045625c582de63a7c85ce10b489c",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 13:56:55 2000",
+   "variable": "X120_DE_time",
+   "sampleCount": 121556,
+   "fs": 12000,
+   "durationS": 10.13,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "B007_2",
+    "element": "B",
+    "diameter": "0.007",
+    "loadZone": null,
+    "hp": 2,
+    "rpm": 1750,
+    "fs": 12000
+   },
+   "rpmTheory": 1750,
+   "shaftHzMeasured": 38.73,
+   "shaftBlindHz": 38.73,
+   "demodBand": [
+    2432,
+    4432
+   ],
+   "resonanceHz": 3432,
+   "windowSec": 1.365,
+   "kurtosis": 2.72,
+   "measured": [],
+   "verdict": "NORMAL",
+   "comparable": true,
+   "truth": "BSF",
+   "agree": false,
+   "kind": "cal",
+   "offset": 491520,
+   "length": 16384,
+   "scale": 0.000015248587270175371,
+   "peak": 0.4997
+  },
+  {
+   "id": "121",
+   "file": "121.mat",
+   "bytes": 2917752,
+   "sha256": "52f686e984ba8e9b04a047a57416271cdb322cee57ee105dce58926a24b966cb",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 13:57:52 2000",
+   "variable": "X121_DE_time",
+   "sampleCount": 121556,
+   "fs": 12000,
+   "durationS": 10.13,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "B007_3",
+    "element": "B",
+    "diameter": "0.007",
+    "loadZone": null,
+    "hp": 3,
+    "rpm": 1730,
+    "fs": 12000
+   },
+   "rpmTheory": 1730,
+   "shaftHzMeasured": 28.88,
+   "shaftBlindHz": 28.88,
+   "demodBand": [
+    2380,
+    4380
+   ],
+   "resonanceHz": 3380,
+   "windowSec": 1.365,
+   "kurtosis": 2.85,
+   "measured": [],
+   "verdict": "NORMAL",
+   "comparable": true,
+   "truth": "BSF",
+   "agree": false,
+   "kind": "cal",
+   "offset": 540672,
+   "length": 16384,
+   "scale": 0.000019040904975534327,
+   "peak": 0.6239
+  },
+  {
+   "id": "122",
+   "file": "122.mat",
+   "bytes": 3916160,
+   "sha256": "f392129bf3b43360b964d4e5b3479d0797d1647af8359934b0f56b9abab4739a",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 15:29:05 2000",
+   "variable": "X122_DE_time",
+   "sampleCount": 244739,
+   "fs": 48000,
+   "durationS": 5.1,
+   "fsCheck": {
+    "lengthImplied": 48000,
+    "pageDeclared": 48000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "B007_0",
+    "element": "B",
+    "diameter": "0.007",
+    "loadZone": null,
+    "hp": 0,
+    "rpm": 1797,
+    "fs": 48000
+   },
+   "rpmTheory": 1797,
+   "shaftHzMeasured": 29.96,
+   "shaftBlindHz": 29.96,
+   "demodBand": [
+    1860,
+    3860
+   ],
+   "resonanceHz": 2860,
+   "windowSec": 1.365,
+   "kurtosis": 3.1,
+   "measured": [],
+   "verdict": "NORMAL",
+   "comparable": true,
+   "truth": "BSF",
+   "agree": false,
+   "kind": "cal",
+   "offset": 589824,
+   "length": 65536,
+   "scale": 0.00002072974920827944,
+   "peak": 0.6793
+  },
+  {
+   "id": "130",
+   "file": "130.mat",
+   "bytes": 2928192,
+   "sha256": "35a095307d0971477049b343a1b5981dde465a58fb7f233ad89b035068c1717d",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 13:59:43 2000",
+   "variable": "X130_DE_time",
+   "sampleCount": 121991,
+   "fs": 12000,
+   "durationS": 10.17,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "OR007@6_0",
+    "element": "OR",
+    "diameter": "0.007",
+    "loadZone": "6:00",
+    "hp": 0,
+    "rpm": 1797,
+    "fs": 12000
+   },
+   "rpmTheory": 1797,
+   "shaftHzMeasured": 35.9,
+   "shaftBlindHz": 35.9,
+   "demodBand": [
+    2445,
+    4445
+   ],
+   "resonanceHz": 3445,
+   "windowSec": 1.365,
+   "kurtosis": 7.54,
+   "measured": [
+    {
+     "code": "BPFO",
+     "theory": 107.34,
+     "measured": 107.65,
+     "devPct": 0.29,
+     "snr": 258.3
+    }
+   ],
+   "verdict": "BPFO",
+   "comparable": true,
+   "truth": "BPFO",
+   "agree": true,
+   "kind": "cal",
+   "offset": 786432,
+   "length": 16384,
+   "scale": 0.0001082669525294636,
+   "peak": 3.5476
+  },
+  {
+   "id": "131",
+   "file": "131.mat",
+   "bytes": 2938632,
+   "sha256": "7883f7b83beadc54b2f301767f9145ce07055707182fb0278fdf0a6bb53ce3cb",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 14:00:58 2000",
+   "variable": "X131_DE_time",
+   "sampleCount": 122426,
+   "fs": 12000,
+   "durationS": 10.2,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "OR007@6_1",
+    "element": "OR",
+    "diameter": "0.007",
+    "loadZone": "6:00",
+    "hp": 1,
+    "rpm": 1772,
+    "fs": 12000
+   },
+   "rpmTheory": 1772,
+   "shaftHzMeasured": 29.51,
+   "shaftBlindHz": 29.51,
+   "demodBand": [
+    1870,
+    3870
+   ],
+   "resonanceHz": 2870,
+   "windowSec": 1.365,
+   "kurtosis": 7.56,
+   "measured": [
+    {
+     "code": "BPFO",
+     "theory": 105.85,
+     "measured": 106.27,
+     "devPct": 0.4,
+     "snr": 66.7
+    }
+   ],
+   "verdict": "BPFO",
+   "comparable": true,
+   "truth": "BPFO",
+   "agree": true,
+   "kind": "cal",
+   "offset": 835584,
+   "length": 16384,
+   "scale": 0.00009372973465892095,
+   "peak": 3.0712
+  },
+  {
+   "id": "132",
+   "file": "132.mat",
+   "bytes": 2914248,
+   "sha256": "17a69ed5d2270b42532e678e35bbe2fa04a2cc413cf2bf9e88c7692de8662d18",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 14:01:47 2000",
+   "variable": "X132_DE_time",
+   "sampleCount": 121410,
+   "fs": 12000,
+   "durationS": 10.12,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "OR007@6_2",
+    "element": "OR",
+    "diameter": "0.007",
+    "loadZone": "6:00",
+    "hp": 2,
+    "rpm": 1750,
+    "fs": 12000
+   },
+   "rpmTheory": 1750,
+   "shaftHzMeasured": 34.98,
+   "shaftBlindHz": 34.98,
+   "demodBand": [
+    2358,
+    4358
+   ],
+   "resonanceHz": 3358,
+   "windowSec": 1.365,
+   "kurtosis": 7.89,
+   "measured": [
+    {
+     "code": "BPFO",
+     "theory": 104.53,
+     "measured": 104.89,
+     "devPct": 0.34,
+     "snr": 42.5
+    }
+   ],
+   "verdict": "BPFO",
+   "comparable": true,
+   "truth": "BPFO",
+   "agree": true,
+   "kind": "cal",
+   "offset": 884736,
+   "length": 16384,
+   "scale": 0.00008937972317336214,
+   "peak": 2.9287
+  },
+  {
+   "id": "133",
+   "file": "133.mat",
+   "bytes": 2942112,
+   "sha256": "53f076cb0d905cf46bffaee7736abce8224ffed777deed03c0c863d762a90c71",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 14:03:16 2000",
+   "variable": "X133_DE_time",
+   "sampleCount": 122571,
+   "fs": 12000,
+   "durationS": 10.21,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "OR007@6_3",
+    "element": "OR",
+    "diameter": "0.007",
+    "loadZone": "6:00",
+    "hp": 3,
+    "rpm": 1730,
+    "fs": 12000
+   },
+   "rpmTheory": 1730,
+   "shaftHzMeasured": 34.3,
+   "shaftBlindHz": 34.3,
+   "demodBand": [
+    2413,
+    4413
+   ],
+   "resonanceHz": 3413,
+   "windowSec": 1.365,
+   "kurtosis": 8.04,
+   "measured": [
+    {
+     "code": "BPFO",
+     "theory": 103.34,
+     "measured": 103.39,
+     "devPct": 0.05,
+     "snr": 87.5
+    }
+   ],
+   "verdict": "BPFO",
+   "comparable": true,
+   "truth": "BPFO",
+   "agree": true,
+   "kind": "cal",
+   "offset": 933888,
+   "length": 16384,
+   "scale": 0.00009418828287819636,
+   "peak": 3.0863
+  },
+  {
+   "id": "135",
+   "file": "135.mat",
+   "bytes": 3896944,
+   "sha256": "5a1c3ceec1f2b58af9e01051e425aa9d31dd018f58a8d31cda25bbdb1ac6dca9",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 15:29:19 2000",
+   "variable": "X135_DE_time",
+   "sampleCount": 243538,
+   "fs": 48000,
+   "durationS": 5.07,
+   "fsCheck": {
+    "lengthImplied": 48000,
+    "pageDeclared": 48000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "OR007@6_0",
+    "element": "OR",
+    "diameter": "0.007",
+    "loadZone": "6:00",
+    "hp": 0,
+    "rpm": 1797,
+    "fs": 48000
+   },
+   "rpmTheory": 1797,
+   "shaftHzMeasured": 30.03,
+   "shaftBlindHz": 30.03,
+   "demodBand": [
+    2446,
+    4446
+   ],
+   "resonanceHz": 3446,
+   "windowSec": 1.365,
+   "kurtosis": 6.76,
+   "measured": [
+    {
+     "code": "BPFO",
+     "theory": 107.34,
+     "measured": 107.68,
+     "devPct": 0.32,
+     "snr": 158.5
+    }
+   ],
+   "verdict": "BPFO",
+   "comparable": true,
+   "truth": "BPFO",
+   "agree": true,
+   "kind": "cal",
+   "offset": 983040,
+   "length": 65536,
+   "scale": 0.00019963019704784282,
+   "peak": 6.5413
+  },
+  {
+   "id": "144",
+   "file": "144.mat",
+   "bytes": 2935152,
+   "sha256": "f1f51d8c3b66e90fcdd8de15be95c2d4d3e9bac018dbba57f3006e930eec6b22",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 14:04:24 2000",
+   "variable": "X144_DE_time",
+   "sampleCount": 122281,
+   "fs": 12000,
+   "durationS": 10.19,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "OR007@3_0",
+    "element": "OR",
+    "diameter": "0.007",
+    "loadZone": "3:00",
+    "hp": 0,
+    "rpm": 1797,
+    "fs": 12000
+   },
+   "rpmTheory": 1797,
+   "shaftHzMeasured": 35.54,
+   "shaftBlindHz": 35.54,
+   "demodBand": [
+    1634,
+    3634
+   ],
+   "resonanceHz": 2634,
+   "windowSec": 1.365,
+   "kurtosis": 4.3,
+   "measured": [
+    {
+     "code": "BPFO",
+     "theory": 107.34,
+     "measured": 107.75,
+     "devPct": 0.38,
+     "snr": 47.3
+    }
+   ],
+   "verdict": "BPFO",
+   "comparable": true,
+   "truth": "BPFO",
+   "agree": true,
+   "kind": "cal",
+   "offset": 1179648,
+   "length": 16384,
+   "scale": 0.0000947211902681651,
+   "peak": 3.1037
+  },
+  {
+   "id": "169",
+   "file": "169.mat",
+   "bytes": 2924712,
+   "sha256": "f5448673725c4ea2735fe7d3fe4b16ad82b217eac6b62c4bf351c4549b0a5229",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 14:12:35 2000",
+   "variable": "X169_DE_time",
+   "sampleCount": 121846,
+   "fs": 12000,
+   "durationS": 10.15,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "IR014_0",
+    "element": "IR",
+    "diameter": "0.014",
+    "loadZone": null,
+    "hp": 0,
+    "rpm": 1797,
+    "fs": 12000
+   },
+   "rpmTheory": 1797,
+   "shaftHzMeasured": 29.96,
+   "shaftBlindHz": 29.96,
+   "demodBand": [
+    1623,
+    3623
+   ],
+   "resonanceHz": 2623,
+   "windowSec": 1.365,
+   "kurtosis": 21.76,
+   "measured": [
+    {
+     "code": "BPFI",
+     "theory": 162.19,
+     "measured": 162.03,
+     "devPct": -0.1,
+     "snr": 21.5
+    }
+   ],
+   "verdict": "BPFI",
+   "comparable": true,
+   "truth": "BPFI",
+   "agree": true,
+   "kind": "cal",
+   "offset": 1228800,
+   "length": 16384,
+   "scale": 0.00006136614493416803,
+   "peak": 2.0108
+  },
+  {
+   "id": "209",
+   "file": "209.mat",
+   "bytes": 2931672,
+   "sha256": "9f723d6d9d2eba714c6dc50f99321dffa73d8b1e4d3605675b2c2251511eff80",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 14:26:16 2000",
+   "variable": "X209_DE_time",
+   "sampleCount": 122136,
+   "fs": 12000,
+   "durationS": 10.18,
+   "fsCheck": {
+    "lengthImplied": 12000,
+    "pageDeclared": 12000,
+    "agree": true
+   },
+   "catalog": {
+    "label": "IR021_0",
+    "element": "IR",
+    "diameter": "0.021",
+    "loadZone": null,
+    "hp": 0,
+    "rpm": 1797,
+    "fs": 12000
+   },
+   "rpmTheory": 1797,
+   "shaftHzMeasured": 29.95,
+   "shaftBlindHz": 29.95,
+   "demodBand": [
+    1885,
+    3885
+   ],
+   "resonanceHz": 2885,
+   "windowSec": 1.365,
+   "kurtosis": 7.15,
+   "measured": [
+    {
+     "code": "BPFI",
+     "theory": 162.19,
+     "measured": 161.92,
+     "devPct": -0.16,
+     "snr": 37.5
+    }
+   ],
+   "verdict": "BPFI",
+   "comparable": true,
+   "truth": "BPFI",
+   "agree": true,
+   "kind": "cal",
+   "offset": 1277952,
+   "length": 16384,
+   "scale": 0.00010468531914106903,
+   "peak": 3.4302
+  },
+  {
+   "id": "97",
+   "file": "97.mat",
+   "bytes": 3903344,
+   "sha256": "16bf48babcf1c7ac224bc1a81cd9eafdb27e42d5cf559761907e067e8eeadf3c",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Mon Jan 31 15:28:20 2000",
+   "variable": "X097_DE_time",
+   "sampleCount": 243938,
+   "fs": 48000,
+   "durationS": 5.08,
+   "fsCheck": {
+    "lengthImplied": 48000,
+    "pageDeclared": 12000,
+    "agree": false
+   },
+   "catalog": {
+    "label": "Normal_0",
+    "element": "NO",
+    "diameter": null,
+    "loadZone": null,
+    "hp": 0,
+    "rpm": 1797,
+    "fs": 12000
+   },
+   "rpmTheory": 1797,
+   "shaftHzMeasured": 30,
+   "shaftBlindHz": 30,
+   "demodBand": [
+    3144,
+    5144
+   ],
+   "resonanceHz": 4144,
+   "windowSec": 1.365,
+   "kurtosis": 2.81,
+   "measured": [],
+   "verdict": "NORMAL",
+   "comparable": true,
+   "truth": "NORMAL",
+   "agree": true,
+   "kind": "cal",
+   "offset": 1327104,
+   "length": 65536,
+   "scale": 0.000009499012843597334,
+   "peak": 0.3113
+  },
+  {
+   "id": "98",
+   "file": "98.mat",
+   "bytes": 7742720,
+   "sha256": "37e6612c05e65c415dcfa2ab27a3fda648a5863160fa898b884a14743044e045",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Fri Jan 28 10:52:35 2000",
+   "variable": "X098_DE_time",
+   "sampleCount": 483903,
+   "fs": 48000,
+   "durationS": 10.08,
+   "fsCheck": {
+    "lengthImplied": 48000,
+    "pageDeclared": 12000,
+    "agree": false
+   },
+   "catalog": {
+    "label": "Normal_1",
+    "element": "NO",
+    "diameter": null,
+    "loadZone": null,
+    "hp": 1,
+    "rpm": 1772,
+    "fs": 12000
+   },
+   "rpmTheory": 1772,
+   "shaftHzMeasured": 19.22,
+   "shaftBlindHz": 19.22,
+   "demodBand": [
+    3263,
+    5263
+   ],
+   "resonanceHz": 4263,
+   "windowSec": 1.365,
+   "kurtosis": 2.88,
+   "measured": [],
+   "verdict": "NORMAL",
+   "comparable": true,
+   "truth": "NORMAL",
+   "agree": true,
+   "kind": "cal",
+   "offset": 1523712,
+   "length": 65536,
+   "scale": 0.000007671789863629213,
+   "peak": 0.2514
+  },
+  {
+   "id": "99",
+   "file": "99.mat",
+   "bytes": 15503928,
+   "sha256": "4b97e6b5361f45efb6951dc3b1aebcdb3b89cb69d0f96d6f5c297dd9f45eee75",
+   "header": "MATLAB 5.0 MAT-file, Platform: PCWIN, Created on: Fri Jan 28 11:19:25 2000",
+   "variable": "X099_DE_time",
+   "sampleCount": 485063,
+   "fs": 48000,
+   "durationS": 10.11,
+   "fsCheck": {
+    "lengthImplied": 48000,
+    "pageDeclared": 12000,
+    "agree": false
+   },
+   "catalog": {
+    "label": "Normal_2",
+    "element": "NO",
+    "diameter": null,
+    "loadZone": null,
+    "hp": 2,
+    "rpm": 1750,
+    "fs": 12000
+   },
+   "rpmTheory": 1750,
+   "shaftHzMeasured": 29.08,
+   "shaftBlindHz": 29.08,
+   "demodBand": [
+    7408,
+    9408
+   ],
+   "resonanceHz": 8408,
+   "windowSec": 1.365,
+   "kurtosis": 2.92,
+   "measured": [],
+   "verdict": "NORMAL",
+   "comparable": true,
+   "truth": "NORMAL",
+   "agree": true,
+   "kind": "cal",
+   "offset": 1720320,
+   "length": 65536,
+   "scale": 0.000008423052273511576,
+   "peak": 0.276
+  }
+ ],
+ "windows": [
+  {
+   "id": "100",
+   "offset": 65536,
+   "length": 16384,
+   "scale": 0.0000074171246399402775,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.89
+  },
+  {
+   "id": "100",
+   "offset": 81920,
+   "length": 16384,
+   "scale": 0.00000736619159520249,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.93
+  },
+  {
+   "id": "100",
+   "offset": 98304,
+   "length": 16384,
+   "scale": 0.000007620856818891427,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.95
+  },
+  {
+   "id": "100",
+   "offset": 114688,
+   "length": 16384,
+   "scale": 0.000007391658117571383,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.92
+  },
+  {
+   "id": "100",
+   "offset": 131072,
+   "length": 16384,
+   "scale": 0.00000798375476264816,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.98
+  },
+  {
+   "id": "100",
+   "offset": 147456,
+   "length": 16384,
+   "scale": 0.00000708605984914466,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.84
+  },
+  {
+   "id": "100",
+   "offset": 163840,
+   "length": 16384,
+   "scale": 0.000007799122475473681,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.92
+  },
+  {
+   "id": "100",
+   "offset": 180224,
+   "length": 16384,
+   "scale": 0.000008397585751142683,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.97
+  },
+  {
+   "id": "105",
+   "offset": 212992,
+   "length": 4096,
+   "scale": 0.0000438669534310084,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 5.02
+  },
+  {
+   "id": "105",
+   "offset": 217088,
+   "length": 4096,
+   "scale": 0.00004005976389151078,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 5.01
+  },
+  {
+   "id": "105",
+   "offset": 221184,
+   "length": 4096,
+   "scale": 0.00004591430926409762,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 5.11
+  },
+  {
+   "id": "105",
+   "offset": 225280,
+   "length": 4096,
+   "scale": 0.000042959771548549984,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 4.95
+  },
+  {
+   "id": "105",
+   "offset": 229376,
+   "length": 4096,
+   "scale": 0.00005001893548636849,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 5.61
+  },
+  {
+   "id": "105",
+   "offset": 233472,
+   "length": 4096,
+   "scale": 0.000049617395964624603,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 5.75
+  },
+  {
+   "id": "105",
+   "offset": 237568,
+   "length": 4096,
+   "scale": 0.000051962188480487065,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 5.62
+  },
+  {
+   "id": "105",
+   "offset": 241664,
+   "length": 4096,
+   "scale": 0.000050777399027440286,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 5.4
+  },
+  {
+   "id": "106",
+   "offset": 262144,
+   "length": 4096,
+   "scale": 0.00004703465410254353,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.533333333333335,
+   "kurtosis": 5.61
+  },
+  {
+   "id": "106",
+   "offset": 266240,
+   "length": 4096,
+   "scale": 0.00004483857992806769,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.533333333333335,
+   "kurtosis": 5.54
+  },
+  {
+   "id": "106",
+   "offset": 270336,
+   "length": 4096,
+   "scale": 0.00004298951521682731,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.533333333333335,
+   "kurtosis": 5.41
+  },
+  {
+   "id": "106",
+   "offset": 274432,
+   "length": 4096,
+   "scale": 0.00004300438705096597,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.533333333333335,
+   "kurtosis": 5.56
+  },
+  {
+   "id": "106",
+   "offset": 278528,
+   "length": 4096,
+   "scale": 0.0000481202979946659,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.533333333333335,
+   "kurtosis": 5.64
+  },
+  {
+   "id": "106",
+   "offset": 282624,
+   "length": 4096,
+   "scale": 0.00004519550394739559,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.533333333333335,
+   "kurtosis": 5.73
+  },
+  {
+   "id": "106",
+   "offset": 286720,
+   "length": 4096,
+   "scale": 0.00004592422382019006,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.533333333333335,
+   "kurtosis": 6.07
+  },
+  {
+   "id": "106",
+   "offset": 290816,
+   "length": 4096,
+   "scale": 0.000045126102054748497,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.533333333333335,
+   "kurtosis": 5.67
+  },
+  {
+   "id": "107",
+   "offset": 311296,
+   "length": 4096,
+   "scale": 0.000046524054463782785,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.166666666666668,
+   "kurtosis": 5.47
+  },
+  {
+   "id": "107",
+   "offset": 315392,
+   "length": 4096,
+   "scale": 0.000041849341266196514,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.166666666666668,
+   "kurtosis": 5.34
+  },
+  {
+   "id": "107",
+   "offset": 319488,
+   "length": 4096,
+   "scale": 0.00004661824274666098,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.166666666666668,
+   "kurtosis": 5.53
+  },
+  {
+   "id": "107",
+   "offset": 323584,
+   "length": 4096,
+   "scale": 0.00005003876459855337,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.166666666666668,
+   "kurtosis": 5.73
+  },
+  {
+   "id": "107",
+   "offset": 327680,
+   "length": 4096,
+   "scale": 0.00004415447555768921,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.166666666666668,
+   "kurtosis": 5.46
+  },
+  {
+   "id": "107",
+   "offset": 331776,
+   "length": 4096,
+   "scale": 0.000045859779205589194,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.166666666666668,
+   "kurtosis": 5.52
+  },
+  {
+   "id": "107",
+   "offset": 335872,
+   "length": 4096,
+   "scale": 0.00004849209384813247,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.166666666666668,
+   "kurtosis": 5.83
+  },
+  {
+   "id": "107",
+   "offset": 339968,
+   "length": 4096,
+   "scale": 0.000042240966231847966,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.166666666666668,
+   "kurtosis": 5.47
+  },
+  {
+   "id": "108",
+   "offset": 360448,
+   "length": 4096,
+   "scale": 0.000042692078534054054,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 28.833333333333332,
+   "kurtosis": 5.35
+  },
+  {
+   "id": "108",
+   "offset": 364544,
+   "length": 4096,
+   "scale": 0.000041358570739620644,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 28.833333333333332,
+   "kurtosis": 5.12
+  },
+  {
+   "id": "108",
+   "offset": 368640,
+   "length": 4096,
+   "scale": 0.00004525994856199646,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 28.833333333333332,
+   "kurtosis": 5.25
+  },
+  {
+   "id": "108",
+   "offset": 372736,
+   "length": 4096,
+   "scale": 0.00004370336325548311,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 28.833333333333332,
+   "kurtosis": 5.22
+  },
+  {
+   "id": "108",
+   "offset": 376832,
+   "length": 4096,
+   "scale": 0.00004509635838647117,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 28.833333333333332,
+   "kurtosis": 5.3
+  },
+  {
+   "id": "108",
+   "offset": 380928,
+   "length": 4096,
+   "scale": 0.00004449157046483224,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 28.833333333333332,
+   "kurtosis": 5.13
+  },
+  {
+   "id": "108",
+   "offset": 385024,
+   "length": 4096,
+   "scale": 0.00004437755306976915,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 28.833333333333332,
+   "kurtosis": 5.2
+  },
+  {
+   "id": "108",
+   "offset": 389120,
+   "length": 4096,
+   "scale": 0.00004599362571283715,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 28.833333333333332,
+   "kurtosis": 5.27
+  },
+  {
+   "id": "118",
+   "offset": 409600,
+   "length": 4096,
+   "scale": 0.00001702825008876866,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 3
+  },
+  {
+   "id": "118",
+   "offset": 413696,
+   "length": 4096,
+   "scale": 0.000014455422782780032,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.88
+  },
+  {
+   "id": "118",
+   "offset": 417792,
+   "length": 4096,
+   "scale": 0.000015739357796751235,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.84
+  },
+  {
+   "id": "118",
+   "offset": 421888,
+   "length": 4096,
+   "scale": 0.000017305857659357028,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 3.05
+  },
+  {
+   "id": "118",
+   "offset": 425984,
+   "length": 4096,
+   "scale": 0.00001806927847847504,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 3.1
+  },
+  {
+   "id": "118",
+   "offset": 430080,
+   "length": 4096,
+   "scale": 0.000014514910119334682,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.89
+  },
+  {
+   "id": "118",
+   "offset": 434176,
+   "length": 4096,
+   "scale": 0.00001416790065609922,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.79
+  },
+  {
+   "id": "118",
+   "offset": 438272,
+   "length": 4096,
+   "scale": 0.000013498668119859403,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.9
+  },
+  {
+   "id": "119",
+   "offset": 458752,
+   "length": 4096,
+   "scale": 0.000019521760946017753,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 3.08
+  },
+  {
+   "id": "119",
+   "offset": 462848,
+   "length": 4096,
+   "scale": 0.000015972349864923618,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 3.13
+  },
+  {
+   "id": "119",
+   "offset": 466944,
+   "length": 4096,
+   "scale": 0.00001617064098677245,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 3
+  },
+  {
+   "id": "119",
+   "offset": 471040,
+   "length": 4096,
+   "scale": 0.000013840720305048644,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.86
+  },
+  {
+   "id": "119",
+   "offset": 475136,
+   "length": 4096,
+   "scale": 0.000014970979699587002,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.86
+  },
+  {
+   "id": "119",
+   "offset": 479232,
+   "length": 4096,
+   "scale": 0.000014802432246015492,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.95
+  },
+  {
+   "id": "119",
+   "offset": 483328,
+   "length": 4096,
+   "scale": 0.000020131506145702916,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 3.17
+  },
+  {
+   "id": "119",
+   "offset": 487424,
+   "length": 4096,
+   "scale": 0.000015184142655574498,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.92
+  },
+  {
+   "id": "120",
+   "offset": 507904,
+   "length": 4096,
+   "scale": 0.000013786190246540216,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.66
+  },
+  {
+   "id": "120",
+   "offset": 512000,
+   "length": 4096,
+   "scale": 0.000017295943103264584,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 3.07
+  },
+  {
+   "id": "120",
+   "offset": 516096,
+   "length": 4096,
+   "scale": 0.000014539696509565786,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.71
+  },
+  {
+   "id": "120",
+   "offset": 520192,
+   "length": 4096,
+   "scale": 0.000014346362665763173,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.77
+  },
+  {
+   "id": "120",
+   "offset": 524288,
+   "length": 4096,
+   "scale": 0.00001685474535715093,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.83
+  },
+  {
+   "id": "120",
+   "offset": 528384,
+   "length": 4096,
+   "scale": 0.000015764144186982338,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.82
+  },
+  {
+   "id": "120",
+   "offset": 532480,
+   "length": 4096,
+   "scale": 0.000015843460635721875,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.79
+  },
+  {
+   "id": "120",
+   "offset": 536576,
+   "length": 4096,
+   "scale": 0.000015912862528368965,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.87
+  },
+  {
+   "id": "121",
+   "offset": 557056,
+   "length": 4096,
+   "scale": 0.000015739357796751235,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.78
+  },
+  {
+   "id": "121",
+   "offset": 561152,
+   "length": 4096,
+   "scale": 0.000016745685240134068,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.8
+  },
+  {
+   "id": "121",
+   "offset": 565248,
+   "length": 4096,
+   "scale": 0.000015089954372696303,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.72
+  },
+  {
+   "id": "121",
+   "offset": 569344,
+   "length": 4096,
+   "scale": 0.00001598226442101606,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.87
+  },
+  {
+   "id": "121",
+   "offset": 573440,
+   "length": 4096,
+   "scale": 0.000018128765815029694,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.82
+  },
+  {
+   "id": "121",
+   "offset": 577536,
+   "length": 4096,
+   "scale": 0.000016661411513348315,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.88
+  },
+  {
+   "id": "121",
+   "offset": 581632,
+   "length": 4096,
+   "scale": 0.000016116110928264017,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 3
+  },
+  {
+   "id": "121",
+   "offset": 585728,
+   "length": 4096,
+   "scale": 0.000015129612597066068,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 28.833333333333332,
+   "kurtosis": 2.77
+  },
+  {
+   "id": "122",
+   "offset": 655360,
+   "length": 16384,
+   "scale": 0.000022353240009296408,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 3.41
+  },
+  {
+   "id": "122",
+   "offset": 671744,
+   "length": 16384,
+   "scale": 0.000016476839972674196,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.96
+  },
+  {
+   "id": "122",
+   "offset": 688128,
+   "length": 16384,
+   "scale": 0.00002155741118526848,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 3.17
+  },
+  {
+   "id": "122",
+   "offset": 704512,
+   "length": 16384,
+   "scale": 0.0000173490683638088,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.95
+  },
+  {
+   "id": "122",
+   "offset": 720896,
+   "length": 16384,
+   "scale": 0.000019061691993116904,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 3.18
+  },
+  {
+   "id": "122",
+   "offset": 737280,
+   "length": 16384,
+   "scale": 0.000018221296754943414,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 3.03
+  },
+  {
+   "id": "122",
+   "offset": 753664,
+   "length": 16384,
+   "scale": 0.000016623272476295334,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 3.14
+  },
+  {
+   "id": "122",
+   "offset": 770048,
+   "length": 16384,
+   "scale": 0.00001749550086742994,
+   "element": "B",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 3.17
+  },
+  {
+   "id": "130",
+   "offset": 802816,
+   "length": 4096,
+   "scale": 0.00010275198070304291,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 7.5
+  },
+  {
+   "id": "130",
+   "offset": 806912,
+   "length": 4096,
+   "scale": 0.00009345708436637879,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 7.5
+  },
+  {
+   "id": "130",
+   "offset": 811008,
+   "length": 4096,
+   "scale": 0.0001016118067524121,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 7.85
+  },
+  {
+   "id": "130",
+   "offset": 815104,
+   "length": 4096,
+   "scale": 0.00010021137570435472,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 7.73
+  },
+  {
+   "id": "130",
+   "offset": 819200,
+   "length": 4096,
+   "scale": 0.00010453660079968241,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 7.65
+  },
+  {
+   "id": "130",
+   "offset": 823296,
+   "length": 4096,
+   "scale": 0.00009949257038765268,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 7.5
+  },
+  {
+   "id": "130",
+   "offset": 827392,
+   "length": 4096,
+   "scale": 0.00010216950053261196,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 7.57
+  },
+  {
+   "id": "130",
+   "offset": 831488,
+   "length": 4096,
+   "scale": 0.00010570156114054432,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 7.46
+  },
+  {
+   "id": "131",
+   "offset": 851968,
+   "length": 4096,
+   "scale": 0.00009189554178181922,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.533333333333335,
+   "kurtosis": 7.71
+  },
+  {
+   "id": "131",
+   "offset": 856064,
+   "length": 4096,
+   "scale": 0.00009142460036742824,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.533333333333335,
+   "kurtosis": 7.44
+  },
+  {
+   "id": "131",
+   "offset": 860160,
+   "length": 4096,
+   "scale": 0.00009199468734274362,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.533333333333335,
+   "kurtosis": 7.61
+  },
+  {
+   "id": "131",
+   "offset": 864256,
+   "length": 4096,
+   "scale": 0.00008930536400266881,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.533333333333335,
+   "kurtosis": 7.56
+  },
+  {
+   "id": "131",
+   "offset": 868352,
+   "length": 4096,
+   "scale": 0.0000889211749540867,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.533333333333335,
+   "kurtosis": 7.65
+  },
+  {
+   "id": "131",
+   "offset": 872448,
+   "length": 4096,
+   "scale": 0.0000944857195609696,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.533333333333335,
+   "kurtosis": 7.5
+  },
+  {
+   "id": "131",
+   "offset": 876544,
+   "length": 4096,
+   "scale": 0.00008795450573507363,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.533333333333335,
+   "kurtosis": 7.61
+  },
+  {
+   "id": "131",
+   "offset": 880640,
+   "length": 4096,
+   "scale": 0.00009349426395172545,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.533333333333335,
+   "kurtosis": 7.55
+  },
+  {
+   "id": "132",
+   "offset": 901120,
+   "length": 4096,
+   "scale": 0.00009111477048953943,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.166666666666668,
+   "kurtosis": 7.75
+  },
+  {
+   "id": "132",
+   "offset": 905216,
+   "length": 4096,
+   "scale": 0.00008151004427498652,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.166666666666668,
+   "kurtosis": 7.7
+  },
+  {
+   "id": "132",
+   "offset": 909312,
+   "length": 4096,
+   "scale": 0.00008586005576054532,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.166666666666668,
+   "kurtosis": 7.91
+  },
+  {
+   "id": "132",
+   "offset": 913408,
+   "length": 4096,
+   "scale": 0.00009406435092704084,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.166666666666668,
+   "kurtosis": 7.88
+  },
+  {
+   "id": "132",
+   "offset": 917504,
+   "length": 4096,
+   "scale": 0.00008418697441994578,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.166666666666668,
+   "kurtosis": 7.73
+  },
+  {
+   "id": "132",
+   "offset": 921600,
+   "length": 4096,
+   "scale": 0.00008479424098060784,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.166666666666668,
+   "kurtosis": 7.7
+  },
+  {
+   "id": "132",
+   "offset": 925696,
+   "length": 4096,
+   "scale": 0.00008728527319883382,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.166666666666668,
+   "kurtosis": 7.8
+  },
+  {
+   "id": "132",
+   "offset": 929792,
+   "length": 4096,
+   "scale": 0.00008592202173612308,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.166666666666668,
+   "kurtosis": 7.86
+  },
+  {
+   "id": "133",
+   "offset": 950272,
+   "length": 4096,
+   "scale": 0.00009653059675503573,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 28.833333333333332,
+   "kurtosis": 7.99
+  },
+  {
+   "id": "133",
+   "offset": 954368,
+   "length": 4096,
+   "scale": 0.00009717504290104442,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 28.833333333333332,
+   "kurtosis": 7.95
+  },
+  {
+   "id": "133",
+   "offset": 958464,
+   "length": 4096,
+   "scale": 0.00008678954539421173,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 28.833333333333332,
+   "kurtosis": 8.17
+  },
+  {
+   "id": "133",
+   "offset": 962560,
+   "length": 4096,
+   "scale": 0.00009118912966023274,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 28.833333333333332,
+   "kurtosis": 7.78
+  },
+  {
+   "id": "133",
+   "offset": 966656,
+   "length": 4096,
+   "scale": 0.00009567546629206263,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 28.833333333333332,
+   "kurtosis": 7.92
+  },
+  {
+   "id": "133",
+   "offset": 970752,
+   "length": 4096,
+   "scale": 0.00009552674795067598,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 28.833333333333332,
+   "kurtosis": 8.06
+  },
+  {
+   "id": "133",
+   "offset": 974848,
+   "length": 4096,
+   "scale": 0.0000929117837812945,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 28.833333333333332,
+   "kurtosis": 8.09
+  },
+  {
+   "id": "133",
+   "offset": 978944,
+   "length": 4096,
+   "scale": 0.00009257716751317459,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 28.833333333333332,
+   "kurtosis": 7.9
+  },
+  {
+   "id": "135",
+   "offset": 1048576,
+   "length": 16384,
+   "scale": 0.00017158466343170466,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 6.47
+  },
+  {
+   "id": "135",
+   "offset": 1064960,
+   "length": 16384,
+   "scale": 0.00017368616799422182,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 6.5
+  },
+  {
+   "id": "135",
+   "offset": 1081344,
+   "length": 16384,
+   "scale": 0.00017669195633818576,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 6.63
+  },
+  {
+   "id": "135",
+   "offset": 1097728,
+   "length": 16384,
+   "scale": 0.00017377532273323769,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 6.68
+  },
+  {
+   "id": "135",
+   "offset": 1114112,
+   "length": 16384,
+   "scale": 0.00017387721386354156,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 6.88
+  },
+  {
+   "id": "135",
+   "offset": 1130496,
+   "length": 16384,
+   "scale": 0.0001749725435143081,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 6.84
+  },
+  {
+   "id": "135",
+   "offset": 1146880,
+   "length": 16384,
+   "scale": 0.00018176104007080294,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 6.71
+  },
+  {
+   "id": "135",
+   "offset": 1163264,
+   "length": 16384,
+   "scale": 0.00018846038188828192,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 6.76
+  },
+  {
+   "id": "144",
+   "offset": 1196032,
+   "length": 4096,
+   "scale": 0.00009023485363633522,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 4.22
+  },
+  {
+   "id": "144",
+   "offset": 1200128,
+   "length": 4096,
+   "scale": 0.0000878305737839181,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 4.15
+  },
+  {
+   "id": "144",
+   "offset": 1204224,
+   "length": 4096,
+   "scale": 0.00009258956070829013,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 4.22
+  },
+  {
+   "id": "144",
+   "offset": 1208320,
+   "length": 4096,
+   "scale": 0.00009071818824584177,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 4.22
+  },
+  {
+   "id": "144",
+   "offset": 1212416,
+   "length": 4096,
+   "scale": 0.0000984267556077152,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 4.31
+  },
+  {
+   "id": "144",
+   "offset": 1216512,
+   "length": 4096,
+   "scale": 0.00009043314475818406,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 4.36
+  },
+  {
+   "id": "144",
+   "offset": 1220608,
+   "length": 4096,
+   "scale": 0.00009246562875713462,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 4.28
+  },
+  {
+   "id": "144",
+   "offset": 1224704,
+   "length": 4096,
+   "scale": 0.00010003787097273698,
+   "element": "OR",
+   "verdict": "BPFO",
+   "fr": 29.95,
+   "kurtosis": 4.33
+  },
+  {
+   "id": "169",
+   "offset": 1245184,
+   "length": 4096,
+   "scale": 0.000053801338635635004,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 23.24
+  },
+  {
+   "id": "169",
+   "offset": 1249280,
+   "length": 4096,
+   "scale": 0.0000510203056517051,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 22
+  },
+  {
+   "id": "169",
+   "offset": 1253376,
+   "length": 4096,
+   "scale": 0.00004960748140853216,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 21.29
+  },
+  {
+   "id": "169",
+   "offset": 1257472,
+   "length": 4096,
+   "scale": 0.000048913462482061244,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 21.02
+  },
+  {
+   "id": "169",
+   "offset": 1261568,
+   "length": 4096,
+   "scale": 0.000054024416147714944,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 23.27
+  },
+  {
+   "id": "169",
+   "offset": 1265664,
+   "length": 4096,
+   "scale": 0.0000503064576130493,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 20.05
+  },
+  {
+   "id": "169",
+   "offset": 1269760,
+   "length": 4096,
+   "scale": 0.0000580051104188303,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 22.46
+  },
+  {
+   "id": "169",
+   "offset": 1273856,
+   "length": 4096,
+   "scale": 0.000056602200731749796,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 23.62
+  },
+  {
+   "id": "209",
+   "offset": 1294336,
+   "length": 4096,
+   "scale": 0.00010748618123718382,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 7.48
+  },
+  {
+   "id": "209",
+   "offset": 1298432,
+   "length": 4096,
+   "scale": 0.0001027024079225807,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 8.09
+  },
+  {
+   "id": "209",
+   "offset": 1302528,
+   "length": 4096,
+   "scale": 0.00009907120175372392,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 6.84
+  },
+  {
+   "id": "209",
+   "offset": 1306624,
+   "length": 4096,
+   "scale": 0.00010616010935981974,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 7.3
+  },
+  {
+   "id": "209",
+   "offset": 1310720,
+   "length": 4096,
+   "scale": 0.00010173573870356764,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 7.98
+  },
+  {
+   "id": "209",
+   "offset": 1314816,
+   "length": 4096,
+   "scale": 0.00011433961813608417,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 9.04
+  },
+  {
+   "id": "209",
+   "offset": 1318912,
+   "length": 4096,
+   "scale": 0.00011296397347825787,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 9.68
+  },
+  {
+   "id": "209",
+   "offset": 1323008,
+   "length": 4096,
+   "scale": 0.00009364298229311208,
+   "element": "IR",
+   "verdict": "BPFI",
+   "fr": 29.95,
+   "kurtosis": 7.17
+  },
+  {
+   "id": "97",
+   "offset": 1392640,
+   "length": 16384,
+   "scale": 0.000007512624098823628,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.8
+  },
+  {
+   "id": "97",
+   "offset": 1409024,
+   "length": 16384,
+   "scale": 0.000008021954546201501,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.64
+  },
+  {
+   "id": "97",
+   "offset": 1425408,
+   "length": 16384,
+   "scale": 0.000008060154329754841,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.7
+  },
+  {
+   "id": "97",
+   "offset": 1441792,
+   "length": 16384,
+   "scale": 0.00000758902366593031,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.76
+  },
+  {
+   "id": "97",
+   "offset": 1458176,
+   "length": 16384,
+   "scale": 0.000008098354113308183,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.64
+  },
+  {
+   "id": "97",
+   "offset": 1474560,
+   "length": 16384,
+   "scale": 0.000007888255303764811,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.79
+  },
+  {
+   "id": "97",
+   "offset": 1490944,
+   "length": 16384,
+   "scale": 0.000007920088456725928,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.81
+  },
+  {
+   "id": "97",
+   "offset": 1507328,
+   "length": 16384,
+   "scale": 0.000008340286075812673,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.95,
+   "kurtosis": 2.79
+  },
+  {
+   "id": "98",
+   "offset": 1589248,
+   "length": 16384,
+   "scale": 0.000008212953463968205,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.93
+  },
+  {
+   "id": "98",
+   "offset": 1605632,
+   "length": 16384,
+   "scale": 0.0000074234912705325,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.86
+  },
+  {
+   "id": "98",
+   "offset": 1622016,
+   "length": 16384,
+   "scale": 0.000007372558225794714,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.88
+  },
+  {
+   "id": "98",
+   "offset": 1638400,
+   "length": 16384,
+   "scale": 0.000007200659199804681,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.88
+  },
+  {
+   "id": "98",
+   "offset": 1654784,
+   "length": 16384,
+   "scale": 0.00000779275584488146,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.89
+  },
+  {
+   "id": "98",
+   "offset": 1671168,
+   "length": 16384,
+   "scale": 0.00000939714675412176,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.98
+  },
+  {
+   "id": "98",
+   "offset": 1687552,
+   "length": 16384,
+   "scale": 0.000008862349784374992,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.97
+  },
+  {
+   "id": "98",
+   "offset": 1703936,
+   "length": 16384,
+   "scale": 0.000007601756927114757,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.533333333333335,
+   "kurtosis": 2.97
+  },
+  {
+   "id": "99",
+   "offset": 1785856,
+   "length": 16384,
+   "scale": 0.000008308452922851556,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 3.02
+  },
+  {
+   "id": "99",
+   "offset": 1802240,
+   "length": 16384,
+   "scale": 0.000006875961039601287,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.92
+  },
+  {
+   "id": "99",
+   "offset": 1818624,
+   "length": 16384,
+   "scale": 0.000007506257468231405,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.95
+  },
+  {
+   "id": "99",
+   "offset": 1835008,
+   "length": 16384,
+   "scale": 0.000010963337879808718,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.99
+  },
+  {
+   "id": "99",
+   "offset": 1851392,
+   "length": 16384,
+   "scale": 0.000007035126804406873,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.87
+  },
+  {
+   "id": "99",
+   "offset": 1867776,
+   "length": 16384,
+   "scale": 0.00000797738813205594,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.92
+  },
+  {
+   "id": "99",
+   "offset": 1884160,
+   "length": 16384,
+   "scale": 0.0000072770587669113624,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.97
+  },
+  {
+   "id": "99",
+   "offset": 1900544,
+   "length": 16384,
+   "scale": 0.000007805489106065904,
+   "element": "NO",
+   "verdict": "NORMAL",
+   "fr": 29.166666666666668,
+   "kurtosis": 2.94
+  }
+ ]
+}

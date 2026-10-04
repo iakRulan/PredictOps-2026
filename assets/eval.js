@@ -44,9 +44,9 @@
     { name: "测试集 15%", value: Math.round(TOTAL * 0.15), color: C.violet }
   ];
   const SOURCES = [
-    { name: "NASA CWRU 轴承基准数据集", tag: "12k/48k 采样 · 内圈/外圈/滚珠故障", share: 45 },
-    { name: "PHM Society 公开数据集", tag: "全寿命退化 · 多工况时序", share: 30 },
-    { name: "自建物理仿真", tag: "1 Hz 趋势段 + 12 kHz 高频段 · 参数化故障注入", share: 25 }
+    { name: "NASA CWRU 轴承基准数据集", tag: "12k/48k 采样 · 内圈/外圈/滚珠故障", share: 45, form: "真实波形已载入" },
+    { name: "PHM Society 公开数据集", tag: "全寿命退化 · 多工况时序", share: 30, form: "仅目录登记 · 未载入波形" },
+    { name: "自建物理仿真", tag: "1 Hz 趋势段 + 12 kHz 高频段 · 参数化故障注入", share: 25, form: "仿真生成" }
   ];
 
   /* 5×5 混淆矩阵（测试集 2,700 条，行=实际工况，列=预测工况） */
@@ -124,56 +124,64 @@
   /* ---------------- 渲染 ---------------- */
   let mounted = false;
 
-  function shell(M, lead) {
-    const pct = (v, d) => (v * 100).toFixed(d == null ? 1 : d) + "%";
-    const kpiCard = (cls, label, value, unit, foot) =>
-      `<div class="metric ${cls}"><div class="metric-label">${label}</div>
-        <div class="metric-value">${value}<small>${unit}</small></div><div class="metric-foot">${foot}</div></div>`;
+  const pct = (v, d) => (v * 100).toFixed(d == null ? 1 : d) + "%";
+  const kpiCard = (cls, label, value, unit, foot) =>
+    `<div class="metric ${cls}"><div class="metric-label">${label}</div>
+      <div class="metric-value">${value}<small>${unit}</small></div><div class="metric-foot">${foot}</div></div>`;
 
+  function shell(M, lead) {
     return `
     <div class="grid g-4 mb">
       ${kpiCard("is-cyan", "设备类别", DEVICES.length, "类", "数控加工中心 / 螺杆空压机 / 单级离心泵")}
       ${kpiCard("is-green", "工况模式", STATES.length, "种", STATES.join(" / "))}
-      ${kpiCard("is-violet", "每类样本", PER_CELL.toLocaleString(), "条", "1 Hz 趋势段 + 12 kHz 高频段")}
-      ${kpiCard("is-amber", "样本总量", TOTAL.toLocaleString(), "条", "3 × 5 × 1,200 · 满足 ≥1,000 条/类")}
+      ${kpiCard("is-violet", "真实公开样本", (global.CWRU && global.CWRU.ready()) ? global.CWRU.samples().length : 0, "只 .mat", "CWRU 驱动端波形 · 构建期抽取，含 SHA-256 溯源")}
+      ${kpiCard("is-amber", "仿真扩充集", TOTAL.toLocaleString(), "条", "3 × 5 × 1,200 参数化仿真 · 与真实样本分列")}
     </div>
 
     <div class="panel mb">
-      <div class="panel-head"><h3>数据集概览</h3><span class="sub">三源融合 · 训练/验证/测试划分</span></div>
+      <div class="panel-head"><h3>数据集概览</h3><span class="sub">真实公开样本 + 参数化仿真扩充 · 训练/验证/测试划分</span></div>
       <div class="grid g-32" style="gap:14px">
         <div>
           <div class="table-wrap"><table class="data">
-            <thead><tr><th>数据来源</th><th>说明</th><th>占比</th></tr></thead>
+            <thead><tr><th>数据来源</th><th>说明</th><th>当前形态</th><th>占比</th></tr></thead>
             <tbody>${SOURCES.map(s => `<tr><td><b>${s.name}</b></td><td>${s.tag}</td>
+              <td>${s.form || "仿真生成"}</td>
               <td><span class="bar-track" style="width:70px"><span class="bar-fill ok" style="width:${s.share}%"></span></span> <span class="mono">${s.share}%</span></td></tr>`).join("")}
             </tbody></table></div>
           <div class="grid g-3 mt">
             ${splitCards()}
           </div>
-          <div class="note" style="margin-top:10px">样本为时序窗口：每个（设备 × 工况）单元含 1,200 条样本，覆盖 1 Hz 趋势段与 12 kHz 高频振动段；划分按分层抽样，保证各工况比例一致。</div>
+          <div class="note" style="margin-top:10px">占比为方案设计的目标构成；当前随包分发的是 ${global.CWRU && global.CWRU.ready() ? global.CWRU.samples().length + " 只 CWRU 真实样本（" + (global.CWRU.state.index.windows.length) + " 段评测窗）" : "0 只真实样本"}，其余 18,000 条为参数化仿真扩充窗口。两者在本视图中始终分列统计，不合并出指标。</div>
         </div>
         <div>
-          <div class="panel-head"><h3>训练 / 验证 / 测试划分</h3><span class="sub">累计 ${TOTAL.toLocaleString()} 条</span></div>
+          <div class="panel-head"><h3>仿真扩充集划分</h3><span class="sub">累计 ${TOTAL.toLocaleString()} 条</span></div>
           <div class="chart" id="ev-split" style="height:250px"></div>
         </div>
       </div>
     </div>
 
     <div class="panel mb">
-      <div class="panel-head"><h3>样本分布 · 设备 × 工况</h3><span class="sub">堆叠柱状图 · 每单元 ${PER_CELL.toLocaleString()} 条</span></div>
+      <div class="panel-head"><h3>样本分布 · 设备 × 工况</h3><span class="sub">堆叠柱状图 · 仿真扩充集，每单元 ${PER_CELL.toLocaleString()} 条</span></div>
       <div class="chart" id="ev-dist" style="height:300px"></div>
     </div>
 
+    ${realBlock()}
+
+    <div class="panel mb">
+      <div class="panel-head"><h3>仿真扩充集指标</h3>
+        <span class="sub">参数化仿真生成的 3×5×${PER_CELL} 条样本 · 与上节真实实测分列，不混用</span></div>
+    </div>
+
     <div class="grid g-4 mb">
-      ${kpiCard("is-green", "准确率", pct(M.accuracy, 1), "", "测试集 " + M.correct.toLocaleString() + " / " + M.total.toLocaleString())}
-      ${kpiCard("is-amber", "误报率", pct(M.falseAlarmRate, 1), "", "误报预警 / 总预警（预警级）")}
+      ${kpiCard("is-green", "准确率", pct(M.accuracy, 1), "", "仿真测试集 " + M.correct.toLocaleString() + " / " + M.total.toLocaleString() + " 条")}
+      ${kpiCard("is-amber", "误报率", pct(M.falseAlarmRate, 1), "", "仿真预警级统计（设定值）")}
       ${kpiCard("is-red", "漏报率", pct(M.missRate, 2), "", "故障判为正常 " + M.missCount + " 条 / " + M.faultTotal + " 条")}
-      ${kpiCard("is-cyan", "平均提前预警", lead.avg.toFixed(1), "小时", "预警窗口 24 ~ 72 小时")}
+      ${kpiCard("is-cyan", "平均提前预警", lead.avg.toFixed(1), "小时", "仿真预警窗口 24 ~ 72 小时")}
     </div>
 
     <div class="grid g-32 mb">
       <div class="panel">
-        <div class="panel-head"><h3>混淆矩阵 · 5×5 工况分类</h3>
+        <div class="panel-head"><h3>混淆矩阵 · 5×5 工况分类（仿真集）</h3>
           <div class="spacer"></div>
           <button class="btn btn-sm" id="btn-metric-basis">查看口径</button>
         </div>
@@ -200,6 +208,75 @@
     <div class="panel mb">
       <div class="panel-head"><h3>预警提前时间分布</h3></div>
       <div class="chart" id="ev-lead" style="height:280px"></div>
+    </div>`;
+  }
+
+  /* 真实公开数据集实测块：全部数字来自浏览器对 CWRU 原始波形的现场解调 */
+  function realBlock() {
+    const C = global.CWRU;
+    if (!C || !C.ready() || !C.samples().length) {
+  
+    return `<div class="panel mb"><div class="panel-head"><h3>公开数据集实测</h3></div>
+        <div class="empty">未载入 assets/data/cwru.bin，真实样本实测路径不可用（构建期运行 <code>node tools/cwru-extract.js</code>）。</div></div>`;
+    }
+    const cv = C.isCrossValidated() ? C.validate() : null;
+    const list = C.samples();
+    const pct = v => (v * 100).toFixed(1) + "%";
+    const NAME = { NO: "正常基线", IR: "内圈故障", OR: "外圈故障", B: "滚珠故障" };
+    const rows = list.map(s => {
+      const a = C.analyze(s.id);
+      const hit = a.dominant;
+      return `<tr><td><b>${s.id}.mat</b></td>
+        <td>${s.fs / 1000}k</td>
+        <td class="mono">${s.sampleCount.toLocaleString()}</td>
+        <td>${NAME[s.catalog.element] || s.catalog.element}${s.catalog.diameter ? " " + s.catalog.diameter + "″" : ""}</td>
+        <td class="mono">${s.catalog.hp} HP / ${s.rpmTheory} rpm</td>
+        <td><b>${hit ? hit.code : "NORMAL"}</b></td>
+        <td class="mono">${hit ? (hit.dev >= 0 ? "+" : "") + hit.dev.toFixed(2) + "%" : "—"}</td>
+        <td class="mono">${hit ? hit.snr.toFixed(1) : "—"}</td>
+        <td>${s.comparable === false ? `<span class="pill pill-muted">异型号轴承</span>`
+            : s.agree ? `<span class="pill pill-ok">一致</span>` : `<span class="pill pill-warn">未检出</span>`}</td>
+        <td class="mono" title="${s.sha256}">${s.sha256.slice(0, 10)}…</td></tr>`;
+    }).join("");
+    const agree = list.filter(s => s.comparable !== false);
+    const dgNote = cv && cv.bySample.degenerate.length
+      ? `<br/><b>参照不足而剔除的分类：</b>${cv.bySample.degenerate.map(x => NAME[x] || x).join("、")}（同类可用文件 &lt; 2 只，留一后没有参照中心，不计入准确率）。`
+      : "";
+    const cvTables = cv ? `
+          <div class="ds-chart-cap">混淆矩阵（行 = 官方目录真值，列 = 算法判定 · 按样本留一）</div>
+          <table class="loo-cm">
+            <tr><th></th>${cv.bySample.labels.map(L => `<th>${NAME[L] || L}</th>`).join("")}</tr>
+            ${cv.bySample.cm.map((row, i) => `<tr><td class="rowh">${NAME[cv.bySample.labels[i]] || cv.bySample.labels[i]}</td>${row.map((v, j) =>
+              `<td class="${i === j ? "diag" : (v ? "err" : "")}">${v}</td>`).join("")}</tr>`).join("")}
+          </table>
+          <div class="ds-chart-cap mt">逐类指标（含该类可用文件数，留一后需仍有参照）</div>
+          <table class="loo-cm">
+            <tr><th>类别</th><th>P</th><th>R</th><th>F1</th><th>N</th><th>文件</th></tr>
+            ${cv.bySample.per.map(x => `<tr><td class="rowh">${NAME[x.label] || x.label}</td><td>${x.precision.toFixed(3)}</td>
+              <td>${x.recall.toFixed(3)}</td><td>${x.f1.toFixed(3)}</td><td>${x.support}</td><td>${x.files}</td></tr>`).join("")}
+          </table>` : `<div class="empty">留一法交叉验证计算中（需解调 ${list.reduce((a, x) => a + (x.evalWindows || 0), 0) * 2} 段窗口的两遍协议对照）…</div>`;
+
+    return `<div class="panel mb">
+      <div class="panel-head"><h3>公开数据集实测 · NASA CWRU 原始波形</h3>
+        <span class="sub">${list.filter(x => x.comparable !== false).length} 只可比样本 · 真值取自官方目录 · 算法为包络解调 + 最近中心</span>
+      </div>
+      <div class="grid g-4 mb">
+        ${kpiCard("is-green", "元素判定一致率", agree.filter(x => x.agree).length + "/" + agree.length, "", "官方目录为真值，算法判据实测")}
+        ${kpiCard("is-cyan", "可比样本 / 真实窗口", list.filter(x => x.comparable !== false).length + " / " + list.reduce((a, x) => a + (x.evalWindows || 0), 0), "", "3.7 MB 随包分发 · 全部含 SHA-256 溯源")}
+        ${kpiCard("is-violet", "最小特征频率偏差", Math.min.apply(null, list.map(s => { const a = C.analyze(s.id); return a.dominant ? Math.abs(a.dominant.dev) : 99; })).toFixed(2), "%", "6205-2RS 理论系数 vs 包络谱实测")}
+        <div id="ev-cv-slot">${cv ? kpiCard("is-amber", "准确率（LOSO）", pct(cv.bySample.accuracy), "", cv.bySample.correct + " / " + cv.bySample.n + " 段窗口 · 同类中心排除同一 .mat 全部窗口") : kpiCard("is-amber", "留一法交叉验证", "计算中…", "", "需解调 336 段窗口，已延后至空闲时段")}</div>
+      </div>
+      <div class="loo-wrap">
+        <div>
+          <div class="ds-chart-cap">逐样本实测明细</div>
+          <div class="table-wrap"><table class="data">
+            <thead><tr><th>样本</th><th>采样率</th><th>点数</th><th>官方目录真值</th><th>工况</th><th>算法判定</th><th>偏差</th><th>SNR</th><th>比对</th><th>SHA-256</th></tr></thead>
+            <tbody>${rows}</tbody></table></div>
+        </div>
+        <div>
+          ${cvTables}
+        </div>
+      </div>
     </div>`;
   }
 
@@ -349,6 +426,9 @@
     });
   }
 
-  global.PredictEval = { render, resize, computeMetrics, leadDistribution, TOTAL, CM };
+  /* 交叉验证在空闲时段算完后，用它重建一次外壳以回填占位区 */
+  function refresh() { mounted = false; render(); }
+
+  global.PredictEval = { render, refresh, resize, computeMetrics, leadDistribution, TOTAL, CM };
   window.addEventListener("resize", () => { if (mounted) resize(); });
 })(window);

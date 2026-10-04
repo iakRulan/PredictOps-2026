@@ -1,0 +1,1070 @@
+{
+ "source": "NASA CWRU Bearing Data Center",
+ "pages": [
+  {
+   "url": "https://engineering.case.edu/bearingdatacenter/normal-baseline-data",
+   "fs": 12000,
+   "htmlSha256": "1d1f04c556f0057631df7d4e922ea92095c5e400f36a0d85846d902516b4c3d5",
+   "fetchedAt": "2026-10-03T16:59:54.983Z"
+  },
+  {
+   "url": "https://engineering.case.edu/bearingdatacenter/12k-drive-end-bearing-fault-data",
+   "fs": 12000,
+   "htmlSha256": "f593f228670d1e23493f068869814a5fc8fe392c44e2bd2ff6882ad02ac40fff",
+   "fetchedAt": "2026-10-03T16:59:54.926Z"
+  },
+  {
+   "url": "https://engineering.case.edu/bearingdatacenter/48k-drive-end-bearing-fault-data",
+   "fs": 48000,
+   "htmlSha256": "4de27d9bad3ad6fff789f46a37a423fc541595f88e59b774ece7a955616f2033",
+   "fetchedAt": "2026-10-03T16:59:54.958Z"
+  }
+ ],
+ "count": 116,
+ "map": {
+  "97": {
+   "label": "Normal_0",
+   "element": "NO",
+   "diameter": null,
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "98": {
+   "label": "Normal_1",
+   "element": "NO",
+   "diameter": null,
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "99": {
+   "label": "Normal_2",
+   "element": "NO",
+   "diameter": null,
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "100": {
+   "label": "Normal_3",
+   "element": "NO",
+   "diameter": null,
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "105": {
+   "label": "IR007_0",
+   "element": "IR",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "106": {
+   "label": "IR007_1",
+   "element": "IR",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "107": {
+   "label": "IR007_2",
+   "element": "IR",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "108": {
+   "label": "IR007_3",
+   "element": "IR",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "109": {
+   "label": "IR007_0",
+   "element": "IR",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "110": {
+   "label": "IR007_1",
+   "element": "IR",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "111": {
+   "label": "IR007_2",
+   "element": "IR",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "112": {
+   "label": "IR007_3",
+   "element": "IR",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "118": {
+   "label": "B007_0",
+   "element": "B",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "119": {
+   "label": "B007_1",
+   "element": "B",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "120": {
+   "label": "B007_2",
+   "element": "B",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "121": {
+   "label": "B007_3",
+   "element": "B",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "122": {
+   "label": "B007_0",
+   "element": "B",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "123": {
+   "label": "B007_1",
+   "element": "B",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "124": {
+   "label": "B007_2",
+   "element": "B",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "125": {
+   "label": "B007_3",
+   "element": "B",
+   "diameter": "0.007",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "130": {
+   "label": "OR007@6_0",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "6:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "131": {
+   "label": "OR007@6_1",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "6:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "132": {
+   "label": "OR007@6_2",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "6:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "133": {
+   "label": "OR007@6_3",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "6:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "135": {
+   "label": "OR007@6_0",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "6:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "136": {
+   "label": "OR007@6_1",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "6:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "137": {
+   "label": "OR007@6_2",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "6:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "138": {
+   "label": "OR007@6_3",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "6:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "144": {
+   "label": "OR007@3_0",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "3:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "145": {
+   "label": "OR007@3_1",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "3:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "146": {
+   "label": "OR007@3_2",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "3:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "147": {
+   "label": "OR007@3_3",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "3:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "148": {
+   "label": "OR007@3_0",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "3:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "149": {
+   "label": "OR007@3_1",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "3:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "150": {
+   "label": "OR007@3_2",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "3:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "151": {
+   "label": "OR007@3_3",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "3:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "156": {
+   "label": "OR007@12_0",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "12:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "158": {
+   "label": "OR007@12_1",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "12:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "159": {
+   "label": "OR007@12_2",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "12:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "160": {
+   "label": "OR007@12_3",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "12:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "161": {
+   "label": "OR007@12_0",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "12:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "162": {
+   "label": "OR007@12_1",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "12:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "163": {
+   "label": "OR007@12_2",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "12:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "164": {
+   "label": "OR007@12_3",
+   "element": "OR",
+   "diameter": "0.007",
+   "loadZone": "12:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "169": {
+   "label": "IR014_0",
+   "element": "IR",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "170": {
+   "label": "IR014_1",
+   "element": "IR",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "171": {
+   "label": "IR014_2",
+   "element": "IR",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "172": {
+   "label": "IR014_3",
+   "element": "IR",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "174": {
+   "label": "IR014_0",
+   "element": "IR",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "175": {
+   "label": "IR014_1",
+   "element": "IR",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "176": {
+   "label": "IR014_2",
+   "element": "IR",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "177": {
+   "label": "IR014_3",
+   "element": "IR",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "185": {
+   "label": "B014_0",
+   "element": "B",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "186": {
+   "label": "B014_1",
+   "element": "B",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "187": {
+   "label": "B014_2",
+   "element": "B",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "188": {
+   "label": "B014_3",
+   "element": "B",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "189": {
+   "label": "B014_0",
+   "element": "B",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "190": {
+   "label": "B014_1",
+   "element": "B",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "191": {
+   "label": "B014_2",
+   "element": "B",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "192": {
+   "label": "B014_3",
+   "element": "B",
+   "diameter": "0.014",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "197": {
+   "label": "OR014@6_0",
+   "element": "OR",
+   "diameter": "0.014",
+   "loadZone": "6:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "198": {
+   "label": "OR014@6_1",
+   "element": "OR",
+   "diameter": "0.014",
+   "loadZone": "6:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "199": {
+   "label": "OR014@6_2",
+   "element": "OR",
+   "diameter": "0.014",
+   "loadZone": "6:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "200": {
+   "label": "OR014@6_3",
+   "element": "OR",
+   "diameter": "0.014",
+   "loadZone": "6:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "201": {
+   "label": "OR014@6_0",
+   "element": "OR",
+   "diameter": "0.014",
+   "loadZone": "6:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "202": {
+   "label": "OR014@6_1",
+   "element": "OR",
+   "diameter": "0.014",
+   "loadZone": "6:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "203": {
+   "label": "OR014@6_2",
+   "element": "OR",
+   "diameter": "0.014",
+   "loadZone": "6:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "204": {
+   "label": "OR014@6_3",
+   "element": "OR",
+   "diameter": "0.014",
+   "loadZone": "6:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "209": {
+   "label": "IR021_0",
+   "element": "IR",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "210": {
+   "label": "IR021_1",
+   "element": "IR",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "211": {
+   "label": "IR021_2",
+   "element": "IR",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "212": {
+   "label": "IR021_3",
+   "element": "IR",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "213": {
+   "label": "IR021_0",
+   "element": "IR",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "214": {
+   "label": "IR021_1",
+   "element": "IR",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "215": {
+   "label": "IR021_2",
+   "element": "IR",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "217": {
+   "label": "IR021_3",
+   "element": "IR",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "222": {
+   "label": "B021_0",
+   "element": "B",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "223": {
+   "label": "B021_1",
+   "element": "B",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "224": {
+   "label": "B021_2",
+   "element": "B",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "225": {
+   "label": "B021_3",
+   "element": "B",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "226": {
+   "label": "B021_0",
+   "element": "B",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "227": {
+   "label": "B021_1",
+   "element": "B",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "228": {
+   "label": "B021_2",
+   "element": "B",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "229": {
+   "label": "B021_3",
+   "element": "B",
+   "diameter": "0.021",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "234": {
+   "label": "OR021@6_0",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "6:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "235": {
+   "label": "OR021@6_1",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "6:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "236": {
+   "label": "OR021@6_2",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "6:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "237": {
+   "label": "OR021@6_3",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "6:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "238": {
+   "label": "OR021@6_0",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "6:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "239": {
+   "label": "OR021@6_1",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "6:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "240": {
+   "label": "OR021@6_2",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "6:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "241": {
+   "label": "OR021@6_3",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "6:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "246": {
+   "label": "OR021@3_0",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "3:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "247": {
+   "label": "OR021@3_1",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "3:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "248": {
+   "label": "OR021@3_2",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "3:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "249": {
+   "label": "OR021@3_3",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "3:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "250": {
+   "label": "OR021@3_0",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "3:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "251": {
+   "label": "OR021@3_1",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "3:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "252": {
+   "label": "OR021@3_2",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "3:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "253": {
+   "label": "OR021@3_3",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "3:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "258": {
+   "label": "OR021@12_0",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "12:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "259": {
+   "label": "OR021@12_1",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "12:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "260": {
+   "label": "OR021@12_2",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "12:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "261": {
+   "label": "OR021@12_3",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "12:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "262": {
+   "label": "OR021@12_0",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "12:00",
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 48000
+  },
+  "263": {
+   "label": "OR021@12_1",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "12:00",
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 48000
+  },
+  "264": {
+   "label": "OR021@12_2",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "12:00",
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 48000
+  },
+  "265": {
+   "label": "OR021@12_3",
+   "element": "OR",
+   "diameter": "0.021",
+   "loadZone": "12:00",
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 48000
+  },
+  "3001": {
+   "label": "IR028_0",
+   "element": "IR",
+   "diameter": "0.028",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "3002": {
+   "label": "IR028_1",
+   "element": "IR",
+   "diameter": "0.028",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "3003": {
+   "label": "IR028_2",
+   "element": "IR",
+   "diameter": "0.028",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "3004": {
+   "label": "IR028_3",
+   "element": "IR",
+   "diameter": "0.028",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  },
+  "3005": {
+   "label": "B028_0",
+   "element": "B",
+   "diameter": "0.028",
+   "loadZone": null,
+   "hp": 0,
+   "rpm": 1797,
+   "fs": 12000
+  },
+  "3006": {
+   "label": "B028_1",
+   "element": "B",
+   "diameter": "0.028",
+   "loadZone": null,
+   "hp": 1,
+   "rpm": 1772,
+   "fs": 12000
+  },
+  "3007": {
+   "label": "B028_2",
+   "element": "B",
+   "diameter": "0.028",
+   "loadZone": null,
+   "hp": 2,
+   "rpm": 1750,
+   "fs": 12000
+  },
+  "3008": {
+   "label": "B028_3",
+   "element": "B",
+   "diameter": "0.028",
+   "loadZone": null,
+   "hp": 3,
+   "rpm": 1730,
+   "fs": 12000
+  }
+ }
+}

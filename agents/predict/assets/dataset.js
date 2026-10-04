@@ -1,84 +1,61 @@
 /* =========================================================================
- * 基准数据集层 —— NASA CWRU 轴承数据集 / PHM Society 工业时序数据
- * 提供特征频率理论计算与实测识别对比
+ * 基准数据集层 —— NASA CWRU 公开数据集（真实波形）+ 本系统参数化仿真
+ *
+ * 两条数据路径严格分开，不再混为一谈：
+ *   实测：assets/data/cwru.bin 里的官方原始加速度窗，经 assets/dsp.js 现场解调
+ *   仿真：SimEngine 生成的 1 Hz 时序，其频谱为模型合成，仅用于交互演示
  * ========================================================================= */
 (function (global) {
   "use strict";
 
-  /* CWRU 轴承特征频率理论系数（相对转频 X 的倍数） */
-  const FACTORS = {
-    BPFI: 5.415,   // 内圈通过频率 Ball Pass Frequency Inner
-    BPFO: 3.585,   // 外圈通过频率 Ball Pass Frequency Outer
-    BSF: 2.357,    // 滚珠自转频率 Ball Spin Frequency
-    FTF: 0.398     // 保持架频率 Fundamental Train Frequency
+  /* 特征频率理论系数（6205-2RS）—— 单一来源，避免各处取值分叉 */
+  const FACTORS = global.DSP ? global.DSP.CWRU_6205 : { BPFI: 5.4152, BPFO: 3.5840, BSF: 2.3569, FTF: 0.3982 };
+
+  const NAMES = {
+    BPFI: "内圈通过频率", BPFO: "外圈通过频率", BSF: "滚珠自转频率", FTF: "保持架频率",
+    "1X": "转频", "2X": "二倍频"
   };
 
-  const DATASETS = {
+  const ELEMENT_LABEL = { IR: "内圈故障", OR: "外圈故障", B: "滚珠故障", NO: "正常基线" };
+
+  /* 目录元数据：真实样本清单由 assets/data/cwru.json（构建期从官网 .mat 抽取）提供 */
+  const META = {
     cwru: {
-      key: "cwru",
+      key: "cwru", short: "CWRU",
       name: "NASA CWRU 轴承故障基准数据集",
-      short: "CWRU",
-      source: "Case Western Reserve University Bearing Data Center（NASA 收录）",
-      desc: "电机驱动端 / 风扇端轴承加速寿命试验，采样率 12kHz 与 48kHz，覆盖内圈故障、外圈故障（3 点钟 / 6 点钟 / 12 点钟）、滚珠故障与正常基线，故障直径 0.007″~0.040″，负载 0~3 HP。",
+      source: "Case Western Reserve University Bearing Data Center（电机驱动端 DE 加速度）",
+      url: "https://engineering.case.edu/bearingdatacenter",
+      bearing: "6205-2RS 深沟球轴承 · BPFI 5.4152X / BPFO 3.5840X / BSF 2.3569X / FTF 0.3982X",
       sampling: "12 kHz / 48 kHz",
-      load: "0 ~ 3 HP",
-      defaultSpeed: 1772,
-      samples: [
-        { id: "CWRU-97",   label: "正常基线",         state: "normal",        sr: "12 kHz", load: "0 HP", dia: "—",      note: "健康轴承基准" },
-        { id: "CWRU-105",  label: "内圈故障 12k",      state: "fault-bpfi",    sr: "12 kHz", load: "1 HP", dia: "0.007″", note: "驱动端内圈" },
-        { id: "CWRU-169",  label: "内圈故障 48k",      state: "fault-bpfi",    sr: "48 kHz", load: "0 HP", dia: "0.007″", note: "高采样率内圈" },
-        { id: "CWRU-130",  label: "外圈故障 @6点钟",   state: "fault-bpfo",    sr: "12 kHz", load: "1 HP", dia: "0.007″", note: "外圈 6 点钟方向" },
-        { id: "CWRU-144",  label: "外圈故障 @3点钟",   state: "fault-bpfo",    sr: "12 kHz", load: "2 HP", dia: "0.007″", note: "外圈 3 点钟方向" },
-        { id: "CWRU-122",  label: "滚珠故障",         state: "fault-bpfi",    sr: "12 kHz", load: "1 HP", dia: "0.007″", note: "滚珠点蚀" },
-        { id: "CWRU-3004", label: "外圈故障 0.040″",  state: "fault-bpfo",    sr: "12 kHz", load: "0 HP", dia: "0.040″", note: "严重外圈剥落" }
-      ]
+      load: "0 ~ 3 HP（标称转速 1730 ~ 1797 rpm）",
+      real: true
     },
     phm: {
-      key: "phm",
-      name: "PHM Society 工业时序数据",
-      short: "PHM",
-      source: "PHM Society Data Challenge（2012 / 2018 / 2020）",
-      desc: "PHM 协会公开挑战赛数据，覆盖轴承全寿命退化、铣削刀具磨损与齿轮箱复合故障等多工况工业时序，用于剩余寿命（RUL）预测与退化建模验证。",
-      sampling: "20 ~ 50 kHz",
-      load: "多工况变载",
-      defaultSpeed: 1500,
-      samples: [
-        { id: "PHM12-B1",  label: "轴承全寿命 1_1",   state: "normal",        sr: "25.6 kHz", load: "多工况", dia: "—", note: "健康阶段" },
-        { id: "PHM12-B34", label: "轴承中期退化",     state: "degraded",      sr: "25.6 kHz", load: "多工况", dia: "—", note: "退化中期" },
-        { id: "PHM12-B56", label: "轴承临近失效",     state: "fault-bpfi",    sr: "25.6 kHz", load: "多工况", dia: "—", note: "RUL 快速收敛" },
-        { id: "PHM18-C1",  label: "铣削刀具磨损",     state: "degraded",      sr: "50 kHz",   load: "3150 rpm", dia: "—", note: "刀具磨损 VB 监测" },
-        { id: "PHM20-G1",  label: "齿轮箱复合故障",   state: "fault-bpfo",    sr: "20 kHz",   load: "变载", dia: "—", note: "齿轮 + 轴承耦合" },
-        { id: "PHM-ISO",   label: "ISO 10816 基线",   state: "normal",        sr: "—",        load: "—", dia: "—", note: "标准振动烈度基线" }
-      ]
+      key: "phm", short: "PHM",
+      name: "PHM Society 公开挑战赛数据",
+      source: "PHM Society Data Challenge（2012 轴承全寿命 / 2018 刀具磨损 / 2020 齿轮箱）",
+      bearing: "多型号", sampling: "20 ~ 50 kHz", load: "多工况变载",
+      real: false,
+      note: "本作品未载入 PHM 原始波形，仅登记目录信息，不参与实测比对。"
     }
   };
 
-  /**
-   * 特征频率理论计算
-   * @param {number} speedRpm 轴转速 rpm
-   * @returns {Array} [{code,name,factor,hz}]
-   */
   function theory(speedRpm) {
     const rot = speedRpm / 60;
-    return [
-      { code: "BPFI", name: "内圈通过频率", factor: FACTORS.BPFI, hz: rot * FACTORS.BPFI },
-      { code: "BPFO", name: "外圈通过频率", factor: FACTORS.BPFO, hz: rot * FACTORS.BPFO },
-      { code: "BSF",  name: "滚珠自转频率", factor: FACTORS.BSF,  hz: rot * FACTORS.BSF },
-      { code: "FTF",  name: "保持架频率",   factor: FACTORS.FTF,  hz: rot * FACTORS.FTF }
-    ];
+    return ["BPFI", "BPFO", "BSF", "FTF"].map(code =>
+      ({ code, name: NAMES[code], factor: FACTORS[code], hz: rot * FACTORS[code] }));
   }
 
   /**
-   * 算法识别结果仿真：依据当前工况判断各特征频率是否被检出，并给出识别偏差
+   * 仿真路径的特征频率"识别"表。
+   * 注意：本表来自本系统合成频谱（charts.js buildSpectrum），属模型输出，
+   * 不是对任何真实信号的测量；真实测量见 CWRU.measured 表。
    */
-  function identify(stateKey, speedRpm) {
+  function identifySim(stateKey, speedRpm) {
     const t = theory(speedRpm);
     const active = { "fault-bpfi": "BPFI", "fault-bpfo": "BPFO" }[stateKey] || null;
     return t.map(x => {
-      const isActive = x.code === active;
-      const isRot = x.code === "BPFI" || x.code === "BPFO";
-      const detected = isActive;
-      // 识别偏差：故障分量 0.3%~1.8%，未触发分量给弱响应
+      const detected = x.code === active;
       const dev = detected ? (0.3 + Math.random() * 1.5) : (3.5 + Math.random() * 3);
       const measured = x.hz * (1 + dev / 100);
       return {
@@ -86,11 +63,17 @@
         theory: Math.round(x.hz * 10) / 10,
         measured: Math.round(measured * 10) / 10,
         dev: Math.round(dev * 10) / 10,
-        detected: detected,
-        verdict: detected ? "已识别 · 特征频率吻合" : (stateKey === "normal" ? "未检出 · 处于健康基线" : "未触发 · 能量占比低")
+        detected,
+        verdict: detected ? "模型置入该分量" : (stateKey === "normal" ? "无故障分量" : "未置入")
       };
     });
   }
 
-  global.Datasets = { FACTORS, defs: DATASETS, theory, identify };
+  global.Datasets = {
+    FACTORS, NAMES, ELEMENT_LABEL, META, theory, identifySim,
+    /** 真实样本清单（波形到位时返回，否则空数组） */
+    realSamples() {
+      return global.CWRU && global.CWRU.ready() ? global.CWRU.samples() : [];
+    }
+  };
 })(window);

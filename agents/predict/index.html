@@ -31,15 +31,15 @@
     </div>
     <div class="topbar-spacer"></div>
     <div class="kpi-strip">
-      <div class="kpi-chip"><em>预警准确率</em><b id="kpi-accuracy">94.6%</b></div>
-      <div class="kpi-chip"><em>实时告警</em><b id="kpi-alerts">0</b></div>
-      <div class="kpi-chip"><em>在监设备</em><b id="kpi-devices">3</b></div>
+      <button class="kpi-chip" data-goto="dataset" title="查看模型评估依据"><em>预警准确率</em><b id="kpi-accuracy">94.6%</b></button>
+      <button class="kpi-chip" data-goto="inference" title="查看最近预警事件流"><em>实时告警</em><b id="kpi-alerts">0</b></button>
+      <button class="kpi-chip" data-goto="perception" title="查看在监设备"><em>在监设备</em><b id="kpi-devices">3</b></button>
     </div>
-    <span class="pill pill-info"><span class="dot pulse"></span>数据采集中</span>
-    <button class="pill pill-warn" id="btn-quick-fault" title="一键注入轴承内圈故障并触发预警与工单">
+    <span class="pill pill-info" id="live-badge"><span class="dot pulse"></span>数据采集中</span>
+    <button class="pill pill-warn" id="btn-quick-fault" title="一键注入轴承内圈故障并触发预警与工单（快捷键 F）">
       ⚡ 快速故障注入
     </button>
-    <button class="pill pill-ok" id="btn-quick-normal" title="恢复正常态健康基线">
+    <button class="pill pill-ok" id="btn-quick-normal" title="恢复正常态健康基线（快捷键 N）">
       ✅ 恢复正常态
     </button>
     <button class="pill pill-info" id="btn-topbar-export" title="导出维护分析报表">
@@ -53,10 +53,10 @@
   </header>
 
   <!-- ================= 侧边导航 ================= -->
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="系统导航">
     <div class="nav-label">系统层级</div>
 
-    <button class="nav-item active" data-view="perception">
+    <button class="nav-item active" data-view="perception" aria-current="page">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M2 12h4l2.5-7 3.5 14 3-9 2 2h5" />
       </svg>
@@ -99,12 +99,26 @@
       系统版本 <b>v1.0.0</b><br />
       采样频率 <b>1 Hz</b> · 窗口 <b>60s</b><br />
       推理引擎 <b>Edge-AI</b><br />
+      <button class="kbd-hint" id="btn-shortcuts" title="查看键盘快捷键（? ）">⌨ 快捷键 · 1~5 切换视图</button><br />
       <span style="color:var(--txt-2)">© 2026 PredictOps</span>
     </div>
   </aside>
 
   <!-- ================= 主内容区 ================= -->
   <main class="main">
+
+    <!-- ======== 全局设备上下文条（跨视图可见） ======== -->
+    <div class="context-bar" id="context-bar">
+      <div class="device-strip" id="device-strip" role="group" aria-label="选择监控设备"><!-- JS 渲染 --></div>
+      <div class="ctx-right">
+        <span class="ctx-trend mono" id="m-trend">趋势：--</span>
+        <span id="state-banner" class="pill pill-ok"><span class="dot"></span>正常态</span>
+        <button class="btn btn-sm" id="btn-pause" aria-pressed="false" title="暂停 / 继续实时数据流（快捷键 空格）">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6v12M15 6v12"/></svg>
+          <span id="pause-label">暂停</span>
+        </button>
+      </div>
+    </div>
 
     <!-- ======== 感知层 ======== -->
     <section class="view active" id="view-perception">
@@ -113,12 +127,9 @@
         <p>采集振动（加速度/位移）、温度、电流信号，建立设备健康基线</p>
         <div class="spacer"></div>
         <span class="pill pill-muted">健康分 <b id="m-health" class="mono" style="margin-left:5px">--</b></span>
-        <span id="state-banner" class="pill pill-ok"><span class="dot"></span>正常态</span>
       </div>
 
-      <div class="device-strip" id="device-strip"><!-- JS 渲染 --></div>
-
-      <div class="panel mt">
+      <div class="panel">
         <div class="panel-head">
           <h3>工况切换与故障模拟</h3>
           <span class="sub">模拟数控机床 / 空压机 / 离心泵的轴承内圈、外圈故障等典型工况</span>
@@ -153,7 +164,7 @@
           <div class="metric-label">运行电流 · 实时</div>
           <div class="metric-value"><span id="m-current">--</span><small>A</small></div>
           <div class="spark" id="spark-current"></div>
-          <div class="spark-label"><span>近 60s</span><span id="m-trend">趋势：平稳</span></div>
+          <div class="spark-label"><span>近 60s</span><span>负载波动监测</span></div>
         </div>
       </div>
 
@@ -167,8 +178,9 @@
           <div class="chart" id="chart-spectrum" style="height:300px"></div>
           <div class="cursor-bar">
             <span class="lbl">告警游标</span>
-            <input type="range" id="spec-cursor" min="0" max="1000" step="20" value="60" />
+            <input type="range" id="spec-cursor" min="0" max="1000" step="20" value="60" aria-label="频谱游标频率（Hz）" />
             <span class="cursor-readout" id="spec-cursor-readout">拖动游标查看频点幅值</span>
+            <div class="segmented segmented-xs" id="spec-snap" role="group" aria-label="游标快速定位"></div>
           </div>
         </div>
       </div>
@@ -302,7 +314,11 @@
 
       <div class="grid g-wo mt">
         <div class="panel">
-          <div class="panel-head"><h3>智能检修工单</h3></div>
+          <div class="panel-head">
+            <h3>智能检修工单</h3>
+            <div class="spacer"></div>
+            <div class="segmented segmented-xs" id="wo-filter" role="group" aria-label="工单状态筛选"></div>
+          </div>
           <div class="wo-list" id="wo-list"><div class="empty">暂无工单</div></div>
         </div>
         <div class="panel">
@@ -347,6 +363,10 @@
             <span class="sub">自然语言 · 结构化诊断方案</span>
             <div class="spacer"></div>
             <span class="pill pill-info"><span class="dot pulse"></span>在线</span>
+            <button class="btn btn-sm btn-ghost" id="btn-chat-clear" title="清空对话记录">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/></svg>
+              清空
+            </button>
           </div>
           <div class="quick-ask mb">
             <button data-ask="轴承温度过高排查SOP">
@@ -374,9 +394,10 @@
             <button data-ask="当前预警准确率和误报率多少？">预警指标</button>
           </div>
           <div class="chat">
-            <div class="chat-log" id="chat-log"></div>
+            <div class="chat-log" id="chat-log" aria-live="polite"></div>
             <form class="chat-input" id="chat-form" autocomplete="off">
-              <input id="chat-input" type="text" placeholder="输入设备故障问题，如：数控机床主轴振动异常如何处理？" />
+              <label class="sr-only" for="chat-input">输入设备故障问题</label>
+              <input id="chat-input" type="text" placeholder="输入设备故障问题，如：数控机床主轴振动异常如何处理？（/ 快速聚焦）" />
               <button class="btn btn-primary" type="submit">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
                 发送
@@ -401,24 +422,24 @@
 
 <!-- ================= 抽屉 ================= -->
 <div class="drawer-mask" id="drawer-mask"></div>
-<aside class="drawer" id="drawer">
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
   <div class="drawer-head">
     <h3 id="drawer-title">工单详情</h3>
-    <button class="drawer-close" id="drawer-close">
+    <button class="drawer-close" id="drawer-close" aria-label="关闭详情面板">
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
   <div class="drawer-body" id="drawer-body"></div>
 </aside>
 
-<div class="toast-wrap" id="toast-wrap"></div>
+<div class="toast-wrap" id="toast-wrap" role="status" aria-live="polite" aria-label="系统通知"></div>
 
 <!-- ================= 通用模态框 ================= -->
 <div class="modal-mask" id="modal-mask"></div>
-<div class="modal" id="modal">
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-head">
     <h3 id="modal-title"></h3>
-    <button class="drawer-close" id="modal-close">
+    <button class="drawer-close" id="modal-close" aria-label="关闭弹窗">
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
@@ -427,7 +448,9 @@
 
 <script src="assets/echarts.min.js"></script>
 <script src="assets/data.js"></script>
+<script src="assets/dsp.js"></script>
 <script src="assets/dataset.js"></script>
+<script src="assets/cwru.js"></script>
 <script src="assets/knowledge.js"></script>
 <script src="assets/charts.js"></script>
 <script src="assets/eval.js"></script>

@@ -32,10 +32,18 @@
   function mount(id) {
     const el = document.getElementById(id);
     if (!el) return null;
-    if (!registry[id]) registry[id] = echarts.init(el, null, { renderer: "canvas" });
+    if (!registry[id]) {
+      if (!el.clientWidth) return null;         // 隐藏视图内不初始化，避免 0 宽实例
+      registry[id] = echarts.init(el, null, { renderer: "canvas" });
+    }
     return registry[id];
   }
-  function resizeAll() { Object.values(registry).forEach(c => c && c.resize()); }
+  function resizeAll() {
+    Object.keys(registry).forEach(k => {
+      const c = registry[k], el = document.getElementById(k);
+      if (c && el && el.clientWidth) c.resize();   // 跳过不可见容器，避免把尺寸压回 100px
+    });
+  }
 
   /* ---------------- 0. 卡片迷你趋势图（sparkline） ---------------- */
   function renderSparkline(id, data, color) {
@@ -71,26 +79,38 @@
   }
 
   /* ---------------- 1. 时序趋势图 ---------------- */
-  function renderTrend(id, ch) {
+  function renderTrend(id, ch, force) {
     const c = mount(id); if (!c) return;
+    if (force) c.__streamed = false;            // 换设备/换工况：基线与坐标轴需整体重建
     const def = ch.def, base = def.base;
     const isVib = id === "chart-vib";
     const unitPrimary = isVib ? "m/s²" : "°C";
     const series = isVib
       ? [
-        { name: "振动加速度", type: "line", data: ch.hist.acc, yAxisIndex: 0, unit: "m/s²", color: C.cyan },
-        { name: "振动位移", type: "line", data: ch.hist.disp, yAxisIndex: 1, unit: "µm", color: C.violet }
+        { name: "振动加速度", type: "line", data: ch.hist.acc.slice(), yAxisIndex: 0, unit: "m/s²", color: C.cyan },
+        { name: "振动位移", type: "line", data: ch.hist.disp.slice(), yAxisIndex: 1, unit: "µm", color: C.violet }
       ]
       : id === "chart-temp"
-        ? [{ name: "温度", type: "line", data: ch.hist.temp, yAxisIndex: 0, unit: "°C", color: C.amber }]
-        : [{ name: "电流", type: "line", data: ch.hist.current, yAxisIndex: 0, unit: "A", color: C.green }];
+        ? [{ name: "温度", type: "line", data: ch.hist.temp.slice(), yAxisIndex: 0, unit: "°C", color: C.amber }]
+        : [{ name: "电流", type: "line", data: ch.hist.current.slice(), yAxisIndex: 0, unit: "A", color: C.green }];
 
     const baseLine = isVib ? base.acc
       : id === "chart-temp" ? base.temp : base.current;
 
+    if (c.__streamed) {
+      // 稳态滚动更新：只下发数据，保留上一帧动画曲线，折线平滑左移而非整图重绘
+      c.setOption({
+        xAxis: { data: ch.time.slice() },
+        series: series.map(s => ({ data: s.data }))
+      });
+      return;
+    }
+
     c.setOption({
       backgroundColor: "transparent",
       animationDuration: 260,
+      animationDurationUpdate: 240,
+      animationEasingUpdate: "linear",
       grid: { left: 6, right: isVib ? 6 : 10, top: 30, bottom: 4, containLabel: true },
       tooltip: tooltip({
         formatter: params => {
@@ -134,7 +154,7 @@
         } : undefined
       }))
     }, true);
-    resizeAll();
+    c.__streamed = true;
   }
 
   /* ---------------- 2. 振动频谱（主频 / 特征频率 / 告警游标） ---------------- */
@@ -228,7 +248,6 @@
         markLine: { silent: true, symbol: "none", data: marks }
       }]
     }, true);
-    resizeAll();
   }
 
 
@@ -467,9 +486,73 @@
     }, true);
   }
 
+  /* ---------------- 9. 真实波形 / 真实频谱 / 包络谱 ---------------- */
+  // 单条谱线：x 轴为频率，marks 为 [{freq,label,color}]，实测算峰与理论值成对标注
+  function renderSpectrumLine(id, spec, fmax, marks, opts) {
+    const c = mount(id); if (!c) return;
+    opts = opts || {};
+    const kMax = Math.min(spec.mag.length - 1, Math.floor(fmax / spec.df));
+    const data = [];
+    for (let k = 1; k <= kMax; k++) data.push([+spec.freqs[k].toFixed(2), +spec.mag[k].toFixed(6)]);
+    c.setOption({
+      backgroundColor: "transparent",
+      animation: false,
+      grid: { left: 6, right: 14, top: 26, bottom: 4, containLabel: true },
+      tooltip: tooltip({
+        trigger: "axis",
+        formatter: p => p[0].data ? `频率 <b>${p[0].data[0]}</b> Hz<br/>幅值 <b>${p[0].data[1]}</b>` : ""
+      }),
+      xAxis: Object.assign({
+        type: "value", name: opts.xName || "频率 Hz", max: fmax,
+        nameTextStyle: { color: C.txt2, fontSize: 9.5 },
+        axisLabel: { color: C.txt2, fontSize: 9 }
+      }, baseAxis(true)),
+      yAxis: Object.assign({
+        type: "value", name: opts.yName || "幅值", max: opts.ymax || null,
+        nameTextStyle: { color: C.txt2, fontSize: 9.5 }
+      }, baseAxis(false)),
+      series: [{
+        type: "line", data, symbol: "none",
+        lineStyle: { width: 1.2, color: opts.color || C.cyan },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: hexA(opts.color || C.cyan, 0.28) }, { offset: 1, color: hexA(opts.color || C.cyan, 0) }
+          ])
+        },
+        markLine: {
+          silent: true, symbol: "none",
+          data: (marks || []).map(m => ({
+            xAxis: m.freq,
+            lineStyle: { color: m.color || C.amber, width: m.width || 1.2, type: m.type || "solid" },
+            label: { formatter: m.label, color: m.color || C.amber, fontSize: 9, position: m.pos || "insideEndTop" }
+          }))
+        }
+      }]
+    }, true);
+  }
+
+  function renderRealWave(id, x, fs, opts) {
+    const c = mount(id); if (!c) return;
+    opts = opts || {};
+    const n = Math.min(x.length, opts.maxPoints || 4000);
+    const step = Math.max(1, Math.floor(x.length / n));
+    const data = [];
+    for (let i = 0; i < x.length; i += step) data.push([+(i / fs * 1000).toFixed(2), +x[i].toFixed(5)]);
+    c.setOption({
+      backgroundColor: "transparent",
+      animation: false,
+      grid: { left: 6, right: 14, top: 26, bottom: 4, containLabel: true },
+      tooltip: tooltip({ formatter: p => `t = <b>${p.data[0]}</b> ms<br/>a = <b>${p.data[1]}</b> g` }),
+      xAxis: Object.assign({ type: "value", name: "时间 ms", nameTextStyle: { color: C.txt2, fontSize: 9.5 }, axisLabel: { color: C.txt2, fontSize: 9 } }, baseAxis(true)),
+      yAxis: Object.assign({ type: "value", name: "加速度 g", scale: true, nameTextStyle: { color: C.txt2, fontSize: 9.5 } }, baseAxis(false)),
+      series: [{ type: "line", data, symbol: "none", lineStyle: { width: 1, color: C.cyan } }]
+    }, true);
+  }
+
   global.Charts = {
     renderSparkline, renderTrend, renderSpectrum, renderGauge, renderRadar,
     renderRul, renderDegrade, renderParts, renderWoPie,
+    renderSpectrumLine, renderRealWave,
     resizeAll, registry,
     get: id => registry[id]
   };
