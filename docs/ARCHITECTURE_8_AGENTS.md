@@ -74,6 +74,14 @@ https://<PORT>-08fe446a69af16a6.code.cosmoplat.cn/
 
 **自包含原则**：每个 `agents/<name>/` 目录自带完整 `assets/`，可单独打包迁移部署，互不依赖。
 
+> **落地状态（本仓库当前实际内容）**：本文是**设计方案**，上表 8 个智能体中目前只有
+> **`agents/predict/`（赛题 04 参赛主体）已实现并部署**，其余 7 个智能体与 `portal/` 门户、
+> `start-all.sh` 多服务启动器均为**设计稿，尚未编码**。请勿按已交付理解。
+>
+> `agents/predict/assets/core.js`（下节 `AgentUI` 契约）已实现但**当前未被 predict 入口加载**：
+> 该页的提示 / 弹窗 / 抽屉由 `app.js` 内部实现承担；`eval.js` 在 `AgentUI` 存在时优先用它、
+> 否则回退 `App.openModal`，因此该文件是为后续智能体预留的共享层，不影响现有功能。
+
 ---
 
 ## 四、 共享运行时 `core.js` 契约
