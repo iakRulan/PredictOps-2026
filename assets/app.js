@@ -1174,14 +1174,41 @@
       const wrap = document.getElementById("supply-chain");
       if (!wrap) return;
       const risky = PARTS.filter(p => p.stock < p.min * 1.4);
-      wrap.innerHTML = risky.map(p => {
+      if (!risky.length) {
+        wrap.innerHTML = `<div class="empty">${svgEmpty()}供应链状态全部正常，无在途补货风险</div>`;
+        return;
+      }
+      wrap.innerHTML = `<div class="sc-radar-feed">${risky.map(p => {
         const crit = p.stock < p.min;
-        return `<div class="tl-item ${crit ? "danger" : "warn"}">
-          <div class="tl-time">${p.code} · ${p.supplier}</div>
-          <div class="tl-text">${p.name} ${crit ? "库存低于安全线，已触发加急采购" : "库存偏低，建议补货"}</div>
-          <div class="tl-text tl-sub">当前 ${p.stock}${p.unit} / 安全 ${p.min}${p.unit} · 标准交期 ${p.lead} 天 · ETA ${crit ? Math.max(1, Math.round(p.lead * 0.6)) : p.lead} 天</div>
+        const eta = crit ? Math.max(1, Math.round(p.lead * 0.6)) : p.lead;
+        return `<div class="sc-radar-card ${crit ? "danger" : "warn"}">
+          <div class="sc-top">
+            <span class="sc-title">
+              <span class="dot ${crit ? "pulse" : ""}" style="background:${crit ? "var(--red)" : "var(--amber)"}"></span>
+              ${p.name}
+            </span>
+            <span class="pill ${crit ? "pill-danger" : "pill-warn"}" style="font-size:10px">${crit ? "库存告急 · 加急采购" : "偏低预警 · 建议备货"}</span>
+          </div>
+          <div class="sc-metrics">
+            <div class="sc-m-item">
+              <span class="sc-m-lbl">当前/安全</span>
+              <span class="sc-m-val ${crit ? "danger" : "warn"}">${p.stock} / ${p.min} ${p.unit}</span>
+            </div>
+            <div class="sc-m-item">
+              <span class="sc-m-lbl">标准交期</span>
+              <span class="sc-m-val">${p.lead} 天</span>
+            </div>
+            <div class="sc-m-item">
+              <span class="sc-m-lbl">加急 ETA</span>
+              <span class="sc-m-val" style="color:var(--cyan)">${eta} 天</span>
+            </div>
+          </div>
+          <div class="sc-foot">
+            <span class="sc-supplier">供应商：${p.supplier}（${p.code}）</span>
+            <span class="sc-action-tag ${crit ? "pill pill-danger" : "pill pill-muted"}">${crit ? "已向供应商锁定加急配额" : "常态采购备货队列"}</span>
+          </div>
         </div>`;
-      }).join("") || `<div class="empty">供应链状态正常，无预警项</div>`;
+      }).join("")}</div>`;
     },
 
     simulateFaultWO() {
