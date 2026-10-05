@@ -677,6 +677,39 @@
       tip("m-disp", `振动位移 · 峰峰值监测\n健康基线 ${d.base.disp.toFixed(1)} µm`);
       tip("m-temp", `轴承温度\n健康基线 ${d.base.temp} ℃ · 预警 ${d.limits.temp} ℃ · 停机 ${d.limits.temp + 12} ℃`);
       tip("m-current", `运行电流\n额定 ${d.base.current} A · 上限 ${d.limits.current} A`);
+
+      // 实时更新右侧时频域物理特征矩阵
+      const mf = document.getElementById("matrix-features");
+      if (mf) {
+        const lastAcc = last(h.acc) || 1.2;
+        const rms = (lastAcc * 0.707).toFixed(2);
+        const peak = (lastAcc * 1.414).toFixed(2);
+        const crest = (peak / (rms || 1)).toFixed(2);
+        const st = global.IOT.STATES[ch.state];
+        const statusCls = st.level === 0 ? "color:var(--green)" : st.level === 1 ? "color:var(--amber)" : "color:var(--red)";
+        mf.innerHTML = `
+          <div class="matrix-cell">
+            <span class="mc-k">有效值 (RMS)</span>
+            <span class="mc-v">${rms} <small style="font-size:10px">m/s²</small></span>
+            <span class="mc-sub">能量基线正常</span>
+          </div>
+          <div class="matrix-cell">
+            <span class="mc-k">峰值指标 (Peak)</span>
+            <span class="mc-v">${peak} <small style="font-size:10px">m/s²</small></span>
+            <span class="mc-sub">峰峰值平稳</span>
+          </div>
+          <div class="matrix-cell">
+            <span class="mc-k">特征谱线状态</span>
+            <span class="mc-v" style="${statusCls}">${st.level === 0 ? "基线正常" : st.label.split(" ")[0]}</span>
+            <span class="mc-sub">${ch.cursor ? ch.cursor + " Hz 游标跟踪" : "1X 转频跟踪中"}</span>
+          </div>
+          <div class="matrix-cell">
+            <span class="mc-k">频域能量集中度</span>
+            <span class="mc-v mono">${st.level === 0 ? "4.2%" : "32.8%"}</span>
+            <span class="mc-sub">${st.level === 0 ? "无冲击谐波" : "故障频带能量升高"}</span>
+          </div>
+        `;
+      }
     },
 
     updateDeviceHealth() {
@@ -759,22 +792,30 @@
       }
       wrap.innerHTML = alerts.map(a => {
         const crit = a.level === "critical";
-        return `<div class="alert-row ${crit ? "critical" : ""}" data-focus-device="${a.device}" role="button" tabindex="0"
-          title="点击切换到 ${a.deviceName}（${a.device}）的监控视图">
-          <div class="ar-top">
-            <span class="pill ${crit ? "pill-danger" : "pill-warn"}">${crit ? "故障预警" : "劣化预警"}</span>
-            ${a.historical ? `<span class="pill pill-muted" style="font-size:10px">历史</span>` : ""}
-            <span class="ar-device">${a.deviceName}（${a.device}）</span>
-            <span class="ar-id">${a.id}</span>
-            <div class="spacer" style="flex:1"></div>
-            <span class="ar-time">${a.time}${a.ts ? " · " + relTime(a.ts) : ""}</span>
+        return `<div class="alert-card-v2 ${crit ? "critical" : ""}" data-focus-device="${a.device}" role="button" tabindex="0"
+          title="点击定位到 ${a.deviceName}（${a.device}）">
+          <div class="ac-header">
+            <div class="ac-title-wrap">
+              <span class="pill ${crit ? "pill-danger" : "pill-warn"} ac-badge"><span class="dot ${crit ? "pulse" : ""}"></span>${crit ? "严重故障告警" : "早期预警"}</span>
+              <span class="ac-dev">${a.deviceName}</span>
+              ${a.historical ? `<span class="pill pill-muted" style="font-size:10.5px">历史记录</span>` : `<span class="pill pill-ok" style="font-size:10.5px">实时活跃</span>`}
+            </div>
+            <span class="ac-time">${a.time}${a.ts ? " · " + relTime(a.ts) : ""}</span>
           </div>
-          <div class="ar-fields">
-            <div class="ar-field"><span class="k">故障类型</span><span class="v ${crit ? "danger" : "warn"}">${a.stateLabel}</span></div>
-            <div class="ar-field"><span class="k">提前预警时长</span><span class="v">${a.leadHours} h</span></div>
-            <div class="ar-field"><span class="k">模型置信度</span><span class="v">${a.confidence}%</span></div>
+          <div class="ac-metrics">
+            <div class="ac-metric-item">
+              <span class="lbl">提前预警窗口</span>
+              <span class="val ${crit ? "danger" : "warn"}">${a.leadHours} <small style="font-size:11px">小时</small></span>
+            </div>
+            <div class="ac-metric-item">
+              <span class="lbl">模型识别置信度</span>
+              <span class="val">${a.confidence}%</span>
+            </div>
           </div>
-          <div class="ar-note">特征：${a.feature} · 误报率 ${a.falseRate}%${a.handled ? " · 已复位" : ""}</div>
+          <div class="ac-desc">
+            <span><b>${a.stateLabel}</b> · ${a.feature}</span>
+            <span class="ac-action-hint">定位设备 →</span>
+          </div>
         </div>`;
       }).join("");
       const focus = el => {
@@ -1106,20 +1147,27 @@
     renderPartsTable() {
       const wrap = document.getElementById("parts-table");
       if (!wrap) return;
-      wrap.innerHTML = `<table class="data">
-        <thead><tr><th>备件名称</th><th>库存</th><th>预计可用</th><th>状态</th></tr></thead>
-        <tbody>${PARTS.map(p => {
+      wrap.innerHTML = `<div class="parts-stock-list">${PARTS.map(p => {
         const ratio = p.stock / p.min;
         const st = ratio < 1 ? ["告急", "danger"] : ratio < 1.4 ? ["偏低", "warn"] : ["充足", "ok"];
+        const pct = Math.min(100, Math.round((p.stock / (p.min * 2)) * 100));
         const days = availableDays(p);
-        const dayCls = days < 30 ? "color:var(--red)" : days < 90 ? "color:var(--amber)" : "color:var(--txt-1)";
-        return `<tr>
-            <td><b>${p.name}</b></td>
-            <td class="mono">${p.stock} ${p.unit}</td>
-            <td class="mono" style="${dayCls}">${days >= 999 ? "—" : days + " 天"}</td>
-            <td><span class="pill pill-${st[1]}">${st[0]}</span></td>
-          </tr>`;
-      }).join("")}</tbody></table>`;
+        const dayCls = days < 30 ? "danger" : days < 90 ? "warn" : "ok";
+        const devChips = p.devices.map(d => `<span class="pm-dev-chip">${d}</span>`).join(" ");
+        return `<div class="part-meter-card">
+          <div class="pm-top">
+            <span class="pm-name">${p.name} ${devChips}</span>
+            <span class="pill pill-${st[1]}" style="font-size:10px">${st[0]}</span>
+          </div>
+          <div class="pm-meter-wrap" title="当前库存 ${p.stock}${p.unit} / 安全线 ${p.min}${p.unit}">
+            <div class="pm-meter-bar ${st[1]}" style="width:${Math.max(12, pct)}%"></div>
+          </div>
+          <div class="pm-meta-row">
+            <span class="pm-stock">实存 <b class="mono" style="color:var(--txt-0)">${p.stock}</b> ${p.unit} · 安全线 ${p.min}${p.unit}</span>
+            <span class="pm-days ${dayCls}">预计可用 <b class="mono">${days >= 999 ? "充足" : days + " 天"}</b></span>
+          </div>
+        </div>`;
+      }).join("")}</div>`;
     },
 
     renderSupplyChain() {

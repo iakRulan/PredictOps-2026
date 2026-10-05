@@ -1038,3 +1038,340 @@ table.data tr.row-active td:first-child { box-shadow: inset 3px 0 0 var(--cyan);
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* =========================================================================
+ * 顶层工业控制台 · 最右列专业架构与组件重塑 (Unified Right Column Redesign)
+ * ========================================================================= */
+
+/* ---- 统一双栏主栅格：消除错位，左主区 1.58fr : 右专业分析列 1fr ---- */
+.g-master-split {
+  display: grid;
+  grid-template-columns: 1.58fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+.left-main-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.right-col-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* 统一面板高端科技工业质感 */
+.right-col-stack .panel,
+.left-main-stack .panel {
+  background: linear-gradient(180deg, rgba(16, 23, 36, 0.95), rgba(11, 16, 26, 0.98));
+  border: 1px solid rgba(34, 211, 238, 0.16);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+.right-col-stack .panel::before,
+.left-main-stack .panel::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.4), transparent);
+  pointer-events: none;
+}
+
+/* ---- 感知层右列：频谱分析仪 HUD 与实时物理特征矩阵 ---- */
+.hud-spectrum-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.hud-cursor-box {
+  background: rgba(6, 11, 19, 0.85);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 10px;
+}
+.hud-cursor-readout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.hud-cursor-readout .h-freq {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cyan);
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
+}
+.hud-cursor-readout .h-amp {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--txt-1);
+}
+.hud-cursor-readout .h-amp b {
+  color: var(--amber);
+  font-size: 14px;
+}
+.hud-cursor-track {
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.15), rgba(59, 130, 246, 0.25));
+  border-radius: 4px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+.hud-cursor-track::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+  border: 2px solid #04121a;
+  cursor: pointer;
+}
+.hud-cursor-snaps {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.hud-cursor-snaps button {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  color: var(--txt-1);
+  transition: all 0.15s ease;
+}
+.hud-cursor-snaps button:hover {
+  background: rgba(34, 211, 238, 0.2);
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+/* 多维物理特征矩阵小面板 */
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+.matrix-cell {
+  background: rgba(6, 11, 19, 0.7);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+.matrix-cell .mc-k {
+  font-size: 10.5px;
+  color: var(--txt-2);
+  display: block;
+  margin-bottom: 3px;
+}
+.matrix-cell .mc-v {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--txt-0);
+}
+.matrix-cell .mc-sub {
+  font-size: 10px;
+  color: var(--cyan);
+  margin-top: 2px;
+  display: block;
+}
+
+/* ---- 推理层右列：流线型实时预警事件流中枢 ---- */
+.alert-stream-v2 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.alert-card-v2 {
+  background: linear-gradient(135deg, rgba(16, 24, 38, 0.85), rgba(11, 16, 26, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 4px solid var(--amber);
+  border-radius: 10px;
+  padding: 13px 15px;
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+.alert-card-v2:hover {
+  border-color: rgba(34, 211, 238, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 12px rgba(34, 211, 238, 0.15);
+  transform: translateY(-2px);
+}
+.alert-card-v2.critical {
+  border-left-color: var(--red);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.15);
+}
+.alert-card-v2 .ac-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+.alert-card-v2 .ac-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.alert-card-v2 .ac-dev {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.alert-card-v2 .ac-badge {
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.alert-card-v2 .ac-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt-2);
+}
+.alert-card-v2 .ac-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: rgba(4, 9, 16, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.alert-card-v2 .ac-metric-item {
+  display: flex;
+  flex-direction: column;
+}
+.alert-card-v2 .ac-metric-item .lbl {
+  font-size: 10px;
+  color: var(--txt-2);
+}
+.alert-card-v2 .ac-metric-item .val {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cyan);
+}
+.alert-card-v2 .ac-metric-item .val.danger { color: var(--red); }
+.alert-card-v2 .ac-metric-item .val.warn { color: var(--amber); }
+.alert-card-v2 .ac-desc {
+  font-size: 11px;
+  color: var(--txt-1);
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.alert-card-v2 .ac-action-hint {
+  font-size: 10.5px;
+  color: var(--cyan);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---- 决策层右列：可视化备件库存水位看板 ---- */
+.parts-stock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.part-meter-card {
+  background: linear-gradient(135deg, rgba(16, 24, 38, 0.8), rgba(9, 14, 23, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: all 0.15s ease;
+}
+.part-meter-card:hover {
+  border-color: rgba(34, 211, 238, 0.3);
+  background: linear-gradient(135deg, rgba(20, 30, 48, 0.9), rgba(11, 16, 26, 0.95));
+}
+.pm-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.pm-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+.pm-dev-chip {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--cyan);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+}
+.pm-meter-wrap {
+  position: relative;
+  height: 8px;
+  background: rgba(3, 7, 13, 0.9);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 6px 0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.pm-meter-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+.pm-meter-bar.ok { background: linear-gradient(90deg, #10b981, #34d399); }
+.pm-meter-bar.warn { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.pm-meter-bar.danger { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+
+.pm-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--txt-2);
+  margin-top: 4px;
+}
+.pm-meta-row .pm-stock {
+  font-family: var(--mono);
+  color: var(--txt-1);
+}
+.pm-meta-row .pm-days {
+  font-family: var(--mono);
+  font-weight: 600;
+}
+.pm-meta-row .pm-days.ok { color: var(--green); }
+.pm-meta-row .pm-days.warn { color: var(--amber); }
+.pm-meta-row .pm-days.danger { color: var(--red); font-weight: 700; }
+
+/* 响应式断点适配 */
+@media (max-width: 1200px) {
+  .g-master-split {
+    grid-template-columns: 1fr;
+  }
+}

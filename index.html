@@ -6,7 +6,7 @@
 <title>智维 PredictOps · 工业设备智能健康管理与预测性维护平台</title>
 <meta name="description" content="面向制造业关键设备的智能管理与预测性维护系统，覆盖感知层、推理层、决策层与知识层。" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1018'/%3E%3Cpath d='M8 20l6-9 4 6 3-4 3 7' stroke='%2322d3ee' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
-<link rel="stylesheet" href="assets/core.css" />
+<link rel="stylesheet" href="assets/core.css?v=20261005_v4" />
 </head>
 <body>
 <div class="app">
@@ -168,31 +168,59 @@
         </div>
       </div>
 
-      <div class="grid g-vib mt">
-        <div class="panel">
-          <div class="panel-head"><h3>振动加速度 / 位移</h3><span class="sub">双轴 · 含健康基线</span></div>
-          <div class="chart chart-lg" id="chart-vib"></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>振动频谱 · 特征频率提取</h3><span class="sub">包络谱分析</span></div>
-          <div class="chart" id="chart-spectrum" style="height:300px"></div>
-          <div class="cursor-bar">
-            <span class="lbl">告警游标</span>
-            <input type="range" id="spec-cursor" min="0" max="1000" step="20" value="60" aria-label="频谱游标频率（Hz）" />
-            <span class="cursor-readout" id="spec-cursor-readout">拖动游标查看频点幅值</span>
-            <div class="segmented segmented-xs" id="spec-snap" role="group" aria-label="游标快速定位"></div>
+      <div class="g-master-split mt">
+        <!-- 左侧主时序监控区 -->
+        <div class="left-main-stack">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>振动加速度 / 位移多通道时序监控</h3>
+              <div class="spacer"></div>
+              <span class="pill pill-info"><span class="dot pulse"></span>双轴动态基线</span>
+            </div>
+            <div class="chart" id="chart-vib" style="height:320px"></div>
+          </div>
+
+          <div class="grid g-2">
+            <div class="panel">
+              <div class="panel-head"><h3>轴承温度时序曲线</h3></div>
+              <div class="chart chart-sm" id="chart-temp" style="height:210px"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h3>运行电流时序曲线</h3></div>
+              <div class="chart chart-sm" id="chart-current" style="height:210px"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="grid g-2 mt">
-        <div class="panel">
-          <div class="panel-head"><h3>温度时序曲线</h3><span class="sub">一阶惯性模型 · 温升趋势</span></div>
-          <div class="chart chart-sm" id="chart-temp"></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>电流时序曲线</h3><span class="sub">负载波动监测</span></div>
-          <div class="chart chart-sm" id="chart-current"></div>
+        <!-- 右侧专业频域诊断与特征分析列 -->
+        <div class="right-col-stack">
+          <div class="panel hud-spectrum-panel">
+            <div class="panel-head">
+              <h3>振动频谱 · 特征频率提取</h3>
+              <div class="spacer"></div>
+              <span class="pill pill-ok" style="font-size:10px">包络解调实时谱</span>
+            </div>
+            <div class="chart" id="chart-spectrum" style="height:260px"></div>
+            <div class="hud-cursor-box">
+              <div class="hud-cursor-readout">
+                <span class="lbl" style="font-size:11px;color:var(--txt-2)">告警测振游标</span>
+                <span class="cursor-readout" id="spec-cursor-readout">拖动游标查看频点幅值</span>
+              </div>
+              <input type="range" class="hud-cursor-track" id="spec-cursor" min="0" max="1000" step="20" value="60" aria-label="频谱游标频率（Hz）" />
+              <div class="hud-cursor-snaps" id="spec-snap" role="group" aria-label="游标快速定位"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>时频域物理特征矩阵</h3>
+              <div class="spacer"></div>
+              <span class="pill pill-muted" style="font-size:10px">实时提取</span>
+            </div>
+            <div class="matrix-grid" id="matrix-features">
+              <!-- JS 实时更新 -->
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -222,48 +250,68 @@
         </div>
       </div>
 
-      <div class="grid g-gauge mt">
-        <div class="panel">
-          <div class="panel-head">
-            <h3>健康指数</h3>
-            <div class="spacer"></div>
-            <button class="btn btn-sm btn-ghost" id="btn-score-detail">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 16v-4M12 8h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              查看评分依据
-            </button>
+      <div class="g-master-split mt">
+        <!-- 左侧核心预测区 -->
+        <div class="left-main-stack">
+          <div class="grid g-2">
+            <div class="panel">
+              <div class="panel-head">
+                <h3>健康指数评估</h3>
+                <div class="spacer"></div>
+                <button class="btn btn-sm btn-ghost" id="btn-score-detail">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 16v-4M12 8h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  评分依据
+                </button>
+              </div>
+              <div class="chart chart-gauge" id="chart-gauge" style="height:280px"></div>
+              <div class="note" id="infer-feature" style="margin-top:4px">频谱无异常特征频率，各维度指标正常</div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head"><h3>健康五维雷达评估</h3></div>
+              <div class="chart chart-gauge" id="chart-radar" style="height:280px"></div>
+            </div>
           </div>
-          <div class="chart chart-gauge" id="chart-gauge"></div>
-          <div class="note" id="infer-feature">频谱无异常特征频率，各维度指标正常</div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>健康五维雷达</h3></div>
-          <div class="chart chart-gauge" id="chart-radar"></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>劣化趋势推演</h3></div>
-          <div class="chart chart-gauge" id="chart-degrade"></div>
-        </div>
-      </div>
 
-      <div class="panel mt">
-        <div class="panel-head">
-          <h3>剩余使用寿命（RUL）预测</h3>
-          <span class="sub">历史健康分 + 劣化趋势外推，含置信区间与停机阈值</span>
-          <div class="spacer"></div>
-          <span class="pill pill-ok" id="rul-badge">RUL --</span>
-        </div>
-        <div class="chart chart-xl" id="chart-rul"></div>
-      </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>剩余使用寿命（RUL）衰减预测</h3>
+              <div class="spacer"></div>
+              <span class="pill pill-ok" id="rul-badge">RUL --</span>
+            </div>
+            <div class="chart chart-xl" id="chart-rul" style="height:310px"></div>
+          </div>
 
-      <div class="grid g-32 mt">
-        <div class="panel">
-          <div class="panel-head"><h3>设备健康台账</h3><span class="sub">实时评分与检修建议</span></div>
-          <div class="table-wrap" id="health-table"></div>
+          <div class="panel">
+            <div class="panel-head">
+              <h3>全厂设备健康管理台账</h3>
+              <div class="spacer"></div>
+              <span class="pill pill-info" style="font-size:10px">动态排查</span>
+            </div>
+            <div class="table-wrap" id="health-table"></div>
+          </div>
         </div>
-        <div class="panel">
-          <div class="panel-head"><h3>最近预警事件流</h3><span class="sub">时间 · 设备 · 故障类型 · 提前时长 · 置信度</span></div>
-          <div id="alert-list" class="alert-stream">
-            <div class="empty">暂无预警</div>
+
+        <!-- 右侧智能预警决策专列 -->
+        <div class="right-col-stack">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>劣化趋势深度推演</h3>
+              <div class="spacer"></div>
+              <span class="pill pill-muted" style="font-size:10px">90天推演</span>
+            </div>
+            <div class="chart" id="chart-degrade" style="height:250px"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>实时早期预警事件流</h3>
+              <div class="spacer"></div>
+              <span class="pill pill-warn" style="font-size:10px"><span class="dot pulse"></span>自动捕获</span>
+            </div>
+            <div id="alert-list" class="alert-stream-v2">
+              <div class="empty">暂无预警</div>
+            </div>
           </div>
         </div>
       </div>
@@ -312,33 +360,51 @@
         </div>
       </div>
 
-      <div class="grid g-wo mt">
-        <div class="panel">
-          <div class="panel-head">
-            <h3>智能检修工单</h3>
-            <div class="spacer"></div>
-            <div class="segmented segmented-xs" id="wo-filter" role="group" aria-label="工单状态筛选"></div>
+      <div class="g-master-split mt">
+        <!-- 左侧工单调度主区 -->
+        <div class="left-main-stack">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>智能检修工单调度中心</h3>
+              <div class="spacer"></div>
+              <div class="segmented segmented-xs" id="wo-filter" role="group" aria-label="工单状态筛选"></div>
+            </div>
+            <div class="wo-list" id="wo-list"><div class="empty">暂无工单</div></div>
           </div>
-          <div class="wo-list" id="wo-list"><div class="empty">暂无工单</div></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>备件库存</h3></div>
-          <div class="table-wrap" id="parts-table" style="max-height:440px;overflow-y:auto"></div>
-        </div>
-      </div>
 
-      <div class="grid g-3 mt">
-        <div class="panel">
-          <div class="panel-head"><h3>工单状态分布</h3></div>
-          <div class="chart chart-sm" id="chart-wopie"></div>
+          <div class="grid g-2">
+            <div class="panel">
+              <div class="panel-head"><h3>工单流转状态分布</h3></div>
+              <div class="chart chart-sm" id="chart-wopie" style="height:230px"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><h3>备件库容总体水位</h3></div>
+              <div class="chart chart-parts" id="chart-parts" style="height:230px"></div>
+            </div>
+          </div>
         </div>
-        <div class="panel">
-          <div class="panel-head"><h3>备件库存水位</h3></div>
-          <div class="chart chart-sm" id="chart-parts"></div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>供应链预警</h3></div>
-          <div class="timeline" id="supply-chain"><div class="empty">供应链状态正常</div></div>
+
+        <!-- 右侧备件与供应链保障专列 -->
+        <div class="right-col-stack">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>关键备件实时库存水位看板</h3>
+              <div class="spacer"></div>
+              <span class="pill pill-ok" style="font-size:10px">动态水位联动</span>
+            </div>
+            <div id="parts-table">
+              <!-- 由 app.js 渲染带有彩色水位条的高级备件卡片列表 -->
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>供应链在途预警与交期雷达</h3>
+              <div class="spacer"></div>
+              <span class="pill pill-amber" style="font-size:10px">采购保障</span>
+            </div>
+            <div class="timeline" id="supply-chain"><div class="empty">供应链状态正常</div></div>
+          </div>
         </div>
       </div>
     </section>
@@ -446,14 +512,14 @@
   <div class="modal-body" id="modal-body"></div>
 </div>
 
-<script src="assets/echarts.min.js"></script>
-<script src="assets/data.js"></script>
+<script src="assets/echarts.min.js?v=20261005_v4"></script>
+<script src="assets/data.js?v=20261005_v4"></script>
 <script src="assets/dsp.js"></script>
-<script src="assets/dataset.js"></script>
+<script src="assets/dataset.js?v=20261005_v4"></script>
 <script src="assets/cwru.js"></script>
-<script src="assets/knowledge.js"></script>
-<script src="assets/charts.js"></script>
-<script src="assets/eval.js"></script>
-<script src="assets/app.js"></script>
+<script src="assets/knowledge.js?v=20261005_v4"></script>
+<script src="assets/charts.js?v=20261005_v4"></script>
+<script src="assets/eval.js?v=20261005_v4"></script>
+<script src="assets/app.js?v=20261005_v4"></script>
 </body>
 </html>
