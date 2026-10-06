@@ -6,7 +6,7 @@
 <title>智维 PredictOps · 工业设备智能健康管理与预测性维护平台</title>
 <meta name="description" content="面向制造业关键设备的智能管理与预测性维护系统，覆盖感知层、推理层、决策层与知识层。" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1018'/%3E%3Cpath d='M8 20l6-9 4 6 3-4 3 7' stroke='%2322d3ee' stroke-width='2.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
-<link rel="stylesheet" href="assets/core.css?v=20261005_v5" />
+<link rel="stylesheet" href="assets/core.css?v=20261005_v6" />
 </head>
 <body>
 <div class="app">
@@ -18,9 +18,12 @@
         <path d="M3 17l5-9 4 6 3-4 3 7" /><circle cx="8" cy="8" r="1.3" fill="#22d3ee" stroke="none" />
       </svg>
     </div>
-    <div>
+    <div class="brand-info">
       <div class="brand-name">智维<span>·</span>PredictOps</div>
-      <div class="brand-sub">Equipment Intelligence</div>
+      <div class="brand-sub">
+        <span class="brand-sub-tag">INDUSTRIAL TWIN</span>
+        <span class="brand-live-dot" title="系统引擎运行中"></span>
+      </div>
     </div>
   </div>
 
@@ -52,55 +55,110 @@
     <span class="mono" id="clock" style="color:var(--txt-1);font-size:12.5px;min-width:64px;text-align:right">--:--:--</span>
   </header>
 
-  <!-- ================= 侧边导航 ================= -->
+  <!-- ================= 侧边导航（最左列 · 工业数字孪生架构指挥舱） ================= -->
   <aside class="sidebar" aria-label="系统导航">
-    <div class="nav-label">系统层级</div>
+    <div class="nav-group-title">
+      <span>工业四层闭环</span>
+      <span class="badge">4-TIER ARCH</span>
+    </div>
 
     <button class="nav-item active" data-view="perception" aria-current="page">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M2 12h4l2.5-7 3.5 14 3-9 2 2h5" />
-      </svg>
-      感知层 · 时序监控
+      <div class="nl-idx">01</div>
+      <div class="nl-body">
+        <div class="nl-head">
+          <span class="nl-title">感知层</span>
+          <span class="nl-en">Perception</span>
+        </div>
+        <div class="nl-desc">多维时序状态感知</div>
+      </div>
+      <div class="nl-status">
+        <span class="nl-pill cyan"><span class="dot pulse"></span>1Hz 采样</span>
+      </div>
     </button>
 
-    <button class="nav-item" data-view="inference">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" />
-      </svg>
-      推理层 · 预测维护
-      <span class="nav-badge" id="nav-alert-badge">0</span>
+    <button class="nav-item" data-view="inference" aria-label="推理层 · 预测维护">
+      <div class="nl-idx">02</div>
+      <div class="nl-body">
+        <div class="nl-head">
+          <span class="nl-title">推理层</span>
+          <span class="nl-en">Inference</span>
+        </div>
+        <div class="nl-desc">劣化预警与 RUL 推演</div>
+      </div>
+      <div class="nl-status">
+        <span class="nl-pill purple" id="nav-alert-badge">0</span>
+      </div>
     </button>
 
     <button class="nav-item" data-view="decision">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 5h10a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6M9 3v4M7 11l2 2 4-4" />
-      </svg>
-      决策层 · 工单备件
+      <div class="nl-idx">03</div>
+      <div class="nl-body">
+        <div class="nl-head">
+          <span class="nl-title">决策层</span>
+          <span class="nl-en">Decision</span>
+        </div>
+        <div class="nl-desc">智能工单与备件流转</div>
+      </div>
+      <div class="nl-status">
+        <span class="nl-pill green">闭环调度</span>
+      </div>
     </button>
 
     <button class="nav-item" data-view="knowledge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 5a2 2 0 012-2h11a1 1 0 011 1v14a1 1 0 01-1 1H6a2 2 0 01-2-2V5z" />
-        <path d="M4 17a2 2 0 012-2h12M8 7h6M8 10h6" />
-      </svg>
-      知识层 · 诊断问答
+      <div class="nl-idx">04</div>
+      <div class="nl-body">
+        <div class="nl-head">
+          <span class="nl-title">知识层</span>
+          <span class="nl-en">Knowledge</span>
+        </div>
+        <div class="nl-desc">维修知识库与 Copilot</div>
+      </div>
+      <div class="nl-status">
+        <span class="nl-pill amber"><span class="dot pulse"></span>在线</span>
+      </div>
     </button>
 
-    <div class="nav-label" style="margin-top:16px">数据与模型</div>
+    <div class="nav-group-title" style="margin-top:14px">
+      <span>数据与模型</span>
+      <span class="badge">EVAL</span>
+    </div>
 
     <button class="nav-item" data-view="dataset">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <ellipse cx="12" cy="6" rx="7" ry="3" /><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6" /><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" />
-      </svg>
-      数据集与评估
+      <div class="nl-idx">05</div>
+      <div class="nl-body">
+        <div class="nl-head">
+          <span class="nl-title">数据集与评估</span>
+          <span class="nl-en">Benchmark</span>
+        </div>
+        <div class="nl-desc">NASA CWRU / 混淆矩阵</div>
+      </div>
+      <div class="nl-status">
+        <span class="nl-pill blue">21 样本</span>
+      </div>
     </button>
 
     <div class="sidebar-foot">
-      系统版本 <b>v1.0.0</b><br />
-      采样频率 <b>1 Hz</b> · 窗口 <b>60s</b><br />
-      推理引擎 <b>Edge-AI</b><br />
-      <button class="kbd-hint" id="btn-shortcuts" title="查看键盘快捷键（? ）">⌨ 快捷键 · 1~5 切换视图</button><br />
-      <span style="color:var(--txt-2)">© 2026 PredictOps</span>
+      <div class="sf-hud-box">
+        <div class="sf-hud-head">
+          <span class="sf-hud-label"><span class="dot pulse" style="color:var(--green)"></span>EDGE COMPUTING</span>
+          <span class="sf-hud-ver">v1.0.0</span>
+        </div>
+        <div class="sf-hud-grid">
+          <div class="sf-hud-item">
+            <span class="k">采样基准</span>
+            <span class="v mono">1 Hz / 60s 窗</span>
+          </div>
+          <div class="sf-hud-item">
+            <span class="k">推理引擎</span>
+            <span class="v mono">Edge-AI</span>
+          </div>
+        </div>
+        <button class="sf-kbd-btn" id="btn-shortcuts" title="查看键盘快捷键（? ）">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15h10M7 9h.01M11 9h.01M15 9h.01M7 12h.01M11 12h.01M15 12h.01"/></svg>
+          快捷键清单 <span class="mono kbd-tag">?</span>
+        </button>
+      </div>
+      <div class="sf-copy">© 2026 PredictOps · 工业孪生</div>
     </div>
   </aside>
 
@@ -171,9 +229,15 @@
       <div class="g-master-split mt">
         <!-- 左侧主时序监控区 -->
         <div class="left-main-stack">
-          <div class="panel">
+          <div class="panel panel-hud-left">
             <div class="panel-head">
-              <h3>振动加速度 / 位移多通道时序监控</h3>
+              <div class="panel-head-left">
+                <h3>振动加速度 / 位移多通道时序监控</h3>
+                <div class="hud-channel-tags">
+                  <span class="hud-ch-tag ch-acc">CH-1 加速度 (m/s²)</span>
+                  <span class="hud-ch-tag ch-disp">CH-2 峰峰位移 (µm)</span>
+                </div>
+              </div>
               <div class="spacer"></div>
               <span class="pill pill-info"><span class="dot pulse"></span>双轴动态基线</span>
             </div>
@@ -181,12 +245,20 @@
           </div>
 
           <div class="grid g-2">
-            <div class="panel">
-              <div class="panel-head"><h3>轴承温度时序曲线</h3></div>
+            <div class="panel panel-hud-left">
+              <div class="panel-head">
+                <h3>轴承温度时序曲线</h3>
+                <div class="spacer"></div>
+                <span class="pill pill-muted" style="font-size:10px">PT100 · 1s</span>
+              </div>
               <div class="chart chart-sm" id="chart-temp" style="height:210px"></div>
             </div>
-            <div class="panel">
-              <div class="panel-head"><h3>运行电流时序曲线</h3></div>
+            <div class="panel panel-hud-left">
+              <div class="panel-head">
+                <h3>运行电流时序曲线</h3>
+                <div class="spacer"></div>
+                <span class="pill pill-muted" style="font-size:10px">霍尔互感器 · 1s</span>
+              </div>
               <div class="chart chart-sm" id="chart-current" style="height:210px"></div>
             </div>
           </div>
@@ -254,7 +326,7 @@
         <!-- 左侧核心预测区 -->
         <div class="left-main-stack">
           <div class="grid g-2">
-            <div class="panel">
+            <div class="panel panel-hud-left">
               <div class="panel-head">
                 <h3>健康指数评估</h3>
                 <div class="spacer"></div>
@@ -267,13 +339,17 @@
               <div class="note" id="infer-feature" style="margin-top:4px">频谱无异常特征频率，各维度指标正常</div>
             </div>
 
-            <div class="panel">
-              <div class="panel-head"><h3>健康五维雷达评估</h3></div>
+            <div class="panel panel-hud-left">
+              <div class="panel-head">
+                <h3>健康五维雷达评估</h3>
+                <div class="spacer"></div>
+                <span class="pill pill-info" style="font-size:10px">多维特征归一</span>
+              </div>
               <div class="chart chart-gauge" id="chart-radar" style="height:280px"></div>
             </div>
           </div>
 
-          <div class="panel">
+          <div class="panel panel-hud-left">
             <div class="panel-head">
               <h3>剩余使用寿命（RUL）衰减预测</h3>
               <div class="spacer"></div>
@@ -282,7 +358,7 @@
             <div class="chart chart-xl" id="chart-rul" style="height:310px"></div>
           </div>
 
-          <div class="panel">
+          <div class="panel panel-hud-left">
             <div class="panel-head">
               <h3>全厂设备健康管理台账</h3>
               <div class="spacer"></div>
@@ -363,7 +439,7 @@
       <div class="g-master-split mt">
         <!-- 左侧工单调度主区 -->
         <div class="left-main-stack">
-          <div class="panel">
+          <div class="panel panel-hud-left">
             <div class="panel-head">
               <h3>智能检修工单调度中心</h3>
               <div class="spacer"></div>
@@ -373,12 +449,20 @@
           </div>
 
           <div class="grid g-2">
-            <div class="panel">
-              <div class="panel-head"><h3>工单流转状态分布</h3></div>
+            <div class="panel panel-hud-left">
+              <div class="panel-head">
+                <h3>工单流转状态分布</h3>
+                <div class="spacer"></div>
+                <span class="pill pill-muted" style="font-size:10px">闭环率跟踪</span>
+              </div>
               <div class="chart chart-sm" id="chart-wopie" style="height:230px"></div>
             </div>
-            <div class="panel">
-              <div class="panel-head"><h3>备件库容总体水位</h3></div>
+            <div class="panel panel-hud-left">
+              <div class="panel-head">
+                <h3>备件库容总体水位</h3>
+                <div class="spacer"></div>
+                <span class="pill pill-muted" style="font-size:10px">库存分布</span>
+              </div>
               <div class="chart chart-parts" id="chart-parts" style="height:230px"></div>
             </div>
           </div>
@@ -417,8 +501,12 @@
       </div>
 
       <div class="grid g-kb">
-        <div class="panel">
-          <div class="panel-head"><h3>知识库检索</h3></div>
+        <div class="panel panel-hud-left">
+          <div class="panel-head">
+            <h3>维修知识库检索</h3>
+            <div class="spacer"></div>
+            <span class="pill pill-info" style="font-size:10px">SOP 规程</span>
+          </div>
           <div class="kb-tags mb" id="kb-tags"></div>
           <div class="kb-list" id="kb-list"></div>
         </div>
@@ -512,14 +600,14 @@
   <div class="modal-body" id="modal-body"></div>
 </div>
 
-<script src="assets/echarts.min.js?v=20261005_v5"></script>
-<script src="assets/data.js?v=20261005_v5"></script>
-<script src="assets/dsp.js?v=20261005_v5"></script>
-<script src="assets/dataset.js?v=20261005_v5"></script>
-<script src="assets/cwru.js?v=20261005_v5"></script>
-<script src="assets/knowledge.js?v=20261005_v5"></script>
-<script src="assets/charts.js?v=20261005_v5"></script>
-<script src="assets/eval.js?v=20261005_v5"></script>
-<script src="assets/app.js?v=20261005_v5"></script>
+<script src="assets/echarts.min.js?v=20261005_v6"></script>
+<script src="assets/data.js?v=20261005_v6"></script>
+<script src="assets/dsp.js?v=20261005_v6"></script>
+<script src="assets/dataset.js?v=20261005_v6"></script>
+<script src="assets/cwru.js?v=20261005_v6"></script>
+<script src="assets/knowledge.js?v=20261005_v6"></script>
+<script src="assets/charts.js?v=20261005_v6"></script>
+<script src="assets/eval.js?v=20261005_v6"></script>
+<script src="assets/app.js?v=20261005_v6"></script>
 </body>
 </html>
