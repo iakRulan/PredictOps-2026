@@ -236,11 +236,12 @@ input, select, textarea { font-family: inherit; }
 .nav-item[data-view="knowledge"].active .nl-idx { background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #fbbf24; }
 .nav-item[data-view="dataset"].active .nl-idx { background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); color: #60a5fa; }
 
-.nl-body { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-.nl-head { display: flex; align-items: baseline; gap: 6px; }
-.nl-title { font-size: 13.5px; font-weight: 700; color: #f1f5f9; }
-.nl-en { font-family: var(--mono); font-size: 8.5px; color: var(--txt-2); letter-spacing: 0.04em; text-transform: uppercase; }
-.nl-desc { font-size: 11px; color: var(--txt-2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nl-body { display: flex; flex-direction: column; justify-content: center; min-width: 0; flex: 1; }
+.nl-head { display: flex; align-items: baseline; flex-wrap: nowrap; gap: 6px; }
+.nl-title { font-size: 14px; font-weight: 700; color: #f1f5f9; white-space: nowrap; flex: none; }
+/* 最左列单行化：英文行与描述行不再展示，避免两行小字（用户明确要求） */
+.nl-en { display: none; }
+.nl-desc { display: none; }
 .nav-item:hover .nl-desc { color: var(--txt-1); }
 .nav-item.active .nl-desc { color: var(--txt-1); }
 
